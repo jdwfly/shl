@@ -1,8 +1,8 @@
-#appname: shl
-#publisher: jwheaton
-#url: http://www.lancasterbaptist.org
-#image: appicon.png
-#appid: org.lancasterbaptist.shl
-#desc: undefined
-#type: mobile
-#guid: 4a9597d6-d44b-44f1-9986-fa4055b49baa
+#appname:shl
+#publisher:Lancaster Baptist Church
+#url:http://www.lancasterbaptist.org/
+#image:appicon.png
+#appid:org.lancasterbaptist.shl
+#desc:not specified
+#type:mobile
+#guid:4a9597d6-d44b-44f1-9986-fa4055b49baa
