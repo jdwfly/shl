@@ -1,6 +1,10 @@
 (function() {
   shl.ui = {};
   
+  shl.ui.createMainWindows = function(_title) {
+    
+  };
+  
   shl.ui.createAllWindow = function() {
     var win = Ti.UI.createWindow({
       title: 'All',
@@ -51,16 +55,20 @@
     var more = shl.ui.createMoreWindow();
     
     shl.allTab = Ti.UI.createTab({
-      
+      title: 'All',
+      window: all
     });
     shl.listsTab = Ti.UI.createTab({
-      
+      title: 'Lists',
+      window: lists
     });
     shl.searchTab = Ti.UI.createTab({
-      
+      title: 'Search',
+      window: search
     });
     shl.moreTab = Ti.UI.createTab({
-      
+      title: 'More',
+      window: more
     });
     
     tabgroup.addTab(shl.allTab);
