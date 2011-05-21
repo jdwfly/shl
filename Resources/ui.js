@@ -1,6 +1,46 @@
 (function() {
   shl.ui = {};
   
+  shl.ui.createAllWindow = function() {
+    var win = Ti.UI.createWindow({
+      title: 'All',
+      activity: {
+        onCreateOptionsMenu : function(e) {
+          var menu = e.menu;
+          var m1 = menu.add({title: 'Add'});
+          m1.addEventListener('click', function(e) {
+            shl.allTab.open(shl.ui.createAddWindow());
+          });
+        }
+      }
+    });
+    win.add(shl.ui.createProspectTableView());
+    
+    if (Ti.Platform.osname === 'iphone') {
+      var b = Ti.UI.createButton({
+        title: 'Add',
+        style: Ti.UI.iPhone.SystemButtonStyle.PLAIN
+      });
+      b.addEventListener('click', function() {
+        shl.ui.createAddWindow().open({modal:true});
+      });
+      win.setRightNavButton(b);
+    }
+    return win;
+  };
+  
+  shl.ui.createListsWindow = function() {
+    
+  };
+  
+  shl.ui.createSearchWindow = function() {
+    
+  };
+  
+  shl.ui.createMoreWindow = function() {
+    
+  };
+  
   shl.ui.createApplicationTabGroup = function() {
     var tabgroup = Ti.UI.createTabGroup();
     
