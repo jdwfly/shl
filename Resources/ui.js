@@ -1,6 +1,11 @@
 (function() {
   shl.ui = {};
   
+  shl.ui.createProspectTableView = function() {
+    var data = [{title:"Row 1"},{title:"Row 2"}];
+    return Titanium.UI.createTableView({data:data});
+  };
+  
   shl.ui.createAllWindow = function() {
     var win = Ti.UI.createWindow({
       title: 'All',
