@@ -1,10 +1,6 @@
 (function() {
   shl.ui = {};
   
-  shl.ui.createMainWindows = function(_title) {
-    
-  };
-  
   shl.ui.createAllWindow = function() {
     var win = Ti.UI.createWindow({
       title: 'All',
@@ -34,15 +30,87 @@
   };
   
   shl.ui.createListsWindow = function() {
+    var win = Ti.UI.createWindow({
+      title: 'Lists',
+      activity: {
+        onCreateOptionsMenu : function(e) {
+          var menu = e.menu;
+          var m1 = menu.add({title: 'Add'});
+          m1.addEventListener('click', function(e) {
+            shl.allTab.open(shl.ui.createAddWindow());
+          });
+        }
+      }
+    });
+    win.add(shl.ui.createProspectTableView());
     
+    if (Ti.Platform.osname === 'iphone') {
+      var b = Ti.UI.createButton({
+        title: 'Add',
+        style: Ti.UI.iPhone.SystemButtonStyle.PLAIN
+      });
+      b.addEventListener('click', function() {
+        shl.ui.createAddWindow().open({modal:true});
+      });
+      win.setRightNavButton(b);
+    }
+    return win;
   };
   
   shl.ui.createSearchWindow = function() {
+    var win = Ti.UI.createWindow({
+      title: 'Search',
+      activity: {
+        onCreateOptionsMenu : function(e) {
+          var menu = e.menu;
+          var m1 = menu.add({title: 'Add'});
+          m1.addEventListener('click', function(e) {
+            shl.allTab.open(shl.ui.createAddWindow());
+          });
+        }
+      }
+    });
+    win.add(shl.ui.createProspectTableView());
     
+    if (Ti.Platform.osname === 'iphone') {
+      var b = Ti.UI.createButton({
+        title: 'Add',
+        style: Ti.UI.iPhone.SystemButtonStyle.PLAIN
+      });
+      b.addEventListener('click', function() {
+        shl.ui.createAddWindow().open({modal:true});
+      });
+      win.setRightNavButton(b);
+    }
+    return win;
   };
   
   shl.ui.createMoreWindow = function() {
+    var win = Ti.UI.createWindow({
+      title: 'More',
+      activity: {
+        onCreateOptionsMenu : function(e) {
+          var menu = e.menu;
+          var m1 = menu.add({title: 'Add'});
+          m1.addEventListener('click', function(e) {
+            shl.allTab.open(shl.ui.createAddWindow());
+          });
+        }
+      }
+    });
+    win.add(shl.ui.createProspectTableView());
     
+    if (Ti.Platform.osname === 'iphone') {
+      var b = Ti.UI.createButton({
+        title: 'Add',
+        style: Ti.UI.iPhone.SystemButtonStyle.PLAIN
+      });
+      b.addEventListener('click', function() {
+        shl.ui.createAddWindow().open({modal:true});
+      });
+      win.setRightNavButton(b);
+    }
+    return win;
   };
   
   shl.ui.createApplicationTabGroup = function() {
