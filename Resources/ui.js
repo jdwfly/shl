@@ -129,19 +129,23 @@
     
     shl.allTab = Ti.UI.createTab({
       title: 'All',
-      window: all
+      window: all,
+      icon: 'images/112-group.png'
     });
     shl.listsTab = Ti.UI.createTab({
       title: 'Lists',
-      window: lists
+      window: lists,
+      icon: 'images/179-notepad.png'
     });
     shl.searchTab = Ti.UI.createTab({
       title: 'Search',
-      window: search
+      window: search,
+      icon: 'images/06-magnify.png'
     });
     shl.moreTab = Ti.UI.createTab({
       title: 'More',
-      window: more
+      window: more,
+      icon: 'images/59-info.png'
     });
     
     tabgroup.addTab(shl.allTab);
