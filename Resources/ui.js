@@ -6,6 +6,38 @@
     return Titanium.UI.createTableView({data:data});
   };
   
+  shl.ui.createAddWindow = function() {
+    var win = Ti.UI.createWindow({
+      title: 'Add Prospect',
+      layout: 'vertical',
+      backgroundColor:'#ffffff'
+    });
+    
+    if (Ti.Platform.osname === 'iphone') {
+      var b = Titanium.UI.createButton({
+        title:'Close',
+        style:Titanium.UI.iPhone.SystemButtonStyle.PLAIN
+      });
+      b.addEventListener('click',function() {
+        win.close();
+      });
+      win.setRightNavButton(b);
+    }
+    
+    var tf = Ti.UI.createTextField({
+      height:40,
+      top:10,
+      width:250,
+      keyboardType:Titanium.UI.KEYBOARD_DEFAULT,
+      returnKeyType:Titanium.UI.RETURNKEY_DONE,
+      borderStyle:Titanium.UI.INPUT_BORDERSTYLE_ROUNDED,
+      hintText:L('fugitive_name')
+    });
+    win.add(tf);
+    
+    return win;
+  };
+  
   shl.ui.createAllWindow = function() {
     var win = Ti.UI.createWindow({
       title: 'All',
