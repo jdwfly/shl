@@ -80,6 +80,8 @@
     s2.add(genderRow);
     data.push(s2);
     
+    var s3 = Ti.UI.createTableViewSection();
+    
     // Finally Make the TableView and add
     var tableView = Ti.UI.createTableView({
       data: data,
