@@ -15,7 +15,7 @@
   //_item : an object with ALL the attributes listed, else it will break
   shl.db.insertProspect = function(_item) {
     var db = Ti.Database.open('Outreach');
-    db.execute('INSERT INTO fugitives(last,firstMale, firstFemale, street, city, state, zip, country, phoneHome, '+
+    db.execute('INSERT INTO prospects(last,firstMale, firstFemale, street, city, state, zip, country, phoneHome, '+
     'phoneMoble, email, firstContactDate, firstContactPoint, previouslySaved, previouslyBaptized, sundaySchool, status, nextStep, lastContact, created, modified, uuid) '+
     'VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
     _item.last,
@@ -47,8 +47,36 @@
   shl.db.listAllProspects = function() {
     var prospectList = [];
     var db = Ti.Database.open('Outreach');
-    //TODO something here
-
+    var result = db.execute('SELECT * FROM prospects ORDER BY last ASC');
+    while(result.isValidRow()){
+      prospectList.push({
+        id: result.fieldByName('id'),
+        last: result.fieldByName('last'),
+        firstMale: result.fieldByName('firstMale'),
+        firstFemale: result.fieldByName('firstFemale'),
+        street: result.fieldByName('street'),
+        city: result.fieldByName('city'),
+        state: result.fieldByName('state'),
+        zip: result.fieldByName('zip'),
+        country: result.fieldByName('country'),
+        phoneHome: result.fieldByName('phoneHome'),
+        phoneMoble: result.fieldByName('phoneMoble'),
+        email: result.fieldByName('email'),
+        firstContactDate: result.fieldByName('firstContactDate'),
+        firstContactPoint: result.fieldByName('firstContactPoint'),
+        previouslySaved: result.fieldByName('previouslySaved'),
+        previouslyBaptized: result.fieldByName('previouslyBaptized'),
+        sundaySchool: result.fieldByName('sundaySchool'),
+        status: result.fieldByName('status'),
+        nextStep: result.fieldByName('nextStep'),
+        lastContact: result.fieldByName('lastContact'),
+        created: result.fieldByName('created'),
+        modified: result.fieldByName('modified'),
+        uuid: result.fieldByName('uuid')
+      });
+      result.next();
+    }
+    result.close();
     db.close();
     return prospectList;
   }
