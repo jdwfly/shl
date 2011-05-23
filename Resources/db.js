@@ -81,7 +81,7 @@
     return prospectList;
   }
   //testing db functions
-  if(Ti.Platform.osname == android) {
+  if(Ti.Platform.osname == "android") {
 
     shl.db.insertProspect({
       last: "Smith",
