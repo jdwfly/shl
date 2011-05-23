@@ -9,8 +9,7 @@
   shl.ui.createAddWindow = function() {
     var win = Ti.UI.createWindow({
       title: 'Add Prospect',
-      layout: 'vertical',
-      backgroundColor:'#ffffff'
+      backgroundColor:'#eeeeee'
     });
     
     if (Ti.Platform.osname === 'iphone') {
@@ -23,18 +22,71 @@
       });
       win.setRightNavButton(b);
     }
-    
-    var tf = Ti.UI.createTextField({
+
+    var data = [];
+    var s1 = Ti.UI.createTableViewSection();
+    // First Name Field
+    var fnameRow = Ti.UI.createTableViewRow({
+      height: 40,
+      layout: "vertical",
+      selectionStyle: "none" 
+    });
+    var fname = Ti.UI.createTextField({
       height:40,
-      top:10,
-      width:250,
       keyboardType:Titanium.UI.KEYBOARD_DEFAULT,
       returnKeyType:Titanium.UI.RETURNKEY_DONE,
-      borderStyle:Titanium.UI.INPUT_BORDERSTYLE_ROUNDED,
-      hintText:L('fugitive_name')
+      borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
+      hintText:L('First Name')
     });
-    win.add(tf);
+    fnameRow.add(fname);
+    s1.add(fnameRow);
+    // Last Name Field
+    var lnameRow = Ti.UI.createTableViewRow({
+      height: 40,
+      layout: "vertical",
+      selectionStyle: "none" 
+    });
+    var lname = Ti.UI.createTextField({
+      height:40,
+      keyboardType:Titanium.UI.KEYBOARD_DEFAULT,
+      returnKeyType:Titanium.UI.RETURNKEY_DONE,
+      borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
+      hintText:L('Last Name')
+    });
+    lnameRow.add(lname);
+    s1.add(lnameRow);
     
+    data.push(s1);
+    
+    var s2 = Ti.UI.createTableViewSection({
+      borderColor: 'transparent',
+      borderWidth: 0
+    });
+    var genderRow = Ti.UI.createTableViewRow({
+      backgroundColor: 'transparent',
+      borderWidth: 0,
+      borderColor: 'transparent',
+      height: 40,
+      selectionStyle: "none"
+    });
+    var gender = Titanium.UI.createTabbedBar({
+      labels: ['Male', 'Female', 'Couple'],
+      backgroundColor: '#336699',
+      style: Titanium.UI.iPhone.SystemButtonStyle.BAR,
+      height: 45,
+      width: 302
+    });
+    genderRow.add(gender);
+    s2.add(genderRow);
+    data.push(s2);
+    
+    // Finally Make the TableView and add
+    var tableView = Ti.UI.createTableView({
+      data: data,
+      style: Titanium.UI.iPhone.TableViewStyle.GROUPED
+    });
+    win.add(tableView);
+
     return win;
   };
   
