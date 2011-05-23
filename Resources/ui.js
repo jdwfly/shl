@@ -80,7 +80,47 @@
     s2.add(genderRow);
     data.push(s2);
     
-    //var s3 = Ti.UI.createTableViewSection();
+    var s3 = Ti.UI.createTableViewSection();
+    var streetRow = Ti.UI.createTableViewRow({
+      height: 45,
+      layout: "vertical",
+      selectionStyle: "none"
+    });
+    var street = Ti.UI.createTextField({
+      height:40,
+      keyboardType:Titanium.UI.KEYBOARD_DEFAULT,
+      returnKeyType:Titanium.UI.RETURNKEY_DONE,
+      borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
+      hintText:L('Street')
+    });
+    streetRow.add(street);
+    s3.add(streetRow);
+    var citystateRow = Ti.UI.createTableViewRow({
+      height: 45,
+      layout: "horizontal",
+      selectionStyle: "none"
+    });
+    var city = Ti.UI.createTextField({
+      width: 150,
+      height:40,
+      keyboardType:Titanium.UI.KEYBOARD_DEFAULT,
+      returnKeyType:Titanium.UI.RETURNKEY_DONE,
+      borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
+      hintText:L('City')
+    });
+    var state = Ti.UI.createTextField({
+      width: 150,
+      height: 40,
+      left: 0,
+      keyboardType:Titanium.UI.KEYBOARD_DEFAULT,
+      returnKeyType:Titanium.UI.RETURNKEY_DONE,
+      borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
+      hintText:L('State')
+    });
+    citystateRow.add(city);
+    citystateRow.add(state);
+    s3.add(citystateRow);
+    data.push(s3);
     
     // Finally Make the TableView and add
     var tableView = Ti.UI.createTableView({
