@@ -48,7 +48,7 @@
     var prospectList = [];
     var db = Ti.Database.open('Outreach');
     var result = db.execute('SELECT * FROM prospects ORDER BY last ASC');
-    while(result.isValidRow()){
+    while(result.isValidRow()) {
       prospectList.push({
         id: result.fieldByName('id'),
         last: result.fieldByName('last'),
@@ -79,5 +79,38 @@
     result.close();
     db.close();
     return prospectList;
+  }
+  //testing db functions
+  if(Ti.Platform.osname == android) {
+
+    shl.db.insertProspect({
+      last: "Smith",
+      firstMale: "John",
+      firstFemale: "Jill",
+      street: "1234 Asdf St.",
+      city: "Lancaster",
+      state: "CA",
+      zip: "93535",
+      country: "United States",
+      phoneHome: "(360)456-6436",
+      phoneMoble: "661.158.4882",
+      email: "test@example.com",
+      firstContactDate: 1305998777,
+      firstContactPoint: "Door knocking",
+      previouslySaved: 0,
+      previouslyBaptized: 0,
+      sundaySchool: 0,
+      status: "Active Prospect",
+      nextStep: "Salvation",
+      lastContact: "1306171747",
+      created: "1306171747",
+      modified: "1306171747",
+      uuid: "a145d9a5-dbef-4e09-b112-1b8209c57aba"
+    });
+
+    var testResult = shl.db.listAllProspects();
+    for(i=0; i<testResult.length; i++) {
+      Ti.API.info(testResult[i].toSource());
+    }
   }
 })();
