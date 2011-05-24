@@ -9,6 +9,7 @@
   'city TEXT, state TEXT, zip TEXT, country TEXT, phoneHome TEXT, phoneMoble TEXT, email TEXT, '+
   'firstContactDate INTEGER, firstContactPoint TEXT, previouslySaved INTEGER, previouslyBaptized INTEGER, '+
   'sundaySchool INTEGER, status TEXT, nextStep TEXT, lastContact INTEGER, created INTEGER, modified INTEGER, uuid TEXT);');
+  db.execute('DELETE FROM prospects'); //TODO Remove Before Flight
   db.close();
 
   //adds a new prospect to the database
@@ -41,8 +42,11 @@
     _item.modified,
     _item.uuid
     );
+    var lastId = db.lastInsertRowId;
     db.close();
+    return lastId;
   }
+
   //dumps all the items in the prospect table into an array of objects for testing
   shl.db.listAllProspects = function() {
     var prospectList = [];
@@ -80,10 +84,73 @@
     db.close();
     return prospectList;
   }
+
+  shl.db.getProspect = function(prospectId) {
+    var db = Ti.Database.open('Outreach');
+    var result = db.execute('SELECT * FROM prospects WHERE id = ?', prospectId);
+    var prospect = {
+      id: result.fieldByName('id'),
+      last: result.fieldByName('last'),
+      firstMale: result.fieldByName('firstMale'),
+      firstFemale: result.fieldByName('firstFemale'),
+      street: result.fieldByName('street'),
+      city: result.fieldByName('city'),
+      state: result.fieldByName('state'),
+      zip: result.fieldByName('zip'),
+      country: result.fieldByName('country'),
+      phoneHome: result.fieldByName('phoneHome'),
+      phoneMoble: result.fieldByName('phoneMoble'),
+      email: result.fieldByName('email'),
+      firstContactDate: result.fieldByName('firstContactDate'),
+      firstContactPoint: result.fieldByName('firstContactPoint'),
+      previouslySaved: result.fieldByName('previouslySaved'),
+      previouslyBaptized: result.fieldByName('previouslyBaptized'),
+      sundaySchool: result.fieldByName('sundaySchool'),
+      status: result.fieldByName('status'),
+      nextStep: result.fieldByName('nextStep'),
+      lastContact: result.fieldByName('lastContact'),
+      created: result.fieldByName('created'),
+      modified: result.fieldByName('modified'),
+      uuid: result.fieldByName('uuid')
+    };
+    result.close();
+    db.close();
+    return prospect;
+  }
+
+  //ceates a prospect object from an item in a result set - must contain all the fields in the prospects table
+  shl.db.loadProspectFromResult = function(result) {
+    return {
+      id: result.fieldByName('id'),
+      last: result.fieldByName('last'),
+      firstMale: result.fieldByName('firstMale'),
+      firstFemale: result.fieldByName('firstFemale'),
+      street: result.fieldByName('street'),
+      city: result.fieldByName('city'),
+      state: result.fieldByName('state'),
+      zip: result.fieldByName('zip'),
+      country: result.fieldByName('country'),
+      phoneHome: result.fieldByName('phoneHome'),
+      phoneMoble: result.fieldByName('phoneMoble'),
+      email: result.fieldByName('email'),
+      firstContactDate: result.fieldByName('firstContactDate'),
+      firstContactPoint: result.fieldByName('firstContactPoint'),
+      previouslySaved: result.fieldByName('previouslySaved'),
+      previouslyBaptized: result.fieldByName('previouslyBaptized'),
+      sundaySchool: result.fieldByName('sundaySchool'),
+      status: result.fieldByName('status'),
+      nextStep: result.fieldByName('nextStep'),
+      lastContact: result.fieldByName('lastContact'),
+      created: result.fieldByName('created'),
+      modified: result.fieldByName('modified'),
+      uuid: result.fieldByName('uuid')
+    };
+  } 
+  
   //testing db functions
   if(Ti.Platform.osname == "android") {
 
-    shl.db.insertProspect({
+    lastId = shl.db.insertProspect({
       last: "Smith",
       firstMale: "John",
       firstFemale: "Jill",
@@ -107,6 +174,8 @@
       modified: "1306171747",
       uuid: "a145d9a5-dbef-4e09-b112-1b8209c57aba"
     });
+    var lastprospect = shl.db.getProspect(lastId);
+    Ti.API.info(lastprospect.toSource());
 
     var testResult = shl.db.listAllProspects();
     for(i=0; i<testResult.length; i++) {
