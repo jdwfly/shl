@@ -69,14 +69,16 @@
       height: 40,
       selectionStyle: "none"
     });
-    var gender = Titanium.UI.createTabbedBar({
-      labels: ['Male', 'Female', 'Couple'],
-      backgroundColor: '#336699',
-      style: Titanium.UI.iPhone.SystemButtonStyle.BAR,
-      height: 45,
-      width: 302
-    });
-    genderRow.add(gender);
+    if (Ti.Platform.osname != 'android') {
+      var gender = Titanium.UI.createTabbedBar({
+        labels: ['Male', 'Female', 'Couple'],
+        backgroundColor: '#336699',
+        style: Titanium.UI.iPhone.SystemButtonStyle.BAR,
+        height: 45,
+        width: 302
+      });
+      genderRow.add(gender);
+    }
     s2.add(genderRow);
     data.push(s2);
     
