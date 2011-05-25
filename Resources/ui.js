@@ -5,7 +5,10 @@
     var data = [], title = '';
     var prospects = shl.db.listAllProspects();
     for(i=0; i<prospects.length; i++) {
-      var row = Ti.UI.createTableViewRow({height: 'auto'});
+      var row = Ti.UI.createTableViewRow({
+        height: 'auto',
+        hasChild: true
+      });
       var content = Ti.UI.createView({
         height: 'auto',
         layout: 'vertical',
@@ -63,7 +66,19 @@
         width: 'auto',
         left: 5
       });
-      var address = prospects[i].street + "\n" + prospects[i].city + ", " + prospects[i].state + " " + prospects[i].zip;
+      // TODO this should probably be it's own function as well
+      var address = '';
+      if (prospects[i].street != '') {
+        address = prospects[i].street + ((prospects[i].city != '') ? "\n" + prospects[i].city : '') + ((prospects[i].state != '') ? ", " + prospects[i].state : '');
+      } else if (prospects[i].city != '') {
+        address = prospects[i].city + ((prospects[i].state != '') ? ", " + prospects[i].state : '');
+      } else if (prospects[i].state != '') {
+        address = prospects[i].state;
+      }
+      if (prospects[i].zip != '') {
+        address += ' ' + prospects[i].zip;
+      }
+      //var address = prospects[i].street + "\n" + prospects[i].city + ", " + prospects[i].state + " " + prospects[i].zip;
       var addressLabel = Ti.UI.createLabel({
         text: address,
         font: {fontWeight: 'normal', fontSize: 12},
@@ -77,8 +92,13 @@
       row.add(content);
       data.push(row);
     }
+    var tableView = Titanium.UI.createTableView({data:data});
     
-    return Titanium.UI.createTableView({data:data});
+    tableView.addEventListener('click', function(e) {
+      alert('haha! you thought this would do something didnt you!');
+    });
+    
+    return tableView;
   };
   
   // TODO This looks nasty in android
