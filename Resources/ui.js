@@ -6,6 +6,7 @@
     return Titanium.UI.createTableView({data:data});
   };
   
+  // TODO This looks nasty in android
   shl.ui.createAddWindow = function() {
     var win = Ti.UI.createWindow({
       title: 'Add Prospect',
@@ -82,6 +83,7 @@
     s2.add(genderRow);
     data.push(s2);
     
+    // TODO add spacing to front of fields
     var s3 = Ti.UI.createTableViewSection();
     var streetRow = Ti.UI.createTableViewRow({
       height: 45,
@@ -103,15 +105,21 @@
       selectionStyle: "none"
     });
     var city = Ti.UI.createTextField({
-      width: 150,
+      width: 149,
       height:40,
       keyboardType:Titanium.UI.KEYBOARD_DEFAULT,
       returnKeyType:Titanium.UI.RETURNKEY_DONE,
       borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
       hintText:L('City')
     });
+    var sep1 = Ti.UI.createView({
+      width: 1,
+      height: 45,
+      left: 0,
+      backgroundColor: '#cccccc'
+    });
     var state = Ti.UI.createTextField({
-      width: 150,
+      width: 149,
       height: 40,
       left: 0,
       keyboardType:Titanium.UI.KEYBOARD_DEFAULT,
@@ -120,9 +128,126 @@
       hintText:L('State')
     });
     citystateRow.add(city);
+    citystateRow.add(sep1);
     citystateRow.add(state);
     s3.add(citystateRow);
+    var zipcountryRow = Ti.UI.createTableViewRow({
+      height: 45,
+      layout: "horizontal",
+      selectionStyle: "none"
+    });
+    var zip = Ti.UI.createTextField({
+      width: 149,
+      height:40,
+      keyboardType:Titanium.UI.KEYBOARD_DEFAULT,
+      returnKeyType:Titanium.UI.RETURNKEY_DONE,
+      borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
+      hintText:L('Zip')
+    });
+    var sep2 = Ti.UI.createView({
+      width: 1,
+      height: 45,
+      left: 0,
+      backgroundColor: '#cccccc'
+    });
+    // TODO Change to a picker instead of textfield
+    var country = Ti.UI.createTextField({
+      width: 149,
+      height:40,
+      keyboardType:Titanium.UI.KEYBOARD_DEFAULT,
+      returnKeyType:Titanium.UI.RETURNKEY_DONE,
+      borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
+      hintText:L('Country')
+    });
+    zipcountryRow.add(zip);
+    zipcountryRow.add(sep2);
+    zipcountryRow.add(country);
+    s3.add(zipcountryRow);
     data.push(s3);
+    
+    // Phone Number section
+    var s4 = Ti.UI.createTableViewSection();
+    var homeRow = Ti.UI.createTableViewRow({
+      height: 45,
+      layout: "horizontal",
+      selectionStyle: "none"
+    });
+    var homeLabel = Ti.UI.createLabel({
+      text: 'Home',
+      font: {fontWeight: 'bold', fontSize: 16},
+      height: 45,
+      width: 75,
+      left: 10
+    });
+    var sep3 = Ti.UI.createView({
+      width: 1,
+      height: 45,
+      left: 0,
+      backgroundColor: '#cccccc'
+    });
+    var homeText = Ti.UI.createTextField({
+      width: 200,
+      height:40,
+      left: 5,
+      keyboardType:Titanium.UI.KEYBOARD_DEFAULT,
+      returnKeyType:Titanium.UI.RETURNKEY_DONE,
+      borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
+    });
+    homeRow.add(homeLabel);
+    homeRow.add(sep3);
+    homeRow.add(homeText);
+    s4.add(homeRow);
+    var mobileRow = Ti.UI.createTableViewRow({
+      height: 45,
+      layout: "horizontal",
+      selectionStyle: "none"
+    });
+    var mobileLabel = Ti.UI.createLabel({
+      text: 'Mobile',
+      font: {fontWeight: 'bold', fontSize: 16},
+      height: 45,
+      width: 75,
+      left: 10
+    });
+    var sep4 = Ti.UI.createView({
+      width: 1,
+      height: 45,
+      left: 0,
+      backgroundColor: '#cccccc'
+    });
+    var mobileText = Ti.UI.createTextField({
+      width: 200,
+      height:40,
+      left: 5,
+      keyboardType:Titanium.UI.KEYBOARD_DEFAULT,
+      returnKeyType:Titanium.UI.RETURNKEY_DONE,
+      borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
+    });
+    mobileRow.add(mobileLabel);
+    mobileRow.add(sep4);
+    mobileRow.add(mobileText);
+    s4.add(mobileRow);
+    data.push(s4);
+    
+    // Email field
+    var s5 = Ti.UI.createTableViewSection();
+    var emailRow = Ti.UI.createTableViewRow({
+      height: 45,
+      layout: "horizontal",
+      selectionStyle: "none"
+    });
+    var email = Ti.UI.createTextField({
+      width: 280,
+      height: 40,
+      left: 10,
+      keyboardType:Titanium.UI.KEYBOARD_DEFAULT,
+      returnKeyType:Titanium.UI.RETURNKEY_DONE,
+      borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
+      hintText:L('Email')
+    });
+    emailRow.add(email);
+    s5.add(emailRow);
+    data.push(s5);
     
     // Finally Make the TableView and add
     var tableView = Ti.UI.createTableView({
