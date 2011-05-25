@@ -1,8 +1,83 @@
 (function() {
   shl.ui = {};
   
-  shl.ui.createProspectTableView = function() {
-    var data = [{title:"Row 1"},{title:"Row 2"}];
+  shl.ui.createProspectTableView = function(_query) {
+    var data = [], title = '';
+    var prospects = shl.db.listAllProspects();
+    for(i=0; i<prospects.length; i++) {
+      var row = Ti.UI.createTableViewRow({height: 'auto'});
+      var content = Ti.UI.createView({
+        height: 'auto',
+        layout: 'vertical',
+        left: 10,
+        top: 10,
+        bottom: 10,
+        right: 10
+      });
+      
+      // TODO this should probably be a function
+      if (prospects[i].firstMale != '') {
+        title = prospects[i].firstMale;
+        if (prospects[i].firstFemale != '') {
+          title += " and " + prospects[i].firstFemale;
+        }
+        if (prospects[i].last != '') {
+          title += " " + prospects[i].last;
+        }
+      } else if (prospects[i].firstFemale != '') {
+        title = prospects[i].firstFemale;
+        if (prospects[i].last != '') {
+          title += " " + prospects[i].last;
+        }
+      }
+      contentTitle = Ti.UI.createLabel({
+        text: title,
+        font: {fontWeight: 'bold', fontSize:18},
+        height: 'auto',
+        width: 'auto',
+        left: 5
+      });
+      // TODO Should be it's own function, only goes back one month
+      var lastContactPretty = (function() {
+        var date = new Date(prospects[i].lastContact * 1000),
+            diff = (((new Date()).getTime() - date.getTime()) / 1000),
+            day_diff = Math.floor(diff / 86400);
+
+        if ( isNaN(day_diff) || day_diff < 0 || day_diff >= 31 )
+          return;
+            
+        return day_diff == 0 && (
+            diff < 60 && "just now" ||
+            diff < 120 && "1 minute ago" ||
+            diff < 3600 && Math.floor( diff / 60 ) + " minutes ago" ||
+            diff < 7200 && "1 hour ago" ||
+            diff < 86400 && Math.floor( diff / 3600 ) + " hours ago") ||
+            day_diff == 1 && "Yesterday" ||
+            day_diff < 7 && day_diff + " days ago" ||
+            day_diff < 31 && Math.ceil( day_diff / 7 ) + " weeks ago";
+      })();
+      lastContactLabel = Ti.UI.createLabel({
+        text: 'Last Contact: ' + lastContactPretty,
+        font: {fontWeight: 'normal', fontSize: 12},
+        height: 'auto',
+        width: 'auto',
+        left: 5
+      });
+      var address = prospects[i].street + "\n" + prospects[i].city + ", " + prospects[i].state + " " + prospects[i].zip;
+      var addressLabel = Ti.UI.createLabel({
+        text: address,
+        font: {fontWeight: 'normal', fontSize: 12},
+        height: 'auto',
+        width: 'auto',
+        left: 5
+      });
+      content.add(contentTitle);
+      content.add(lastContactLabel);
+      content.add(addressLabel);
+      row.add(content);
+      data.push(row);
+    }
+    
     return Titanium.UI.createTableView({data:data});
   };
   
@@ -272,12 +347,11 @@
         }
       }
     });
-    win.add(shl.ui.createProspectTableView());
+    win.add(shl.ui.createProspectTableView('all'));
     
     if (Ti.Platform.osname === 'iphone') {
       var b = Ti.UI.createButton({
-        title: 'Add',
-        style: Ti.UI.iPhone.SystemButtonStyle.PLAIN
+        systemButton:Ti.UI.iPhone.SystemButton.ADD
       });
       b.addEventListener('click', function() {
         shl.ui.createAddWindow().open({modal:true});
@@ -318,34 +392,6 @@
   shl.ui.createSearchWindow = function() {
     var win = Ti.UI.createWindow({
       title: 'Search',
-      activity: {
-        onCreateOptionsMenu : function(e) {
-          var menu = e.menu;
-          var m1 = menu.add({title: 'Add'});
-          m1.addEventListener('click', function(e) {
-            shl.allTab.open(shl.ui.createAddWindow());
-          });
-        }
-      }
-    });
-    win.add(shl.ui.createProspectTableView());
-    
-    if (Ti.Platform.osname === 'iphone') {
-      var b = Ti.UI.createButton({
-        title: 'Add',
-        style: Ti.UI.iPhone.SystemButtonStyle.PLAIN
-      });
-      b.addEventListener('click', function() {
-        shl.ui.createAddWindow().open({modal:true});
-      });
-      win.setRightNavButton(b);
-    }
-    return win;
-  };
-  
-  shl.ui.createMoreWindow = function() {
-    var win = Ti.UI.createWindow({
-      title: 'More',
       activity: {
         onCreateOptionsMenu : function(e) {
           var menu = e.menu;
