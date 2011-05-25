@@ -378,7 +378,6 @@
     var all = shl.ui.createAllWindow();
     var lists = shl.ui.createListsWindow();
     var search = shl.ui.createSearchWindow();
-    var more = shl.ui.createMoreWindow();
     
     shl.allTab = Ti.UI.createTab({
       title: 'All',
@@ -395,16 +394,10 @@
       window: search,
       icon: 'images/06-magnify.png'
     });
-    shl.moreTab = Ti.UI.createTab({
-      title: 'More',
-      window: more,
-      icon: 'images/59-info.png'
-    });
     
     tabgroup.addTab(shl.allTab);
     tabgroup.addTab(shl.listsTab);
     tabgroup.addTab(shl.searchTab);
-    tabgroup.addTab(shl.moreTab);
     
     return tabgroup;
   };
