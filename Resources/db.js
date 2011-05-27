@@ -1,16 +1,59 @@
 (function() {
   shl.db = {};
 
-  //bootstrap database
-  var db = Ti.Database.open('Outreach');
-  //No, there isn't a better way to do multi-line strings in js, and Eclipse does not support word-wrap without a plug-in. Yes, concatenation in inefficient.
-  db.execute('CREATE TABLE IF NOT EXISTS prospects('+
-  'id INTEGER PRIMARY KEY, last TEXT, firstMale TEXT, firstFemale TEXT, street TEXT, '+
-  'city TEXT, state TEXT, zip TEXT, country TEXT, phoneHome TEXT, phoneMoble TEXT, email TEXT, '+
-  'firstContactDate INTEGER, firstContactPoint TEXT, previouslySaved INTEGER, previouslyBaptized INTEGER, '+
-  'sundaySchool INTEGER, status TEXT, nextStep TEXT, lastContact INTEGER, created INTEGER, modified INTEGER, uuid TEXT);');
-  db.execute('DELETE FROM prospects'); //TODO Remove Before Flight
-  db.close();
+
+  shl.db.prospects = {
+    name : 'prospects',
+    fields : {
+      id : 'INTEGER PRIMARY KEY',
+      last : 'TEXT',
+      firstMale : 'TEXT',
+      firstFemale : 'TEXT',
+      street : 'TEXT',
+      city : 'TEXT',
+      state : 'TEXT',
+      zip : 'TEXT',
+      country : 'TEXT',
+      phoneHome : 'TEXT',
+      phoneMoble : 'TEXT',
+      email : 'TEXT',
+      firstContactDate : 'INTEGER',
+      firstContactPoint : 'TEXT',
+      previouslySaved : 'INTEGER',
+      previouslyBaptized : 'INTEGER',
+      sundaySchool : 'INTEGER',
+      status : 'TEXT',
+      nextStep : 'TEXT',
+      lastContact : 'INTEGER',
+      created : 'INTEGER',
+      modified : 'INTEGER',
+      uuid : 'TEXT'
+    }
+  }
+
+  shl.db.createTable = function (table) {
+    //bootstrap database
+    var db = Ti.Database.open('Outreach');
+    var qstring = 'CREATE TABLE IF NOT EXISTS ' + table.name + ' (';
+    var firstField = true;
+    for (var field in table.fields) {
+      if (table.fields.hasOwnProperty(field)) {
+        if (!firstField) {
+          qstring += ', ';
+        }
+        qstring += (field + ' ' + table.fields[field]);
+        firstField = false;
+      }
+    }
+    qstring += ')'
+    db.execute('DROP TABLE IF EXISTS ' + table.name); //TODO Remove Before Flight
+    db.execute(qstring);
+    db.close();
+  }
+  
+  //create the database table
+  shl.db.createTable(shl.db.prospects);
+  
 
   //adds a new prospect to the database
   //_item : an object with ALL the attributes listed, else it will break
