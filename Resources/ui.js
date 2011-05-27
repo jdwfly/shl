@@ -1,10 +1,10 @@
 (function() {
   shl.ui = {};
   
-  shl.ui.createProspectTableView = function(_query) {
+  // _prospects = array of prospect objects
+  shl.ui.createProspectTableView = function(_prospects) {
     var data = [], title = '';
-    var prospects = shl.db.listAllProspects();
-    for(i=0; i<prospects.length; i++) {
+    for(i=0; i<_prospects.length; i++) {
       var row = Ti.UI.createTableViewRow({
         height: 'auto',
         hasChild: true
@@ -19,18 +19,18 @@
       });
       
       // TODO this should probably be a function
-      if (prospects[i].firstMale != '') {
-        title = prospects[i].firstMale;
-        if (prospects[i].firstFemale != '') {
-          title += " and " + prospects[i].firstFemale;
+      if (_prospects[i].firstMale != '') {
+        title = _prospects[i].firstMale;
+        if (_prospects[i].firstFemale != '') {
+          title += " and " + _prospects[i].firstFemale;
         }
-        if (prospects[i].last != '') {
-          title += " " + prospects[i].last;
+        if (_prospects[i].last != '') {
+          title += " " + _prospects[i].last;
         }
-      } else if (prospects[i].firstFemale != '') {
-        title = prospects[i].firstFemale;
-        if (prospects[i].last != '') {
-          title += " " + prospects[i].last;
+      } else if (_prospects[i].firstFemale != '') {
+        title = _prospects[i].firstFemale;
+        if (_prospects[i].last != '') {
+          title += " " + _prospects[i].last;
         }
       }
       contentTitle = Ti.UI.createLabel({
@@ -42,7 +42,7 @@
       });
       // TODO Should be it's own function, only goes back one month
       var lastContactPretty = (function() {
-        var date = new Date(prospects[i].lastContact * 1000),
+        var date = new Date(_prospects[i].lastContact * 1000),
             diff = (((new Date()).getTime() - date.getTime()) / 1000),
             day_diff = Math.floor(diff / 86400);
 
@@ -68,17 +68,17 @@
       });
       // TODO this should probably be it's own function as well
       var address = '';
-      if (prospects[i].street != '') {
-        address = prospects[i].street + ((prospects[i].city != '') ? "\n" + prospects[i].city : '') + ((prospects[i].state != '') ? ", " + prospects[i].state : '');
-      } else if (prospects[i].city != '') {
-        address = prospects[i].city + ((prospects[i].state != '') ? ", " + prospects[i].state : '');
-      } else if (prospects[i].state != '') {
-        address = prospects[i].state;
+      if (_prospects[i].street != '') {
+        address = _prospects[i].street + ((_prospects[i].city != '') ? "\n" + _prospects[i].city : '') + ((_prospects[i].state != '') ? ", " + _prospects[i].state : '');
+      } else if (_prospects[i].city != '') {
+        address = _prospects[i].city + ((_prospects[i].state != '') ? ", " + _prospects[i].state : '');
+      } else if (_prospects[i].state != '') {
+        address = _prospects[i].state;
       }
-      if (prospects[i].zip != '') {
-        address += ' ' + prospects[i].zip;
+      if (_prospects[i].zip != '') {
+        address += ' ' + _prospects[i].zip;
       }
-      //var address = prospects[i].street + "\n" + prospects[i].city + ", " + prospects[i].state + " " + prospects[i].zip;
+      //var address = _prospects[i].street + "\n" + _prospects[i].city + ", " + _prospects[i].state + " " + _prospects[i].zip;
       var addressLabel = Ti.UI.createLabel({
         text: address,
         font: {fontWeight: 'normal', fontSize: 12},
@@ -367,7 +367,8 @@
         }
       }
     });
-    win.add(shl.ui.createProspectTableView('all'));
+    var prospects = shl.db.listAllProspects();
+    win.add(shl.ui.createProspectTableView(prospects));
     
     if (Ti.Platform.osname === 'iphone') {
       var b = Ti.UI.createButton({
@@ -394,7 +395,8 @@
         }
       }
     });
-    win.add(shl.ui.createProspectTableView());
+    var prospects = shl.db.listAllProspects();
+    win.add(shl.ui.createProspectTableView(prospects));
     
     if (Ti.Platform.osname === 'iphone') {
       var b = Ti.UI.createButton({
@@ -422,7 +424,8 @@
         }
       }
     });
-    win.add(shl.ui.createProspectTableView());
+    var prospects = shl.db.listAllProspects();
+    win.add(shl.ui.createProspectTableView(prospects));
     
     if (Ti.Platform.osname === 'iphone') {
       var b = Ti.UI.createButton({
