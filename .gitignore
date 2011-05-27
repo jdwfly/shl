@@ -3,3 +3,4 @@ build/
 build.log
 .settings/
 .DS_Store
+.fastdev.lock
