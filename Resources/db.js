@@ -56,28 +56,31 @@
   //base class
   shl.db.Model = function() {
     Ti.API.info('just made an object of type Model');
-    Ti.API.info(this.toSource());
+    Ti.API.info(JSON.stringify(this));
   }
 
+  
   shl.db.Model.prototype.save = function() {
     Ti.API.info('just called save method for Model');
-    Ti.API.info(this.toSource());
+    Ti.API.info(JSON.stringify(this));
   }
 
-  shl.db.Model.prototype.find = function() {
-    Ti.API.info('just called find method for Model');
-    Ti.API.info(this.toSource());
+  shl.db.Model.prototype.find = function(params) {
+    if (!params){
+      return false;
+    }
+    if (typeof(params) === "number"){
+      
+    }
+    
+    
+    
   }
   
-  
-  //we can define defalts here
-  shl.db.Model.prototype.state = 'CA';
-  
-
   shl.Prospect = function() {
     shl.db.Model.call(this);
     Ti.API.info('just made an object of type Prospect');
-    Ti.API.info(this.toSource());
+    Ti.API.info(JSON.stringify(this));
   }
 
   shl.Prospect.prototype = new shl.db.Model();
@@ -89,7 +92,6 @@
   shl.db.Model.prototype.sundaySchool = 0;
   shl.db.Model.prototype.status = 'Active Prospect';
   shl.db.Model.prototype.nextStep = 'Salvation';
-  
   
 
   //adds a new prospect to the database
@@ -277,7 +279,7 @@
   });
 
   var lastprospect = shl.db.getProspect(lastId);
-  Ti.API.info(lastprospect.toSource());
+  Ti.API.info(JSON.stringify(lastprospect));
 
   shl.db.insertProspect({
     last: "Jones",
@@ -295,6 +297,6 @@
 
   var testResult = shl.db.listAllProspects();
   for(i=0; i<testResult.length; i++) {
-    Ti.API.info(testResult[i].toSource());
+    Ti.API.info(JSON.stringify(testResult[i]));
   }
 })();
