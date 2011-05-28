@@ -1,8 +1,30 @@
 (function() {
   shl.db = {};
 
+  //function to create table based on an object
+  shl.db.createTable = function (table) {
+    //bootstrap database
+    var db = Ti.Database.open('Outreach');
+    var qstring = 'CREATE TABLE IF NOT EXISTS ' + table.name + ' (';
+    var firstField = true;
+    for (var field in table.fields) {
+      if (table.fields.hasOwnProperty(field)) {
+        if (!firstField) {
+          qstring += ', ';
+        }
+        qstring += (field + ' ' + table.fields[field]);
+        firstField = false;
+      }
+    }
+    qstring += ')'
+    db.execute('DROP TABLE IF EXISTS ' + table.name); //TODO Remove Before Flight
+    db.execute(qstring);
+    db.close();
+    return table;
+  }
 
-  shl.db.prospects = {
+  //create the prospects table; save field defs for later
+  shl.db.prospects = shl.db.createTable({
     name : 'prospects',
     fields : {
       id : 'INTEGER PRIMARY KEY',
@@ -29,30 +51,45 @@
       modified : 'INTEGER',
       uuid : 'TEXT'
     }
+  });
+
+  //base class
+  shl.db.Model = function() {
+    Ti.API.info('just made an object of type Model');
+    Ti.API.info(this.toSource());
   }
 
-  shl.db.createTable = function (table) {
-    //bootstrap database
-    var db = Ti.Database.open('Outreach');
-    var qstring = 'CREATE TABLE IF NOT EXISTS ' + table.name + ' (';
-    var firstField = true;
-    for (var field in table.fields) {
-      if (table.fields.hasOwnProperty(field)) {
-        if (!firstField) {
-          qstring += ', ';
-        }
-        qstring += (field + ' ' + table.fields[field]);
-        firstField = false;
-      }
-    }
-    qstring += ')'
-    db.execute('DROP TABLE IF EXISTS ' + table.name); //TODO Remove Before Flight
-    db.execute(qstring);
-    db.close();
+  shl.db.Model.prototype.save = function() {
+    Ti.API.info('just called save method for Model');
+    Ti.API.info(this.toSource());
+  }
+
+  shl.db.Model.prototype.find = function() {
+    Ti.API.info('just called find method for Model');
+    Ti.API.info(this.toSource());
   }
   
-  //create the database table
-  shl.db.createTable(shl.db.prospects);
+  
+  //we can define defalts here
+  shl.db.Model.prototype.state = 'CA';
+  
+
+  shl.Prospect = function() {
+    shl.db.Model.call(this);
+    Ti.API.info('just made an object of type Prospect');
+    Ti.API.info(this.toSource());
+  }
+
+  shl.Prospect.prototype = new shl.db.Model();
+  shl.Prospect.prototype.constructor = shl.Prospect;
+  
+  //we can define static defaults here - these will get saved to the database if no other is specified
+  shl.db.Model.prototype.previouslySaved = 0;
+  shl.db.Model.prototype.previouslyBaptized = 0;
+  shl.db.Model.prototype.sundaySchool = 0;
+  shl.db.Model.prototype.status = 'Active Prospect';
+  shl.db.Model.prototype.nextStep = 'Salvation';
+  
   
 
   //adds a new prospect to the database
@@ -200,7 +237,13 @@
     return prospect;
   }
 
-  //testing db functions
+  //testing stuff
+  //TODO remove all this testing code and its evil global vars
+
+  var testProspect = new shl.Prospect();
+  testProspect.save();
+  testProspect.find();
+  Ti.API.info(testProspect.nextStep);
 
   var lastId = shl.db.insertProspect({
     last: "Smith",
