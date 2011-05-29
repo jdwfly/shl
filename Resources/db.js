@@ -57,42 +57,64 @@
   shl.db.Model = function() {
     Ti.API.info('just made an object of type Model');
     Ti.API.info(JSON.stringify(this));
+
   }
 
-  
   shl.db.Model.prototype.save = function() {
     Ti.API.info('just called save method for Model');
     Ti.API.info(JSON.stringify(this));
+    //if it already exists, update
+    if (this.id && typeof this.id === 'number' && this.id > 0) {
+
+    }
+    //if it does not exist, insert
+    else {
+
+    }
   }
 
-  shl.db.Model.prototype.find = function(params) {
-    if (!params){
+  shl.db.Model.find = function(params) {
+    if (!params) {
       return false;
     }
-    if (typeof(params) === "number"){
-      
+    if (typeof(params) === "number") {
+      var db = Ti.Database.open('Outreach');
+      var result = db.execute('SELECT * FROM ' + this.structure.name + ' WHERE id = ?', params);
+      if (!result.rowCount === 0) {
+        return false;
+      }
+      var foundObj = new this(); //hope this works
+      for (field in this.structure.fields) {
+        if (typeof field !== 'function') {
+          foundObj[field] = result.fieldByName(field);
+        }
+      }
+      result.close();
+      db.close();
+      return foundObj;
     }
-    
-    
-    
+
   }
-  
+
+  //Propspect inherits from Model
   shl.Prospect = function() {
     shl.db.Model.call(this);
+
     Ti.API.info('just made an object of type Prospect');
     Ti.API.info(JSON.stringify(this));
   }
 
   shl.Prospect.prototype = new shl.db.Model();
   shl.Prospect.prototype.constructor = shl.Prospect;
-  
+  shl.Prospect.structure = shl.db.prospects;//define table name, fields, etc.
+  shl.Prospect.find = shl.db.Model.find;
+
   //we can define static defaults here - these will get saved to the database if no other is specified
-  shl.db.Model.prototype.previouslySaved = 0;
-  shl.db.Model.prototype.previouslyBaptized = 0;
-  shl.db.Model.prototype.sundaySchool = 0;
-  shl.db.Model.prototype.status = 'Active Prospect';
-  shl.db.Model.prototype.nextStep = 'Salvation';
-  
+  shl.Prospect.prototype.previouslySaved = 0;
+  shl.Prospect.prototype.previouslyBaptized = 0;
+  shl.Prospect.prototype.sundaySchool = 0;
+  shl.Prospect.prototype.status = 'Active Prospect';
+  shl.Prospect.prototype.nextStep = 'Salvation';
 
   //adds a new prospect to the database
   //_item : an object with ALL the attributes listed, else it will break
@@ -244,7 +266,6 @@
 
   var testProspect = new shl.Prospect();
   testProspect.save();
-  testProspect.find();
   Ti.API.info(testProspect.nextStep);
 
   var lastId = shl.db.insertProspect({
@@ -299,4 +320,7 @@
   for(i=0; i<testResult.length; i++) {
     Ti.API.info(JSON.stringify(testResult[i]));
   }
+
+  var foundProspect = shl.Prospect.find(1);
+  Ti.API.info(JSON.stringify(foundProspect));
 })();
