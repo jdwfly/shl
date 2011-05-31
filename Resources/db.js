@@ -64,27 +64,55 @@
     Ti.API.info('just called save method for Model');
     Ti.API.info(JSON.stringify(this));
     //if it already exists, update
+    var first = true;
+    var subList = [];
+    var set = '';
+    var rows = 0;
     if (this.id && typeof this.id === 'number' && this.id > 0) {
-
+      this.preUpdate();
+      for (var field in this.structure.fields) {
+        if (this[field] !== undefined && field !== 'id') {
+          set += (first == false ? ', ' : '') + field + ' = ?';
+          subList.push(this[field]);
+          first = false;
+        }
+      }
+      subList.push(this.id);
+      if (set !== '') {
+        var db = Ti.Database.open('Outreach');
+        db.execute('UPDATE ' + this.structure.name + ' SET ' + set + ' WHERE id = ?', subList);
+        rows = db.rowsAffected;
+        db.close();
+      }
+      return rows;
     }
     //if it does not exist, insert
     else {
-
+      Ti.API.info("no id - need to instert a new item")
     }
+  }
+
+  shl.db.Model.prototype.preUpdate = function() {
+    //do stuff before we update the record
+  }
+
+  shl.db.Model.prototype.preInsert = function() {
+    //do stuff before we insert a new record record
   }
 
   shl.db.Model.find = function(params) {
     if (!params) {
+      Ti.API.info("no params 353453");
       return false;
     }
     if (typeof(params) === "number") {
       var db = Ti.Database.open('Outreach');
-      var result = db.execute('SELECT * FROM ' + this.structure.name + ' WHERE id = ?', params);
+      var result = db.execute('SELECT * FROM ' + this.prototype.structure.name + ' WHERE id = ?', params);
       if (!result.rowCount === 0) {
         return false;
       }
       var foundObj = new this(); //hope this works
-      for (field in this.structure.fields) {
+      for (field in this.prototype.structure.fields) {
         if (typeof field !== 'function') {
           foundObj[field] = result.fieldByName(field);
         }
@@ -106,7 +134,7 @@
 
   shl.Prospect.prototype = new shl.db.Model();
   shl.Prospect.prototype.constructor = shl.Prospect;
-  shl.Prospect.structure = shl.db.prospects;//define table name, fields, etc.
+  shl.Prospect.prototype.structure = shl.db.prospects;//define table name, fields, etc.
   shl.Prospect.find = shl.db.Model.find;
 
   //we can define static defaults here - these will get saved to the database if no other is specified
@@ -323,4 +351,8 @@
 
   var foundProspect = shl.Prospect.find(1);
   Ti.API.info(JSON.stringify(foundProspect));
+  foundProspect.firstMale = "TEST";
+  foundProspect.save();
+  var newProspect = shl.Prospect.find(1);
+  Ti.API.info(JSON.stringify(newProspect));
 })();
