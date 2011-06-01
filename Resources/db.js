@@ -23,8 +23,146 @@
     return table;
   }
 
-  //create the prospects table; save field defs for later
-  shl.db.prospects = shl.db.createTable({
+  //********************************************** Base DB Model ************************************************
+  // note: all db tables are assumed to have an id property
+  shl.db.Model = function(initVal) {
+    if (initVal) {
+      for (field in initVal) {
+        if (initVal.hasOwnProperty(field)) {
+          this[field] = initVal[field];
+        }
+      }
+    }
+  }
+
+  shl.db.Model.prototype.save = function() {
+    //if it already exists, update
+    //only updates fields that are defined in the object, does not inherit or set default fields unless they are set by .preUpdate()
+    var first = true;
+    var subList = [];
+    var fieldCount = '';
+    var set = '';
+    var rows = 0;
+    //if it already exists, update
+    if (this.id && typeof this.id === 'number' && this.id > 0) {
+      this.preUpdate();
+      for (var field in this.structure.fields) {
+        if (this.hasOwnProperty(field) && field !== 'id') {
+          set += (first == false ? ', ' : '') + field + ' = ?';
+          subList.push(this[field]);
+          first = false;
+        }
+      }
+      subList.push(this.id);
+      if (set !== '') {
+        var db = Ti.Database.open('Outreach');
+        db.execute('UPDATE ' + this.structure.name + ' SET ' + set + ' WHERE id = ?', subList);
+        rows = db.rowsAffected;
+        db.close();
+      }
+      return rows;
+    }
+    //if it does not exist, insert
+    //on istert we will substitute default values if one is not set
+    else {
+      this.preInsert();
+      for (var field in this.structure.fields) {
+        if (field !== 'id') {
+          set += (first == false ? ',' : '') + field;
+          fieldCount += (first == false ? ',?' : '?');
+          subList.push(this[field] || '');
+          first = false;
+        }
+      }
+      if (set !== '') {
+        var db = Ti.Database.open('Outreach');
+        db.execute('INSERT INTO ' + this.structure.name + ' (' + set + ') VALUES(' +  fieldCount + ')', subList);
+        rows = db.rowsAffected;
+        this.id = db.lastInsertRowId;
+        db.close();
+      }
+      return rows;
+    }
+  }
+
+  shl.db.Model.prototype.destroy = function() {
+    this.preDestroy();
+    var db = Ti.Database.open('Outreach');
+    db.execute("DELETE FROM " + this.structure.name + " WHERE id = ?", this.id);
+    db.close();
+  }
+
+  shl.db.Model.prototype.preUpdate = function() {
+    //do stuff before we update the record
+  }
+
+  shl.db.Model.prototype.preInsert = function() {
+    //do stuff before we insert a new record
+  }
+
+  shl.db.Model.prototype.preDestroy = function() {
+    //do stuff before we delete a record
+  }
+
+  //********************************************** THE find method ************************************************
+  shl.db.Model.find = function(params, subValues) {
+    var loadObject = function (that, resultSet) {
+      var newObj = new that(); // yep, it works :-)
+      for (field in newObj.structure.fields) {
+        if (typeof field !== 'function') {
+          newObj[field] = resultSet.fieldByName(field);
+        }
+      }
+      return newObj;
+    }
+
+    if (typeof params  === "undefined") {
+      params = "ORDER BY id ASC";
+    }
+    if (typeof params === "number") {
+      var db = Ti.Database.open('Outreach');
+      var result = db.execute('SELECT * FROM ' + this.prototype.structure.name + ' WHERE id = ?', params);
+      if (!result.rowCount === 0) {
+        return false;
+      }
+      var foundObj = loadObject(this, result);
+      result.close();
+      db.close();
+      return foundObj;
+    }
+    if (typeof params === "string") {
+      var db = Ti.Database.open('Outreach');
+      var qstring = 'SELECT * FROM ' + this.prototype.structure.name + ' ' + params;
+      if (subValues){
+        var result = db.execute(qstring, subValues);
+      }
+      else {
+        var result = db.execute(qstring);
+      }
+      
+      if (!result.rowCount === 0) {
+        return false;
+      }
+      var itemList = [];
+      while(result.isValidRow()) {
+        itemList.push(loadObject(this, result));
+        result.next();
+      }
+      result.close();
+      db.close();
+      return itemList;
+    }
+
+  }
+
+  //********************************************** Prospects table ************************************************
+  shl.Prospect = function(initVal) {
+    shl.db.Model.call(this, initVal);
+  }
+
+  shl.Prospect.prototype = new shl.db.Model();
+  shl.Prospect.prototype.constructor = shl.Prospect;
+  shl.Prospect.prototype.structure = shl.db.createTable({
     name : 'prospects',
     fields : {
       id : 'INTEGER PRIMARY KEY',
@@ -52,89 +190,6 @@
       uuid : 'TEXT'
     }
   });
-
-  //base class
-  shl.db.Model = function() {
-    Ti.API.info('just made an object of type Model');
-    Ti.API.info(JSON.stringify(this));
-
-  }
-
-  shl.db.Model.prototype.save = function() {
-    Ti.API.info('just called save method for Model');
-    Ti.API.info(JSON.stringify(this));
-    //if it already exists, update
-    var first = true;
-    var subList = [];
-    var set = '';
-    var rows = 0;
-    if (this.id && typeof this.id === 'number' && this.id > 0) {
-      this.preUpdate();
-      for (var field in this.structure.fields) {
-        if (this[field] !== undefined && field !== 'id') {
-          set += (first == false ? ', ' : '') + field + ' = ?';
-          subList.push(this[field]);
-          first = false;
-        }
-      }
-      subList.push(this.id);
-      if (set !== '') {
-        var db = Ti.Database.open('Outreach');
-        db.execute('UPDATE ' + this.structure.name + ' SET ' + set + ' WHERE id = ?', subList);
-        rows = db.rowsAffected;
-        db.close();
-      }
-      return rows;
-    }
-    //if it does not exist, insert
-    else {
-      Ti.API.info("no id - need to instert a new item")
-    }
-  }
-
-  shl.db.Model.prototype.preUpdate = function() {
-    //do stuff before we update the record
-  }
-
-  shl.db.Model.prototype.preInsert = function() {
-    //do stuff before we insert a new record record
-  }
-
-  shl.db.Model.find = function(params) {
-    if (!params) {
-      Ti.API.info("no params 353453");
-      return false;
-    }
-    if (typeof(params) === "number") {
-      var db = Ti.Database.open('Outreach');
-      var result = db.execute('SELECT * FROM ' + this.prototype.structure.name + ' WHERE id = ?', params);
-      if (!result.rowCount === 0) {
-        return false;
-      }
-      var foundObj = new this(); //hope this works
-      for (field in this.prototype.structure.fields) {
-        if (typeof field !== 'function') {
-          foundObj[field] = result.fieldByName(field);
-        }
-      }
-      result.close();
-      db.close();
-      return foundObj;
-    }
-
-  }
-
-  //Propspect inherits from Model
-  shl.Prospect = function() {
-    shl.db.Model.call(this);
-
-    Ti.API.info('just made an object of type Prospect');
-    Ti.API.info(JSON.stringify(this));
-  }
-
-  shl.Prospect.prototype = new shl.db.Model();
-  shl.Prospect.prototype.constructor = shl.Prospect;
-  shl.Prospect.prototype.structure = shl.db.prospects;//define table name, fields, etc.
   shl.Prospect.find = shl.db.Model.find;
 
   //we can define static defaults here - these will get saved to the database if no other is specified
@@ -145,74 +200,14 @@
   shl.Prospect.prototype.nextStep = 'Salvation';
 
   //adds a new prospect to the database
-  //_item : an object with ALL the attributes listed, else it will break
   shl.db.insertProspect = function(_item) {
-    var db = Ti.Database.open('Outreach');
-    var currentTimeStamp = Math.round(new Date().getTime()/1000.0);
-    db.execute('INSERT INTO prospects(last,firstMale, firstFemale, street, city, state, zip, country, phoneHome, '+
-    'phoneMoble, email, firstContactDate, firstContactPoint, previouslySaved, previouslyBaptized, sundaySchool, status, nextStep, lastContact, created, modified, uuid) '+
-    'VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
-    ('last' in _item) ? _item.last : "",
-    ('firstMale' in _item) ? _item.firstMale : "",
-    ('firstFemale' in _item) ? _item.firstFemale : "",
-    ('street' in _item) ? _item.street : "",
-    ('city' in _item) ? _item.city : "",
-    ('state' in _item) ? _item.state : "",
-    ('zip' in _item) ? _item.zip : "",
-    ('country' in _item) ? _item.country : "",
-    ('phoneHome' in _item) ? _item.phoneHome : "",
-    ('phoneMoble' in _item) ? _item.phoneMoble : "",
-    ('email' in _item) ? _item.email : "",
-    ('firstContactDate' in _item) ? _item.firstContactDate : currentTimeStamp,
-    ('firstContactPoint' in _item) ? _item.firstContactPoint : "",
-    ('previouslySaved' in _item) ? _item.previouslySaved : 0,
-    ('previouslyBaptized' in _item) ? _item.previouslyBaptized : 0,
-    ('sundaySchool' in _item) ? _item.sundaySchool : 0,
-    ('status' in _item) ? _item.status : "Active Prospect",
-    ('nextStep' in _item) ? _item.nextStep : "Salvation",
-    ('lastContact' in _item) ? _item.lastContact : currentTimeStamp,
-    ('created' in _item) ? _item.created : currentTimeStamp,
-    ('modified' in _item) ? _item.modified : currentTimeStamp,
-    ('uuid' in _item) ? _item.uuid : Ti.Platform.createUUID()
-    );
-    //TODO check to see if uuid, timestamp are empty
-    var lastId = db.lastInsertRowId;
-    db.close();
-    return lastId;
-  }
-
-  //low level update function
-  //TODO we need a higher level function that updates status flags and the like
-  //will crash if there is not a valid id
-  //all other properties must be valid columbs of the prospects table
-  //_item an object that contains only data to be updated and an id
-  shl.db.updateProspect = function(_item) {
-
-    var first = true;
-    var subList = [];
-    var set = '';
-    var rows = 0;
-
-    for (var property in _item) {
-      //TODO check against a list of valid properties
-      if (_item[property] != undefined && property != 'id') {
-        set += (first == false ? ', ' : '') + property + ' = ?';
-        subList.push(_item[property]);
-        first = false;
-      }
-    }
-    subList.push(_item.id);
-    if (set != '') {
-      var db = Ti.Database.open('Outreach');
-      db.execute('UPDATE prospects SET ' + set + ' WHERE id = ?', subList);
-      rows = db.rowsAffected;
-      db.close();
-    }
-    return rows;
+    var newProspect = new shl.Prospect(_item);
+    newProspect.save();
+    return newProspect;
   }
 
   //dumps all the items in the prospect table into an array of objects for testing
-  //TODO pass this funciton a WHERE statement
+  //TODO remove this testing funciton and all uses of it - replace with Prospect.find
   shl.db.listAllProspects = function() {
     var prospectList = [];
     var db = Ti.Database.open('Outreach');
@@ -251,52 +246,23 @@
   }
 
   shl.db.deleteProspect = function(_id) {
-    var db = Ti.Database.open('Outreach');
-    db.execute("DELETE FROM prospects WHERE id = ?", _id);
-    db.close();
+    var toGo = shl.Prospect.find(_id);
+    toGO.destroy();
+    return toGo;
   }
 
   shl.db.getProspect = function(prospectId) {
-    var db = Ti.Database.open('Outreach');
-    var result = db.execute('SELECT * FROM prospects WHERE id = ?', prospectId);
-    var prospect = {
-      id: result.fieldByName('id'),
-      last: result.fieldByName('last'),
-      firstMale: result.fieldByName('firstMale'),
-      firstFemale: result.fieldByName('firstFemale'),
-      street: result.fieldByName('street'),
-      city: result.fieldByName('city'),
-      state: result.fieldByName('state'),
-      zip: result.fieldByName('zip'),
-      country: result.fieldByName('country'),
-      phoneHome: result.fieldByName('phoneHome'),
-      phoneMoble: result.fieldByName('phoneMoble'),
-      email: result.fieldByName('email'),
-      firstContactDate: result.fieldByName('firstContactDate'),
-      firstContactPoint: result.fieldByName('firstContactPoint'),
-      previouslySaved: result.fieldByName('previouslySaved'),
-      previouslyBaptized: result.fieldByName('previouslyBaptized'),
-      sundaySchool: result.fieldByName('sundaySchool'),
-      status: result.fieldByName('status'),
-      nextStep: result.fieldByName('nextStep'),
-      lastContact: result.fieldByName('lastContact'),
-      created: result.fieldByName('created'),
-      modified: result.fieldByName('modified'),
-      uuid: result.fieldByName('uuid')
-    };
-    result.close();
-    db.close();
-    return prospect;
+    return shl.Prospect.find(prospectId);
   }
 
-  //testing stuff
-  //TODO remove all this testing code and its evil global vars
+  // ******************************* testing stuff *****************************************
+  //TODO remove all this testing code
 
   var testProspect = new shl.Prospect();
   testProspect.save();
   Ti.API.info(testProspect.nextStep);
 
-  var lastId = shl.db.insertProspect({
+  var lastIns = shl.db.insertProspect({
     last: "Smith",
     firstMale: "John",
     firstFemale: "Jill",
@@ -321,13 +287,7 @@
     uuid: "a145d9a5-dbef-4e09-b112-1b8209c57aba"
   });
 
-  shl.db.updateProspect({
-    id: lastId,
-    street: "new street",
-    last: "Bass"
-  });
-
-  var lastprospect = shl.db.getProspect(lastId);
+  var lastprospect = shl.db.getProspect(lastIns.id);
   Ti.API.info(JSON.stringify(lastprospect));
 
   shl.db.insertProspect({
@@ -344,9 +304,10 @@
     nextStep: "Salvation"
   });
 
-  var testResult = shl.db.listAllProspects();
+  //var testResult = shl.db.listAllProspects();
+  var testResult = shl.Prospect.find();
   for(i=0; i<testResult.length; i++) {
-    Ti.API.info(JSON.stringify(testResult[i]));
+    Ti.API.info("item:" + JSON.stringify(testResult[i]));
   }
 
   var foundProspect = shl.Prospect.find(1);
@@ -354,5 +315,5 @@
   foundProspect.firstMale = "TEST";
   foundProspect.save();
   var newProspect = shl.Prospect.find(1);
-  Ti.API.info(JSON.stringify(newProspect));
+  Ti.API.info('final result' + JSON.stringify(newProspect));
 })();
