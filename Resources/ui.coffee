@@ -118,13 +118,13 @@ class UI
         bottom: 10,
         right: 10
       })
-      if prospects[i].firstMale?
-        title = prospects[i].firstmale
-        title += ' and ' + prospects[i].firstFemale if prospects[i].firstFemale?
-        title += ' ' + prospects[i].last if prospects[i].last?
-      else if prospects[i].firstFemale?
+      if prospects[i].firstMale isnt ''
+        title = prospects[i].firstMale
+        title += ' and ' + prospects[i].firstFemale if prospects[i].firstFemale isnt ''
+        title += ' ' + prospects[i].last if prospects[i].last isnt ''
+      else if prospects[i].firstFemale isnt ''
         title = _prospects[i].firstFemale
-        title += ' ' + prospects[i].last if prospects[i].last?
+        title += ' ' + prospects[i].last if prospects[i].last isnt ''
       contentTitle = Ti.UI.createLabel({
         text: title,
         font: {fontWeight: 'bold', fontSize:18},
@@ -133,15 +133,16 @@ class UI
         left: 5
       })
       # TODO Probably should be it's own function somewhere
-      lastContactPretty = () ->
+      lastContactPretty = (() ->
         date = new Date(prospects[i].lastContact * 1000)
         diff = (((new Date()).getTime() - date.getTime()) / 1000)
         day_diff = Math.floor(diff / 86400)
 
         if ( isNaN(day_diff) || day_diff < 0 || day_diff >= 31 )
-          return
+          return ''
 
-        return day_diff == 0 && (diff < 60 && "just now" || diff < 120 && "1 minute ago" || diff < 3600 && Math.floor( diff / 60 ) + " minutes ago" || diff < 7200 && "1 hour ago" || diff < 86400 && Math.floor( diff / 3600 ) + " hours ago") || day_diff == 1 && "Yesterday" || day_diff < 7 && day_diff + " days ago" || day_diff < 31 && Math.ceil( day_diff / 7 ) + " weeks ago"
+        day_diff == 0 && (diff < 60 && "just now" || diff < 120 && "1 minute ago" || diff < 3600 && Math.floor( diff / 60 ) + " minutes ago" || diff < 7200 && "1 hour ago" || diff < 86400 && Math.floor( diff / 3600 ) + " hours ago") || day_diff == 1 && "Yesterday" || day_diff < 7 && day_diff + " days ago" || day_diff < 31 && Math.ceil( day_diff / 7 ) + " weeks ago"
+        )()
       lastContactLabel = Ti.UI.createLabel({
         text: 'Last Contact: ' + lastContactPretty,
         font: {fontWeight: 'normal', fontSize: 12},
@@ -149,10 +150,10 @@ class UI
         width: 'auto',
         left: 5
       })
-      address = (prospects[i].street if prospects[i].street?) +
-                ("\n" + prospects[i].city if prospects[i].city?) +
-                (", " + prospects[i].state if prospects[i].state?) +
-                (" " + prospects[i].zip if prospects[i].zip?)
+      address = '' + (if prospects[i].street? and prospects[i].street isnt '' then prospects[i].street else '') +
+                (if prospects[i].city? and prospects[i].city isnt '' then "\n" + prospects[i].city else '') +
+                (if prospects[i].state? and prospects[i].state isnt '' then ", " + prospects[i].state else '') +
+                (if prospects[i].zip? and prospects[i].zip isnt '' then " " + prospects[i].zip else '')
       addressLabel = Ti.UI.createLabel({
         text: address,
         font: {fontWeight: 'normal', fontSize: 12},
@@ -164,6 +165,7 @@ class UI
       content.add(lastContactLabel)
       content.add(addressLabel)
       row.add(content)
+      row
     tableView = Ti.UI.createTableView({data:data})
     tableView.addEventListener('click', (e) -> 
       alert('haha! you thought this would do something didnt you!')

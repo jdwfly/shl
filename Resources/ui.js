@@ -127,17 +127,17 @@
               bottom: 10,
               right: 10
             });
-            if (typeof (_ref2 = prospects[i].firstMale) !== "undefined" && _ref2 !== null) {
-              title = prospects[i].firstmale;
-              if (typeof (_ref2 = prospects[i].firstFemale) !== "undefined" && _ref2 !== null) {
+            if (prospects[i].firstMale !== '') {
+              title = prospects[i].firstMale;
+              if (prospects[i].firstFemale !== '') {
                 title += ' and ' + prospects[i].firstFemale;
               }
-              if (typeof (_ref2 = prospects[i].last) !== "undefined" && _ref2 !== null) {
+              if (prospects[i].last !== '') {
                 title += ' ' + prospects[i].last;
               }
-            } else if (typeof (_ref2 = prospects[i].firstFemale) !== "undefined" && _ref2 !== null) {
+            } else if (prospects[i].firstFemale !== '') {
               title = _prospects[i].firstFemale;
-              if (typeof (_ref2 = prospects[i].last) !== "undefined" && _ref2 !== null) {
+              if (prospects[i].last !== '') {
                 title += ' ' + prospects[i].last;
               }
             }
@@ -151,16 +151,16 @@
               width: 'auto',
               left: 5
             });
-            lastContactPretty = function() {
+            lastContactPretty = (function() {
               var date, day_diff, diff;
               date = new Date(prospects[i].lastContact * 1000);
               diff = (((new Date()).getTime() - date.getTime()) / 1000);
               day_diff = Math.floor(diff / 86400);
               if (isNaN(day_diff) || day_diff < 0 || (day_diff >= 31)) {
-                return null;
+                return '';
               }
               return day_diff === 0 && (diff < 60 && "just now" || diff < 120 && "1 minute ago" || diff < 3600 && Math.floor(diff / 60) + " minutes ago" || diff < 7200 && "1 hour ago" || diff < 86400 && Math.floor(diff / 3600) + " hours ago") || day_diff === 1 && "Yesterday" || day_diff < 7 && day_diff + " days ago" || day_diff < 31 && Math.ceil(day_diff / 7) + " weeks ago";
-            };
+            })();
             lastContactLabel = Ti.UI.createLabel({
               text: 'Last Contact: ' + lastContactPretty,
               font: {
@@ -171,23 +171,7 @@
               width: 'auto',
               left: 5
             });
-            address = (function() {
-              if (typeof (_ref2 = prospects[i].street) !== "undefined" && _ref2 !== null) {
-                return prospects[i].street;
-              }
-            })() + (function() {
-              if (typeof (_ref2 = prospects[i].city) !== "undefined" && _ref2 !== null) {
-                return "\n" + prospects[i].city;
-              }
-            })() + (function() {
-              if (typeof (_ref2 = prospects[i].state) !== "undefined" && _ref2 !== null) {
-                return ", " + prospects[i].state;
-              }
-            })() + (function() {
-              if (typeof (_ref2 = prospects[i].zip) !== "undefined" && _ref2 !== null) {
-                return " " + prospects[i].zip;
-              }
-            })();
+            address = '' + ((typeof (_ref2 = prospects[i].street) !== "undefined" && _ref2 !== null) && prospects[i].street !== '' ? prospects[i].street : '') + ((typeof (_ref2 = prospects[i].city) !== "undefined" && _ref2 !== null) && prospects[i].city !== '' ? "\n" + prospects[i].city : '') + ((typeof (_ref2 = prospects[i].state) !== "undefined" && _ref2 !== null) && prospects[i].state !== '' ? ", " + prospects[i].state : '') + ((typeof (_ref2 = prospects[i].zip) !== "undefined" && _ref2 !== null) && prospects[i].zip !== '' ? " " + prospects[i].zip : '');
             addressLabel = Ti.UI.createLabel({
               text: address,
               font: {
@@ -201,7 +185,8 @@
             content.add(contentTitle);
             content.add(lastContactLabel);
             content.add(addressLabel);
-            return row.add(content);
+            row.add(content);
+            return row;
           })());
         })();
       }
