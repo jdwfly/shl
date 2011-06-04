@@ -24,27 +24,33 @@
     });
     starredTab = Ti.UI.createTab({
       title: 'Starred',
-      window: starred
+      window: starred,
+      icon: 'images/28-star.png'
     });
     addTab = Ti.UI.createTab({
       title: 'Add',
-      window: add
+      window: add,
+      icon: 'images/13-plus.png'
     });
     searchTab = Ti.UI.createTab({
       title: 'Search',
-      window: search
+      window: search,
+      icon: 'images/06-magnify.png'
     });
     nearbyTab = Ti.UI.createTab({
       title: 'Nearby',
-      window: nearby
+      window: nearby,
+      icon: 'images/73-radar.png'
     });
     settingsTab = Ti.UI.createTab({
       title: 'Settings',
-      window: settings
+      window: settings,
+      icon: 'images/20-gear2.png'
     });
     helpTab = Ti.UI.createTab({
       title: 'Help',
-      window: help
+      window: help,
+      icon: 'images/90-life-buoy.png'
     });
     tabs.addTab(listsTab);
     tabs.addTab(starredTab);
