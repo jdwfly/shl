@@ -22,6 +22,7 @@
     <fullscreen>false</fullscreen>
     <navbar-hidden>false</navbar-hidden>
     <analytics>true</analytics>
+    <property name="ti.android.threadstacksize" type="int">51200</property>
 <guid>4a9597d6-d44b-44f1-9986-fa4055b49baa</guid>
 	<iphone>
 		<orientations device="iphone">
