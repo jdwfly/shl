@@ -101,7 +101,23 @@ class UI
     return win
     
   createStarredWindow : () ->
-    @createListsWindow()
+    win = Ti.UI.createWindow({
+      title: 'Starred'
+    })
+    # TODO: call prospect find function for starred
+    # prospects = shl.Prospects.find('starred')
+    prospects = []
+    win.add(@createProspectTableView(prospects))
+    if @platform is 'iphone'
+      b = Ti.UI.createButton({
+        systemButton: Ti.UI.iPhone.SystemButton.ADD
+      })
+      b.addEventListener('click', (e) ->
+        alert('clicked')
+      )
+      win.setRightNavButton(b)
+    
+    return win
   
   createAddWindow : () ->
     @createListsWindow()

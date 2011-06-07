@@ -98,7 +98,22 @@
       return win;
     };
     UI.prototype.createStarredWindow = function() {
-      return this.createListsWindow();
+      var b, prospects, win;
+      win = Ti.UI.createWindow({
+        title: 'Starred'
+      });
+      prospects = [];
+      win.add(this.createProspectTableView(prospects));
+      if (this.platform === 'iphone') {
+        b = Ti.UI.createButton({
+          systemButton: Ti.UI.iPhone.SystemButton.ADD
+        });
+        b.addEventListener('click', function(e) {
+          return alert('clicked');
+        });
+        win.setRightNavButton(b);
+      }
+      return win;
     };
     UI.prototype.createAddWindow = function() {
       return this.createListsWindow();
