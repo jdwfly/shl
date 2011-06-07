@@ -79,6 +79,7 @@ class UI
       }
     })
     # prospects = shl.db.listAllProspects()
+    prospects = [];
     win.add(@createProspectTableView(prospects))
     
     if @platform is 'iphone'

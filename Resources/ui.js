@@ -62,7 +62,7 @@
       return tabs;
     };
     UI.prototype.createListsWindow = function() {
-      var b, win;
+      var b, prospects, win;
       win = Ti.UI.createWindow({
         title: 'All',
         activity: {
@@ -78,6 +78,7 @@
           }
         }
       });
+      prospects = [];
       win.add(this.createProspectTableView(prospects));
       if (this.platform === 'iphone') {
         b = Ti.UI.createButton({
