@@ -68,19 +68,26 @@ class UI
   
   createListsWindow : () ->
     win = Ti.UI.createWindow({
-      title: 'All'
+      title: 'Lists'
       activity: {
         onCreateOptionsMenu : (e) ->
           menu = e.menu
-          m1 = menu.add({title: 'Add'})
+          m1 = menu.add({title: 'Add Prospect'})
+          m2 = menu.add({title: 'Add List'})
           m1.addEventListener('click', (e) ->
+            # TODO: call add prospect window
+            alert('clicked')
+          )
+          m2.addEventListener('click', (e) ->
+            # TODO: call add list window
             alert('clicked')
           )
       }
     })
-    # prospects = shl.db.listAllProspects()
-    prospects = [];
-    win.add(@createProspectTableView(prospects))
+    # TODO: call the function to get all Lists
+    #lists = shl.Lists.find();
+    lists = ['All', 'Starred', 'Prospects']
+    win.add(@createListTableView(lists))
     
     if @platform is 'iphone'
       b = Ti.UI.createButton({
@@ -110,6 +117,19 @@ class UI
     
   createHelpWindow : () ->
     @createListsWindow()
+    
+  createListTableView : (lists) ->
+    data = for i of lists
+      row = Ti.UI.createTableViewRow({
+        height: 'auto',
+        hasChild: true,
+        title: lists[i]
+      })
+    tableView = Ti.UI.createTableView({data:data})
+    tableView.addEventListener('click', (e) -> 
+      alert('haha! you thought this would do something didnt you!')
+    )
+    return tableView
   
   createProspectTableView : (prospects) ->
     data = for i of prospects

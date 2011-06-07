@@ -62,24 +62,30 @@
       return tabs;
     };
     UI.prototype.createListsWindow = function() {
-      var b, prospects, win;
+      var b, lists, win;
       win = Ti.UI.createWindow({
-        title: 'All',
+        title: 'Lists',
         activity: {
           onCreateOptionsMenu: function(e) {
-            var m1, menu;
+            var m1, m2, menu;
             menu = e.menu;
             m1 = menu.add({
-              title: 'Add'
+              title: 'Add Prospect'
             });
-            return m1.addEventListener('click', function(e) {
+            m2 = menu.add({
+              title: 'Add List'
+            });
+            m1.addEventListener('click', function(e) {
+              return alert('clicked');
+            });
+            return m2.addEventListener('click', function(e) {
               return alert('clicked');
             });
           }
         }
       });
-      prospects = [];
-      win.add(this.createProspectTableView(prospects));
+      lists = ['All', 'Starred', 'Prospects'];
+      win.add(this.createListTableView(lists));
       if (this.platform === 'iphone') {
         b = Ti.UI.createButton({
           systemButton: Ti.UI.iPhone.SystemButton.ADD
@@ -108,6 +114,28 @@
     };
     UI.prototype.createHelpWindow = function() {
       return this.createListsWindow();
+    };
+    UI.prototype.createListTableView = function(lists) {
+      var data, i, row, tableView;
+      data = (function() {
+        var _results;
+        _results = [];
+        for (i in lists) {
+          _results.push(row = Ti.UI.createTableViewRow({
+            height: 'auto',
+            hasChild: true,
+            title: lists[i]
+          }));
+        }
+        return _results;
+      })();
+      tableView = Ti.UI.createTableView({
+        data: data
+      });
+      tableView.addEventListener('click', function(e) {
+        return alert('haha! you thought this would do something didnt you!');
+      });
+      return tableView;
     };
     UI.prototype.createProspectTableView = function(prospects) {
       var address, addressLabel, content, contentTitle, data, i, lastContactLabel, lastContactPretty, row, tableView, title;
