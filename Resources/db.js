@@ -27,16 +27,34 @@
     previouslySaved : 0,
     previouslyBaptized : 0,
     sundaySchool : 0,
-    status : '',
+    status : 'Active Prospect',
     starred : 0,
     nextStep : '',
     lastContact : 0,
-    created : 0,
+    createdDate : 0,
     modified : 0,
     uuid : ''
   });
   shl.Prospect.hasMany('contacts',{
     dependent: true
+  });
+  
+  shl.Prospect.beforeCreate(function(prospect){
+    prospect.set('uuid',Ti.Platform.createUUID());
+    var currentTime = Math.round(new Date().getTime()/1000.0);
+    prospect.set('createdDate',currentTime);
+    prospect.set('modified',currentTime);
+    prospect.set('lastContact',currentTime);
+    if (prospect.firstContactDate == 0){
+      prospect.set('firstContactDate',currentTime);
+    }
+    if (prospect.previouslySaved == 0){
+      prospect.set('nextStep','Salvation');
+    }
+    else {
+      prospect.set('nextStep','Attendance');
+    }
+    
   });
   
   //************************* Contacts **************************************
@@ -46,11 +64,21 @@
      date : 0,
      comments : '',
      indevidual : '',
-     created : 0,
+     createdDate : 0,
      modified : 0,
      uuid : ''
   });
   shl.Contact.belongsTo('prospect');
+  
+  shl.Contact.beforeCreate(function(contact){
+    contact.set('uuid',Ti.Platform.createUUID());
+    var currentTime = Math.round(new Date().getTime()/1000.0);
+    contact.set('createdDate',currentTime);
+    contact.set('modified',currentTime);
+    if (contact.date == 0){
+      contact.set('date',currentTime);
+    }
+  });
   
   //************************* Lists *****************************************
   
@@ -58,7 +86,7 @@
      name : '',
      weight : 0,
      active : 0,
-     created : 0,
+     createdDate : 0,
      modified : 0,
      uuid : ''
    });
@@ -66,12 +94,20 @@
   shl.List.hasMany('Prospect', {
     through: 'ListItem'
   });
+  
+  shl.List.beforeCreate(function(list){
+    list.set('uuid',Ti.Platform.createUUID());
+    var currentTime = Math.round(new Date().getTime()/1000.0);
+    list.set('createdDate',currentTime);
+    list.set('modified',currentTime);
+  });
+  
   //************************* List Items **************************************
 
   shl.ListItem = ActiveRecord.create('listitems', {
      prospect_id : 0,
      list_id : 0,
-     created : 0,
+     createdDate : 0,
      uuid : ''
    });
    
@@ -81,7 +117,13 @@
    shl.ListItem.belongsTo('List',{
      dependent: true
    });
-
+   
+   shl.List.beforeCreate(function(listitem){
+    listitem.set('uuid',Ti.Platform.createUUID());
+    var currentTime = Math.round(new Date().getTime()/1000.0);
+    listitem.set('createdDate',currentTime);
+    listitem.set('modified',currentTime);
+   });
 
   //************************* Tests ******************************************
   var testProspect = shl.Prospect.create({
