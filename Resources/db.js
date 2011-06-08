@@ -131,6 +131,42 @@
     firstMale: "John",
     email : "test@example.com"
   });
+  var testProspect2 = shl.Prospect.create({
+    last: 'Smith',
+    firstMale: 'Jack',
+    firstFemale: 'Shirley',
+    street: '4321 Main St.',
+    city: 'Lancaster',
+    state: 'CA',
+    zip: '93535'
+  });
+  var testProspect3 = shl.Prospect.create({
+    last: 'Brown',
+    firstFemale: 'Jackie',
+    street: '3456 Easy St.',
+    city: 'Palmdale',
+    state: 'CA'
+  });
+  var testList = shl.List.create({
+    name : 'All',
+    weight : 0,
+    active : 1
+  });
+  var testList2 = shl.List.create({
+    name : 'Church Prospects',
+    weight : 1,
+    active : 1
+  });
+  var testList3 = shl.List.create({
+    name : 'Follow up',
+    weight : 0,
+    active : 1
+  });
+  var testList4 = shl.List.create({
+    name : 'Salvation Prospects',
+    weight : 0,
+    active : 0
+  });
   Ti.API.info("***************" + testProspect.toJSON());
   testProspect.save();
   var testContact = testProspect.createContact({
