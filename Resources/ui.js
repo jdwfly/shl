@@ -62,7 +62,8 @@
       return tabs;
     };
     UI.prototype.createListsWindow = function() {
-      var b, lists, win;
+      var b, cancel, edit, lists, self, tableView, win;
+      self = this;
       win = Ti.UI.createWindow({
         title: 'Lists',
         activity: {
@@ -84,15 +85,40 @@
           }
         }
       });
-      lists = ['All', 'Starred', 'Prospects'];
-      win.add(this.createListTableView(lists));
-      if (this.platform === 'iphone') {
+      lists = shl.List.find({
+        where: {
+          active: 1
+        },
+        order: 'weight ASC'
+      });
+      Ti.API.info('lists = ' + lists.toJSON());
+      tableView = this.createListTableView(lists);
+      win.add(tableView);
+      if (this.platform === 'iPhone OS') {
         b = Ti.UI.createButton({
           systemButton: Ti.UI.iPhone.SystemButton.ADD
         });
         b.addEventListener('click', function(e) {
           return alert('clicked');
         });
+        edit = Ti.UI.createButton({
+          systemButton: Ti.UI.iPhone.SystemButton.EDIT
+        });
+        edit.addEventListener('click', function(e) {
+          win.setRightNavButton(cancel);
+          win.setLeftNavButton();
+          return tableView.editing = true;
+        });
+        cancel = Ti.UI.createButton({
+          systemButton: Ti.UI.iPhone.SystemButton.DONE,
+          title: 'Cancel'
+        });
+        cancel.addEventListener('click', function(e) {
+          win.setRightNavButton(b);
+          win.setLeftNavButton(edit);
+          return tableView.editing = false;
+        });
+        win.setLeftNavButton(edit);
         win.setRightNavButton(b);
       }
       return win;
@@ -104,7 +130,7 @@
       });
       prospects = [];
       win.add(this.createProspectTableView(prospects));
-      if (this.platform === 'iphone') {
+      if (this.platform === 'iPhone OS') {
         b = Ti.UI.createButton({
           systemButton: Ti.UI.iPhone.SystemButton.ADD
         });
@@ -133,22 +159,31 @@
     UI.prototype.createListTableView = function(lists) {
       var data, i, row, tableView;
       data = (function() {
-        var _results;
+        var _i, _len, _results;
         _results = [];
-        for (i in lists) {
+        for (_i = 0, _len = lists.length; _i < _len; _i++) {
+          i = lists[_i];
           _results.push(row = Ti.UI.createTableViewRow({
             height: 'auto',
             hasChild: true,
-            title: lists[i]
+            title: i.name,
+            listID: i.id,
+            editable: false,
+            moveable: true
           }));
         }
         return _results;
       })();
       tableView = Ti.UI.createTableView({
-        data: data
+        data: data,
+        moveable: true
       });
       tableView.addEventListener('click', function(e) {
         return alert('haha! you thought this would do something didnt you!');
+      });
+      tableView.addEventListener('move', function(e) {});
+      tableView.addEventListener('delete', function(e) {
+        return alert(JSON.stringify(e.row));
       });
       return tableView;
     };
