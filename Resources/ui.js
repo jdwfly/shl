@@ -62,7 +62,8 @@
       return tabs;
     };
     UI.prototype.createListsWindow = function() {
-      var b, edit, lists, tableView, win;
+      var b, cancel, edit, lists, self, tableView, win;
+      self = this;
       win = Ti.UI.createWindow({
         title: 'Lists',
         activity: {
@@ -104,10 +105,21 @@
           systemButton: Ti.UI.iPhone.SystemButton.EDIT
         });
         edit.addEventListener('click', function(e) {
-          return alert('clicked edit');
+          win.setRightNavButton(cancel);
+          win.setLeftNavButton();
+          return tableView.editing = true;
         });
-        win.setRightNavButton(b);
+        cancel = Ti.UI.createButton({
+          systemButton: Ti.UI.iPhone.SystemButton.DONE,
+          title: 'Cancel'
+        });
+        cancel.addEventListener('click', function(e) {
+          win.setRightNavButton(b);
+          win.setLeftNavButton(edit);
+          return tableView.editing = false;
+        });
         win.setLeftNavButton(edit);
+        win.setRightNavButton(b);
       }
       return win;
     };
@@ -154,16 +166,24 @@
           _results.push(row = Ti.UI.createTableViewRow({
             height: 'auto',
             hasChild: true,
-            title: i.name
+            title: i.name,
+            listID: i.id,
+            editable: false,
+            moveable: true
           }));
         }
         return _results;
       })();
       tableView = Ti.UI.createTableView({
-        data: data
+        data: data,
+        moveable: true
       });
       tableView.addEventListener('click', function(e) {
         return alert('haha! you thought this would do something didnt you!');
+      });
+      tableView.addEventListener('move', function(e) {});
+      tableView.addEventListener('delete', function(e) {
+        return alert(JSON.stringify(e.row));
       });
       return tableView;
     };

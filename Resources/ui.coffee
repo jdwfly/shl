@@ -67,6 +67,7 @@ class UI
     return tabs
   
   createListsWindow : () ->
+    self = this
     win = Ti.UI.createWindow({
       title: 'Lists'
       activity: {
@@ -104,10 +105,21 @@ class UI
         systemButton: Ti.UI.iPhone.SystemButton.EDIT
       })
       edit.addEventListener('click', (e) ->
-        alert('clicked edit')
+        win.setRightNavButton(cancel)
+        win.setLeftNavButton()
+        tableView.editing = true
       )
-      win.setRightNavButton(b)
+      cancel = Ti.UI.createButton({
+        systemButton: Ti.UI.iPhone.SystemButton.DONE,
+        title: 'Cancel'
+      })
+      cancel.addEventListener('click', (e) ->
+        win.setRightNavButton(b)
+        win.setLeftNavButton(edit)
+        tableView.editing = false
+      )
       win.setLeftNavButton(edit)
+      win.setRightNavButton(b)
     
     return win
     
@@ -150,12 +162,25 @@ class UI
       row = Ti.UI.createTableViewRow({
         height: 'auto',
         hasChild: true,
-        title: i.name
+        title: i.name,
+        listID: i.id,
+        editable: false,
+        moveable: true
       })
-    tableView = Ti.UI.createTableView({data:data})
+    tableView = Ti.UI.createTableView({
+      data:data,
+      moveable: true
+    })
     tableView.addEventListener('click', (e) -> 
       alert('haha! you thought this would do something didnt you!')
     )
+    tableView.addEventListener('move', (e) ->
+      
+    )
+    tableView.addEventListener('delete', (e) ->
+      alert(JSON.stringify(e.row));
+    )
+    
     return tableView
   
   createProspectTableView : (prospects) ->
