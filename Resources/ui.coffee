@@ -95,18 +95,11 @@ class UI
     win.add(tableView)
     
     if @platform is 'iPhone OS'
-      b = Ti.UI.createButton({
-        systemButton: Ti.UI.iPhone.SystemButton.ADD
-      })
-      b.addEventListener('click', (e) ->
-        alert('clicked')
-      )
       edit = Ti.UI.createButton({
         systemButton: Ti.UI.iPhone.SystemButton.EDIT
       })
       edit.addEventListener('click', (e) ->
         win.setRightNavButton(cancel)
-        win.setLeftNavButton()
         tableView.editing = true
       )
       cancel = Ti.UI.createButton({
@@ -114,12 +107,10 @@ class UI
         title: 'Cancel'
       })
       cancel.addEventListener('click', (e) ->
-        win.setRightNavButton(b)
-        win.setLeftNavButton(edit)
+        win.setRightNavButton(edit)
         tableView.editing = false
       )
-      win.setLeftNavButton(edit)
-      win.setRightNavButton(b)
+      win.setRightNavButton(edit)
     
     return win
     
@@ -127,18 +118,12 @@ class UI
     win = Ti.UI.createWindow({
       title: 'Starred'
     })
-    # TODO: call prospect find function for starred
-    # prospects = shl.Prospects.find('starred')
-    prospects = []
+    prospects = shl.Prospect.find({
+      where: {starred: 1},
+      order: 'id ASC'
+    })
+    Ti.API.info('prospects = ' + prospects.toJSON())
     win.add(@createProspectTableView(prospects))
-    if @platform is 'iPhone OS'
-      b = Ti.UI.createButton({
-        systemButton: Ti.UI.iPhone.SystemButton.ADD
-      })
-      b.addEventListener('click', (e) ->
-        alert('clicked')
-      )
-      win.setRightNavButton(b)
     
     return win
   
@@ -167,15 +152,26 @@ class UI
         editable: false,
         moveable: true
       })
+    addCustom = Ti.UI.createTableViewRow({
+      height: 'auto',
+      title: 'Create Custom List...',
+      editable: false,
+      moveable: false
+    })
+    data.push(addCustom)
     tableView = Ti.UI.createTableView({
       data:data,
       moveable: true
     })
     tableView.addEventListener('click', (e) -> 
       alert('haha! you thought this would do something didnt you!')
+      Ti.API.info(JSON.stringify(e.row))
     )
     tableView.addEventListener('move', (e) ->
-      
+      Ti.API.info(JSON.stringify(e.index))
+      list = shl.List.find(e.row.listID)
+      list.set('weight', e.index)
+      Ti.API.info(list.toJSON())
     )
     tableView.addEventListener('delete', (e) ->
       alert(JSON.stringify(e.row));
@@ -184,7 +180,9 @@ class UI
     return tableView
   
   createProspectTableView : (prospects) ->
-    data = for i of prospects
+    if prospects.length < 1
+      return Ti.UI.createLabel({text: 'None'})
+    data = for i in prospects
       row = Ti.UI.createTableViewRow({
         height: 'auto',
         hasChild: true

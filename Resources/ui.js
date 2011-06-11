@@ -62,7 +62,7 @@
       return tabs;
     };
     UI.prototype.createListsWindow = function() {
-      var b, cancel, edit, lists, self, tableView, win;
+      var cancel, edit, lists, self, tableView, win;
       self = this;
       win = Ti.UI.createWindow({
         title: 'Lists',
@@ -95,18 +95,11 @@
       tableView = this.createListTableView(lists);
       win.add(tableView);
       if (this.platform === 'iPhone OS') {
-        b = Ti.UI.createButton({
-          systemButton: Ti.UI.iPhone.SystemButton.ADD
-        });
-        b.addEventListener('click', function(e) {
-          return alert('clicked');
-        });
         edit = Ti.UI.createButton({
           systemButton: Ti.UI.iPhone.SystemButton.EDIT
         });
         edit.addEventListener('click', function(e) {
           win.setRightNavButton(cancel);
-          win.setLeftNavButton();
           return tableView.editing = true;
         });
         cancel = Ti.UI.createButton({
@@ -114,31 +107,26 @@
           title: 'Cancel'
         });
         cancel.addEventListener('click', function(e) {
-          win.setRightNavButton(b);
-          win.setLeftNavButton(edit);
+          win.setRightNavButton(edit);
           return tableView.editing = false;
         });
-        win.setLeftNavButton(edit);
-        win.setRightNavButton(b);
+        win.setRightNavButton(edit);
       }
       return win;
     };
     UI.prototype.createStarredWindow = function() {
-      var b, prospects, win;
+      var prospects, win;
       win = Ti.UI.createWindow({
         title: 'Starred'
       });
-      prospects = [];
+      prospects = shl.Prospect.find({
+        where: {
+          starred: 1
+        },
+        order: 'id ASC'
+      });
+      Ti.API.info('prospects = ' + prospects.toJSON());
       win.add(this.createProspectTableView(prospects));
-      if (this.platform === 'iPhone OS') {
-        b = Ti.UI.createButton({
-          systemButton: Ti.UI.iPhone.SystemButton.ADD
-        });
-        b.addEventListener('click', function(e) {
-          return alert('clicked');
-        });
-        win.setRightNavButton(b);
-      }
       return win;
     };
     UI.prototype.createAddWindow = function() {
@@ -157,7 +145,7 @@
       return this.createListsWindow();
     };
     UI.prototype.createListTableView = function(lists) {
-      var data, i, row, tableView;
+      var addCustom, data, i, row, tableView;
       data = (function() {
         var _i, _len, _results;
         _results = [];
@@ -174,14 +162,28 @@
         }
         return _results;
       })();
+      addCustom = Ti.UI.createTableViewRow({
+        height: 'auto',
+        title: 'Create Custom List...',
+        editable: false,
+        moveable: false
+      });
+      data.push(addCustom);
       tableView = Ti.UI.createTableView({
         data: data,
         moveable: true
       });
       tableView.addEventListener('click', function(e) {
-        return alert('haha! you thought this would do something didnt you!');
+        alert('haha! you thought this would do something didnt you!');
+        return Ti.API.info(JSON.stringify(e.row));
       });
-      tableView.addEventListener('move', function(e) {});
+      tableView.addEventListener('move', function(e) {
+        var list;
+        Ti.API.info(JSON.stringify(e.index));
+        list = shl.List.find(e.row.listID);
+        list.set('weight', e.index);
+        return Ti.API.info(list.toJSON());
+      });
       tableView.addEventListener('delete', function(e) {
         return alert(JSON.stringify(e.row));
       });
@@ -189,10 +191,16 @@
     };
     UI.prototype.createProspectTableView = function(prospects) {
       var address, addressLabel, content, contentTitle, data, i, lastContactLabel, lastContactPretty, row, tableView, title;
+      if (prospects.length < 1) {
+        return Ti.UI.createLabel({
+          text: 'None'
+        });
+      }
       data = (function() {
-        var _results;
+        var _i, _len, _results;
         _results = [];
-        for (i in prospects) {
+        for (_i = 0, _len = prospects.length; _i < _len; _i++) {
+          i = prospects[_i];
           row = Ti.UI.createTableViewRow({
             height: 'auto',
             hasChild: true
