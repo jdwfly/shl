@@ -2,14 +2,36 @@
   //ActiveRecord.logging = true;
   //ActiveSupport.log = Ti.API.debug;
 
+  //Built in auto lists
+  shl.aLists = {
+    'All' : {
+      weight : 10,
+      active : 0,
+      qwery : {
+        order : 'last DESC'
+      }
+    },
+    'Active Prospects' : {
+      weight : '1',
+      active : 1,
+      qwery : {
+        where : {
+          status : 'Active Prospect'
+        },
+        order : 'last DESC'
+      }
+    }
+  }
+
   /* Set the Adapter to Titanium and connect to the default 'app.sqlite' database */
   ActiveRecord.connect(ActiveRecord.Adapters.Titanium, "Outreach");
-
-  ActiveRecord.execute('DROP TABLE IF EXISTS prospects');
-  ActiveRecord.execute('DROP TABLE IF EXISTS contacts');
-  ActiveRecord.execute('DROP TABLE IF EXISTS lists');
-  ActiveRecord.execute('DROP TABLE IF EXISTS listitems');
-
+  if (shl.debugMode){
+    ActiveRecord.execute('DROP TABLE IF EXISTS prospects');
+    ActiveRecord.execute('DROP TABLE IF EXISTS contacts');
+    ActiveRecord.execute('DROP TABLE IF EXISTS lists');
+    ActiveRecord.execute('DROP TABLE IF EXISTS listitems');
+    Ti.App.Properties.removeProperty('dbInitComplete');
+  }
   //******************** Prospect *****************************
 
   shl.Prospect = ActiveRecord.create('prospects', {
@@ -126,6 +148,25 @@
     listitem.set('modified',currentTime);
   });
 
+//*************** Init *************************
+  
+  shl.dbInit = function() {
+    for (list in shl.aLists) {
+      if (shl.aLists.hasOwnProperty(list)) {
+        shl.List.create({
+          name : list,
+          weight : shl.aLists[list].weight,
+          active : shl.aLists[list].active
+        });
+      }
+    }
+  };
+  
+  if (!Ti.App.Properties.hasProperty('dbInitComplete')) {
+    shl.dbInit();
+    Ti.App.Properties.setBool('dbInitComplete', true);
+  }
+  
   //************************* Tests ******************************************
   var testProspect = shl.Prospect.create({
     last: "Jones",
