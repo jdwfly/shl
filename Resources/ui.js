@@ -145,7 +145,8 @@
       return this.createListsWindow();
     };
     UI.prototype.createListTableView = function(lists) {
-      var addCustom, data, i, row, tableView;
+      var addCustom, data, i, row, self, tableView;
+      self = this;
       data = (function() {
         var _i, _len, _results;
         _results = [];
@@ -165,6 +166,7 @@
       addCustom = Ti.UI.createTableViewRow({
         height: 'auto',
         title: 'Create Custom List...',
+        listID: 'custom',
         editable: false,
         moveable: false
       });
@@ -174,8 +176,19 @@
         moveable: true
       });
       tableView.addEventListener('click', function(e) {
-        alert('haha! you thought this would do something didnt you!');
-        return Ti.API.info(JSON.stringify(e.row));
+        var listWin, prospects;
+        Ti.API.info(JSON.stringify(e.row));
+        if (e.row.listID === 'custom') {
+          alert('add a list');
+        }
+        listWin = Ti.UI.createWindow();
+        if (shl.aLists[e.row.title] != null) {
+          listWin.title = e.row.title;
+          prospects = shl.Prospect.find(shl.aLists[e.row.title].qwery);
+          Ti.API.info('prospects = ' + prospects.toJSON());
+          listWin.add(self.createProspectTableView(prospects));
+          return self.tabs.activeTab.open(listWin);
+        }
       });
       tableView.addEventListener('move', function(e) {
         var list;
@@ -190,7 +203,7 @@
       return tableView;
     };
     UI.prototype.createProspectTableView = function(prospects) {
-      var address, addressLabel, content, contentTitle, data, i, lastContactLabel, lastContactPretty, row, tableView, title;
+      var address, addressLabel, content, contentTitle, data, lastContactLabel, lastContactPretty, prospect, row, tableView, title;
       if (prospects.length < 1) {
         return Ti.UI.createLabel({
           text: 'None'
@@ -200,7 +213,7 @@
         var _i, _len, _results;
         _results = [];
         for (_i = 0, _len = prospects.length; _i < _len; _i++) {
-          i = prospects[_i];
+          prospect = prospects[_i];
           row = Ti.UI.createTableViewRow({
             height: 'auto',
             hasChild: true
@@ -213,18 +226,18 @@
             bottom: 10,
             right: 10
           });
-          if (prospects[i].firstMale !== '') {
-            title = prospects[i].firstMale;
-            if (prospects[i].firstFemale !== '') {
-              title += ' and ' + prospects[i].firstFemale;
+          if (prospect.firstMale !== '') {
+            title = prospect.firstMale;
+            if (prospect.firstFemale !== '') {
+              title += ' and ' + prospect.firstFemale;
             }
-            if (prospects[i].last !== '') {
-              title += ' ' + prospects[i].last;
+            if (prospect.last !== '') {
+              title += ' ' + prospect.last;
             }
-          } else if (prospects[i].firstFemale !== '') {
-            title = _prospects[i].firstFemale;
-            if (prospects[i].last !== '') {
-              title += ' ' + prospects[i].last;
+          } else if (prospect.firstFemale !== '') {
+            title = prospect.firstFemale;
+            if (prospect.last !== '') {
+              title += ' ' + prospect.last;
             }
           }
           contentTitle = Ti.UI.createLabel({
@@ -239,7 +252,7 @@
           });
           lastContactPretty = (function() {
             var date, day_diff, diff;
-            date = new Date(prospects[i].lastContact * 1000);
+            date = new Date(prospect.lastContact * 1000);
             diff = ((new Date()).getTime() - date.getTime()) / 1000;
             day_diff = Math.floor(diff / 86400);
             if (isNaN(day_diff) || day_diff < 0 || day_diff >= 31) {
@@ -257,7 +270,7 @@
             width: 'auto',
             left: 5
           });
-          address = '' + ((prospects[i].street != null) && prospects[i].street !== '' ? prospects[i].street : '') + ((prospects[i].city != null) && prospects[i].city !== '' ? "\n" + prospects[i].city : '') + ((prospects[i].state != null) && prospects[i].state !== '' ? ", " + prospects[i].state : '') + ((prospects[i].zip != null) && prospects[i].zip !== '' ? " " + prospects[i].zip : '');
+          address = '' + ((prospect.street != null) && prospect.street !== '' ? prospect.street : '') + ((prospect.city != null) && prospect.city !== '' ? "\n" + prospect.city : '') + ((prospect.state != null) && prospect.state !== '' ? ", " + prospect.state : '') + ((prospect.zip != null) && prospect.zip !== '' ? " " + prospect.zip : '');
           addressLabel = Ti.UI.createLabel({
             text: address,
             font: {

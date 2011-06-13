@@ -143,6 +143,7 @@ class UI
     @createListsWindow()
     
   createListTableView : (lists) ->
+    self = this
     data = for i in lists
       row = Ti.UI.createTableViewRow({
         height: 'auto',
@@ -155,6 +156,7 @@ class UI
     addCustom = Ti.UI.createTableViewRow({
       height: 'auto',
       title: 'Create Custom List...',
+      listID: 'custom',
       editable: false,
       moveable: false
     })
@@ -163,9 +165,20 @@ class UI
       data:data,
       moveable: true
     })
-    tableView.addEventListener('click', (e) -> 
-      alert('haha! you thought this would do something didnt you!')
+    tableView.addEventListener('click', (e) ->
       Ti.API.info(JSON.stringify(e.row))
+      if e.row.listID == 'custom'
+        # TODO : pull up modal window to add a list
+        alert('add a list')
+      # TODO : create and populate window based on list choice
+      # Determine if the list is an auto list
+      listWin = Ti.UI.createWindow()
+      if shl.aLists[e.row.title]?
+        listWin.title = e.row.title
+        prospects = shl.Prospect.find(shl.aLists[e.row.title].qwery)
+        Ti.API.info('prospects = ' + prospects.toJSON())
+        listWin.add(self.createProspectTableView(prospects))
+        self.tabs.activeTab.open(listWin)
     )
     tableView.addEventListener('move', (e) ->
       Ti.API.info(JSON.stringify(e.index))
@@ -182,7 +195,7 @@ class UI
   createProspectTableView : (prospects) ->
     if prospects.length < 1
       return Ti.UI.createLabel({text: 'None'})
-    data = for i in prospects
+    data = for prospect in prospects
       row = Ti.UI.createTableViewRow({
         height: 'auto',
         hasChild: true
@@ -195,13 +208,13 @@ class UI
         bottom: 10,
         right: 10
       })
-      if prospects[i].firstMale isnt ''
-        title = prospects[i].firstMale
-        title += ' and ' + prospects[i].firstFemale if prospects[i].firstFemale isnt ''
-        title += ' ' + prospects[i].last if prospects[i].last isnt ''
-      else if prospects[i].firstFemale isnt ''
-        title = _prospects[i].firstFemale
-        title += ' ' + prospects[i].last if prospects[i].last isnt ''
+      if prospect.firstMale isnt ''
+        title = prospect.firstMale
+        title += ' and ' + prospect.firstFemale if prospect.firstFemale isnt ''
+        title += ' ' + prospect.last if prospect.last isnt ''
+      else if prospect.firstFemale isnt ''
+        title = prospect.firstFemale
+        title += ' ' + prospect.last if prospect.last isnt ''
       contentTitle = Ti.UI.createLabel({
         text: title,
         font: {fontWeight: 'bold', fontSize:18},
@@ -211,7 +224,7 @@ class UI
       })
       # TODO Probably should be it's own function somewhere
       lastContactPretty = (() ->
-        date = new Date(prospects[i].lastContact * 1000)
+        date = new Date(prospect.lastContact * 1000)
         diff = (((new Date()).getTime() - date.getTime()) / 1000)
         day_diff = Math.floor(diff / 86400)
 
@@ -227,10 +240,10 @@ class UI
         width: 'auto',
         left: 5
       })
-      address = '' + (if prospects[i].street? and prospects[i].street isnt '' then prospects[i].street else '') +
-                (if prospects[i].city? and prospects[i].city isnt '' then "\n" + prospects[i].city else '') +
-                (if prospects[i].state? and prospects[i].state isnt '' then ", " + prospects[i].state else '') +
-                (if prospects[i].zip? and prospects[i].zip isnt '' then " " + prospects[i].zip else '')
+      address = '' + (if prospect.street? and prospect.street isnt '' then prospect.street else '') +
+                (if prospect.city? and prospect.city isnt '' then "\n" + prospect.city else '') +
+                (if prospect.state? and prospect.state isnt '' then ", " + prospect.state else '') +
+                (if prospect.zip? and prospect.zip isnt '' then " " + prospect.zip else '')
       addressLabel = Ti.UI.createLabel({
         text: address,
         font: {fontWeight: 'normal', fontSize: 12},
