@@ -184,7 +184,7 @@
         listWin = Ti.UI.createWindow();
         if (shl.aLists[e.row.title] != null) {
           listWin.title = e.row.title;
-          prospects = shl.Prospect.find(shl.aLists[e.row.title].qwery);
+          prospects = shl.Prospect.find(shl.aLists[e.row.title].query);
           Ti.API.info('prospects = ' + prospects.toJSON());
           listWin.add(self.createProspectTableView(prospects));
           return self.tabs.activeTab.open(listWin);
