@@ -20,6 +20,132 @@
         },
         order : 'last DESC'
       }
+    },
+    'Visitor Follow up' : {
+      weight : '2',
+      active : 1,
+      query : {
+        where : {
+          status : 'Active Prospect',
+          attended : 1
+        },
+        order : 'last DESC'
+      }
+    },
+    'Church Prospects' : {
+      weight : '3',
+      active : 1,
+      query : {
+        where : {
+          status : 'Active Prospect',
+          attedned : 0
+        },
+        order : 'last DESC'
+      }
+    },
+    'Salvation Prospects' : {
+      weight : '1',
+      active : 0,
+      query : {
+        where : {
+          status : 'Active Prospect',
+          nextStep : 'Salvation'
+        },
+        order : 'last DESC'
+      }
+    },
+    'Baptism Prospects' : {
+      weight : '1',
+      active : 0,
+      query : {
+        where : {
+          status : 'Active Prospect',
+          nextStep : 'Baptism'
+        },
+        order : 'last DESC'
+      }
+    },
+    'Membership Prospects' : {
+      weight : '1',
+      active : 0,
+      query : {
+        where : {
+          status : 'Active Prospect',
+          nextStep : 'Membership'
+        },
+        order : 'last DESC'
+      }
+    },
+    'Members' : {
+      weight : '1',
+      active : 0,
+      query : {
+        where : {
+          status : 'Member'
+        },
+        order : 'last DESC'
+      }
+    },
+    'Dead Ends' : {
+      weight : '1',
+      active : 0,
+      query : {
+        where : {
+          status : 'Dead end'
+        },
+        order : 'last DESC'
+      }
+    },
+    'Inactive' : {
+      weight : '5',
+      active : 1,
+      query : {
+        where : {
+          status : 'Inactive Prospect'
+        },
+        order : 'last DESC'
+      }
+    },
+    'Sunday School Prospects' : {
+      weight : '1',
+      active : 0,
+      query : {
+        where : {
+          status : 'Active Prospect',
+          sundaySchool : 0
+        },
+        order : 'last DESC'
+      }
+    },
+    'No Contact: This Week' : {
+      weight : '4',
+      active : 1,
+      query : {
+        where : {
+          status : 'Active Prospect'
+        },
+        order : 'last DESC'
+      }
+    },
+    'No Contact: 14 Days' : {
+      weight : '1',
+      active : 0,
+      query : {
+        where : {
+          status : 'Active Prospect'
+        },
+        order : 'last DESC'
+      }
+    },
+    'No Contact: 30 Days' : {
+      weight : '1',
+      active : 0,
+      query : {
+        where : {
+          status : 'Active Prospect'
+        },
+        order : 'last DESC'
+      }
     }
   }
 
@@ -188,26 +314,6 @@
     street: '3456 Easy St.',
     city: 'Palmdale',
     state: 'CA'
-  });
-  var testList = shl.List.create({
-    name : 'All',
-    weight : 0,
-    active : 1
-  });
-  var testList2 = shl.List.create({
-    name : 'Church Prospects',
-    weight : 1,
-    active : 1
-  });
-  var testList3 = shl.List.create({
-    name : 'Follow up',
-    weight : 0,
-    active : 1
-  });
-  var testList4 = shl.List.create({
-    name : 'Salvation Prospects',
-    weight : 0,
-    active : 0
   });
   Ti.API.info("***************" + testProspect.toJSON());
   testProspect.save();
