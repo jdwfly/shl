@@ -7,14 +7,14 @@
     'All' : {
       weight : 10,
       active : 0,
-      qwery : {
+      query : {
         order : 'last DESC'
       }
     },
     'Active Prospects' : {
       weight : '1',
       active : 1,
-      qwery : {
+      query : {
         where : {
           status : 'Active Prospect'
         },
