@@ -130,21 +130,11 @@
       return win;
     };
     UI.prototype.createAddWindow = function() {
-      var b, city, citystateRow, country, data, email, emailRow, fname, fnameRow, gender, genderRow, homeLabel, homeRow, homeText, lname, lnameRow, mobileLabel, mobileRow, mobileText, s1, s2, s3, s4, s5, sep1, sep2, sep3, sep4, state, street, streetRow, tableView, win, zip, zipcountryRow;
+      var attendedRow, city, citystateRow, country, data, email, emailRow, enrolledRow, fname, fnameRow, gender, genderRow, homeLabel, homeRow, homeText, initContactLabel, initialContactRow, initialPicker, lname, lnameRow, mobileLabel, mobileRow, mobileText, pocRow, pocTextfield, prevBaptRow, prevSavedRow, s1, s2, s3, s4, s5, s6, s7, sep1, sep2, sep3, sep4, sep5, state, street, streetRow, tableView, win, zip, zipcountryRow;
       win = Ti.UI.createWindow({
         title: 'Add Prospect',
         backgroundColor: '#eeeeee'
       });
-      if (this.platform === 'iPhone OS') {
-        b = Titanium.UI.createButton({
-          title: 'Close',
-          style: Titanium.UI.iPhone.SystemButtonStyle.PLAIN
-        });
-        b.addEventListener('click', function(e) {
-          return win.close();
-        });
-        win.setRightNavButton(b);
-      }
       data = [];
       s1 = Ti.UI.createTableViewSection();
       fnameRow = Ti.UI.createTableViewRow({
@@ -154,6 +144,7 @@
       });
       fname = Ti.UI.createTextField({
         height: 40,
+        left: 10,
         keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
         returnKeyType: Titanium.UI.RETURNKEY_DONE,
         borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
@@ -168,6 +159,7 @@
       });
       lname = Ti.UI.createTextField({
         height: 40,
+        left: 10,
         keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
         returnKeyType: Titanium.UI.RETURNKEY_DONE,
         borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
@@ -207,6 +199,7 @@
       });
       street = Ti.UI.createTextField({
         height: 40,
+        left: 10,
         keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
         returnKeyType: Titanium.UI.RETURNKEY_DONE,
         borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
@@ -220,8 +213,9 @@
         selectionStyle: "none"
       });
       city = Ti.UI.createTextField({
-        width: 149,
+        width: 139,
         height: 40,
+        left: 10,
         keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
         returnKeyType: Titanium.UI.RETURNKEY_DONE,
         borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
@@ -234,9 +228,9 @@
         backgroundColor: '#cccccc'
       });
       state = Ti.UI.createTextField({
-        width: 149,
+        width: 139,
         height: 40,
-        left: 0,
+        left: 10,
         keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
         returnKeyType: Titanium.UI.RETURNKEY_DONE,
         borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
@@ -252,8 +246,9 @@
         selectionStyle: "none"
       });
       zip = Ti.UI.createTextField({
-        width: 149,
+        width: 139,
         height: 40,
+        left: 10,
         keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
         returnKeyType: Titanium.UI.RETURNKEY_DONE,
         borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
@@ -266,8 +261,9 @@
         backgroundColor: '#cccccc'
       });
       country = Ti.UI.createTextField({
-        width: 149,
+        width: 139,
         height: 40,
+        left: 10,
         keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
         returnKeyType: Titanium.UI.RETURNKEY_DONE,
         borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
@@ -364,6 +360,87 @@
       emailRow.add(email);
       s5.add(emailRow);
       data.push(s5);
+      s6 = Ti.UI.createTableViewSection();
+      initialContactRow = Ti.UI.createTableViewRow({
+        height: 45,
+        layout: 'horizontal',
+        selectionSytle: 'none'
+      });
+      initContactLabel = Ti.UI.createLabel({
+        text: 'Initial Contact',
+        font: {
+          fontWeight: 'bold',
+          fontSize: 16
+        },
+        height: 45,
+        width: 160,
+        left: 10
+      });
+      sep5 = Ti.UI.createView({
+        width: 1,
+        height: 45,
+        left: 0,
+        backgroundColor: '#cccccc'
+      });
+      initialPicker = Ti.UI.createTextField({
+        height: 45,
+        width: 120,
+        left: 7,
+        keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
+        returnKeyType: Titanium.UI.RETURNKEY_DONE,
+        borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
+        hintText: L('1/10/2011')
+      });
+      initialContactRow.add(initContactLabel);
+      initialContactRow.add(sep5);
+      initialContactRow.add(initialPicker);
+      s6.add(initialContactRow);
+      pocRow = Ti.UI.createTableViewRow({
+        height: 45,
+        layout: 'horizontal',
+        selectionSytle: 'none'
+      });
+      pocTextfield = Ti.UI.createTextField({
+        width: 280,
+        height: 40,
+        left: 10,
+        keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
+        returnKeyType: Titanium.UI.RETURNKEY_DONE,
+        borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
+        hintText: L('Point of Contact')
+      });
+      pocRow.add(pocTextfield);
+      s6.add(pocRow);
+      data.push(s6);
+      s7 = Ti.UI.createTableViewSection();
+      prevSavedRow = Ti.UI.createTableViewRow({
+        title: 'Previously Saved',
+        hasCheck: false
+      });
+      prevBaptRow = Ti.UI.createTableViewRow({
+        title: 'Previously Baptized',
+        hasCheck: false
+      });
+      attendedRow = Ti.UI.createTableViewRow({
+        title: 'Attended Church',
+        hasCheck: false
+      });
+      enrolledRow = Ti.UI.createTableViewRow({
+        title: 'Enrolled in Sunday School',
+        hasCheck: false
+      });
+      s7.add(prevSavedRow);
+      s7.add(prevBaptRow);
+      s7.add(attendedRow);
+      s7.add(enrolledRow);
+      s7.addEventListener('click', function(e) {
+        if (e.row.hasCheck) {
+          return e.row.hasCheck = false;
+        } else {
+          return e.row.hasCheck = true;
+        }
+      });
+      data.push(s7);
       tableView = Ti.UI.createTableView({
         data: data,
         style: Titanium.UI.iPhone.TableViewStyle.GROUPED

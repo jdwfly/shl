@@ -4,3 +4,4 @@ build.log
 .settings/
 .DS_Store
 .fastdev.lock
+api.jsca

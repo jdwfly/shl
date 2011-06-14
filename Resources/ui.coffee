@@ -133,16 +133,6 @@ class UI
       backgroundColor:'#eeeeee'
     })
 
-    if @platform is 'iPhone OS' 
-      b = Titanium.UI.createButton({
-        title:'Close',
-        style:Titanium.UI.iPhone.SystemButtonStyle.PLAIN
-      })
-      b.addEventListener('click', (e) -> 
-        win.close()
-      )
-      win.setRightNavButton(b)
-
     data = []
     s1 = Ti.UI.createTableViewSection()
     # First Name Field
@@ -153,6 +143,7 @@ class UI
     })
     fname = Ti.UI.createTextField({
       height:40,
+      left: 10,
       keyboardType:Titanium.UI.KEYBOARD_DEFAULT,
       returnKeyType:Titanium.UI.RETURNKEY_DONE,
       borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
@@ -168,6 +159,7 @@ class UI
     })
     lname = Ti.UI.createTextField({
       height:40,
+      left: 10,
       keyboardType:Titanium.UI.KEYBOARD_DEFAULT,
       returnKeyType:Titanium.UI.RETURNKEY_DONE,
       borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
@@ -211,6 +203,7 @@ class UI
     })
     street = Ti.UI.createTextField({
       height:40,
+      left: 10,
       keyboardType:Titanium.UI.KEYBOARD_DEFAULT,
       returnKeyType:Titanium.UI.RETURNKEY_DONE,
       borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
@@ -224,8 +217,9 @@ class UI
       selectionStyle: "none"
     })
     city = Ti.UI.createTextField({
-      width: 149,
+      width: 139,
       height:40,
+      left: 10,
       keyboardType:Titanium.UI.KEYBOARD_DEFAULT,
       returnKeyType:Titanium.UI.RETURNKEY_DONE,
       borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
@@ -238,9 +232,9 @@ class UI
       backgroundColor: '#cccccc'
     })
     state = Ti.UI.createTextField({
-      width: 149,
+      width: 139,
       height: 40,
-      left: 0,
+      left: 10,
       keyboardType:Titanium.UI.KEYBOARD_DEFAULT,
       returnKeyType:Titanium.UI.RETURNKEY_DONE,
       borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
@@ -256,8 +250,9 @@ class UI
       selectionStyle: "none"
     })
     zip = Ti.UI.createTextField({
-      width: 149,
+      width: 139,
       height:40,
+      left: 10,
       keyboardType:Titanium.UI.KEYBOARD_DEFAULT,
       returnKeyType:Titanium.UI.RETURNKEY_DONE,
       borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
@@ -271,8 +266,9 @@ class UI
     })
     # TODO Change to a picker instead of textfield
     country = Ti.UI.createTextField({
-      width: 149,
-      height:40,
+      width: 139,
+      height: 40,
+      left: 10,
       keyboardType:Titanium.UI.KEYBOARD_DEFAULT,
       returnKeyType:Titanium.UI.RETURNKEY_DONE,
       borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
@@ -368,6 +364,83 @@ class UI
     s5.add(emailRow)
     data.push(s5)
 
+    s6 = Ti.UI.createTableViewSection()
+    initialContactRow = Ti.UI.createTableViewRow({
+      height: 45,
+      layout: 'horizontal',
+      selectionSytle: 'none'
+    })
+    initContactLabel = Ti.UI.createLabel({
+      text: 'Initial Contact',
+      font: {fontWeight: 'bold', fontSize: 16},
+      height: 45,
+      width: 160,
+      left: 10
+    })
+    sep5 = Ti.UI.createView({
+      width: 1,
+      height: 45,
+      left: 0,
+      backgroundColor: '#cccccc'
+    })
+    # TODO : Change to a picker
+    initialPicker = Ti.UI.createTextField({
+      height: 45,
+      width: 120,
+      left: 7,
+      keyboardType:Titanium.UI.KEYBOARD_DEFAULT,
+      returnKeyType:Titanium.UI.RETURNKEY_DONE,
+      borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
+      hintText:L('1/10/2011')
+    })
+    initialContactRow.add(initContactLabel)
+    initialContactRow.add(sep5)
+    initialContactRow.add(initialPicker)
+    s6.add(initialContactRow)
+    pocRow = Ti.UI.createTableViewRow({
+      height: 45,
+      layout: 'horizontal',
+      selectionSytle: 'none'
+    })
+    pocTextfield = Ti.UI.createTextField({
+      width: 280,
+      height: 40,
+      left: 10,
+      keyboardType:Titanium.UI.KEYBOARD_DEFAULT,
+      returnKeyType:Titanium.UI.RETURNKEY_DONE,
+      borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
+      hintText:L('Point of Contact')
+    })
+    pocRow.add(pocTextfield)
+    s6.add(pocRow)
+    data.push(s6)
+    
+    s7 = Ti.UI.createTableViewSection()
+    prevSavedRow = Ti.UI.createTableViewRow({
+      title: 'Previously Saved',
+      hasCheck: false
+    })
+    prevBaptRow = Ti.UI.createTableViewRow({
+      title: 'Previously Baptized',
+      hasCheck: false
+    })
+    attendedRow = Ti.UI.createTableViewRow({
+      title: 'Attended Church',
+      hasCheck: false
+    })
+    enrolledRow = Ti.UI.createTableViewRow({
+      title: 'Enrolled in Sunday School',
+      hasCheck: false
+    })
+    s7.add(prevSavedRow)
+    s7.add(prevBaptRow)
+    s7.add(attendedRow)
+    s7.add(enrolledRow)
+    s7.addEventListener('click', (e) ->
+      if e.row.hasCheck then e.row.hasCheck = false else e.row.hasCheck = true
+    )
+    data.push(s7)
+    
     # Finally Make the TableView and add
     tableView = Ti.UI.createTableView({
       data: data,
