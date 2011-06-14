@@ -38,7 +38,7 @@
       query : {
         where : {
           status : 'Active Prospect',
-          attedned : 0
+          attended : 0
         },
         order : 'last DESC'
       }
@@ -176,6 +176,7 @@
     firstContactPoint : '',
     previouslySaved : 0,
     previouslyBaptized : 0,
+    attended : 0,
     sundaySchool : 0,
     status : 'Active Prospect',
     starred : 0,
@@ -233,9 +234,46 @@
     if (prospect.previouslySaved == 0) {
       prospect.set('nextStep','Salvation');
     } else {
-      prospect.set('nextStep','Attendance');
+      prospect.set('nextStep','Baptism');
     }
 
+  });
+  
+  
+  
+  shl.Prospect.observe('beforeUpdate', function(prospect){
+    var currentTime = Math.round(new Date().getTime()/1000.0);
+    prospect.set('modified',currentTime);
+    //Set next step
+    if (!prospect.previouslySaved && ActiveRecord.Contact.count({
+      where : {
+        type : 'Saved',
+        prospect_id : propect.id
+      }
+    }) < 1){
+      prospect.set('nextStep','Salvation');
+    }
+    else if(!prospect.previouslyBaptized && ActiveRecord.Contact.count({
+      where : {
+        type : 'Baptized',
+        prospect_id : propect.id
+      }
+    }) < 1){
+      prospect.set('nextStep','Baptism');
+    }
+    else if(!prospect.attended){
+      prospect.set('nextStep','Attendance');
+    }
+    else {
+      prospect.set('nextStep','Membership');
+    }
+    
+    //date of last contact
+    //don't think we need this as this should be updated every time we record a prospect - the only problem will be when we add sync
+    /*prospect.set('lastContact',shl.Contact.max('date', {
+      where : ["prospect_id = ? AND type <> 'Comment'", prospect.id]
+    }));*/
+    
   });
 
   //************************* Contacts **************************************
@@ -258,6 +296,22 @@
     contact.set('modified',currentTime);
     if (contact.date == 0) {
       contact.set('date',currentTime);
+    }
+  });
+  
+  shl.Contact.afterSave( function(contact) {
+    var prospect = shl.Prospect.find(contact.prospect_id);
+    if (prospect !== false){
+      if (contact.type === 'Joined the church'){
+        prospect.set("status", "Member");
+      }
+      if (contact.type === 'Visited Church'){
+        prospect.set("attended", 1);
+      }
+      if (contact.type !== 'Comment'){
+        prospect.set('lastContact', contact.date);
+      }
+      prospect.save();
     }
   });
 
