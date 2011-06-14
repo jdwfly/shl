@@ -89,8 +89,8 @@ class UI
     lists = shl.List.find({
       where: {active: 1},
       order: 'weight ASC'
-    });
-    Ti.API.info('lists = ' + lists.toJSON());
+    })
+    Ti.API.info('lists = ' + lists.toJSON())
     tableView = @createListTableView(lists)
     win.add(tableView)
     
@@ -128,7 +128,254 @@ class UI
     return win
   
   createAddWindow : () ->
-    @createListsWindow()
+    win = Ti.UI.createWindow({
+      title: 'Add Prospect',
+      backgroundColor:'#eeeeee'
+    })
+
+    if @platform is 'iPhone OS' 
+      b = Titanium.UI.createButton({
+        title:'Close',
+        style:Titanium.UI.iPhone.SystemButtonStyle.PLAIN
+      })
+      b.addEventListener('click', (e) -> 
+        win.close()
+      )
+      win.setRightNavButton(b)
+
+    data = []
+    s1 = Ti.UI.createTableViewSection()
+    # First Name Field
+    fnameRow = Ti.UI.createTableViewRow({
+      height: 40,
+      layout: "vertical",
+      selectionStyle: "none" 
+    })
+    fname = Ti.UI.createTextField({
+      height:40,
+      keyboardType:Titanium.UI.KEYBOARD_DEFAULT,
+      returnKeyType:Titanium.UI.RETURNKEY_DONE,
+      borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
+      hintText:L('First Name')
+    })
+    fnameRow.add(fname)
+    s1.add(fnameRow)
+    # Last Name Field
+    lnameRow = Ti.UI.createTableViewRow({
+      height: 40,
+      layout: "vertical",
+      selectionStyle: "none" 
+    })
+    lname = Ti.UI.createTextField({
+      height:40,
+      keyboardType:Titanium.UI.KEYBOARD_DEFAULT,
+      returnKeyType:Titanium.UI.RETURNKEY_DONE,
+      borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
+      hintText:L('Last Name')
+    })
+    lnameRow.add(lname)
+    s1.add(lnameRow)
+
+    data.push(s1)
+
+    s2 = Ti.UI.createTableViewSection({
+      borderColor: 'transparent',
+      borderWidth: 0
+    })
+    genderRow = Ti.UI.createTableViewRow({
+      backgroundColor: 'transparent',
+      borderWidth: 0,
+      borderColor: 'transparent',
+      height: 40,
+      selectionStyle: "none"
+    })
+    if @platform is 'iPhone OS'
+      gender = Titanium.UI.createTabbedBar({
+        labels: ['Male', 'Female', 'Couple'],
+        backgroundColor: '#336699',
+        style: Titanium.UI.iPhone.SystemButtonStyle.BAR,
+        height: 45,
+        width: 302
+      })
+      # TODO : Create function to add/remove rows on click
+      genderRow.add(gender)
+    s2.add(genderRow)
+    data.push(s2)
+
+    # TODO add spacing to front of fields
+    s3 = Ti.UI.createTableViewSection()
+    streetRow = Ti.UI.createTableViewRow({
+      height: 45,
+      layout: "vertical",
+      selectionStyle: "none"
+    })
+    street = Ti.UI.createTextField({
+      height:40,
+      keyboardType:Titanium.UI.KEYBOARD_DEFAULT,
+      returnKeyType:Titanium.UI.RETURNKEY_DONE,
+      borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
+      hintText:L('Street')
+    })
+    streetRow.add(street)
+    s3.add(streetRow)
+    citystateRow = Ti.UI.createTableViewRow({
+      height: 45,
+      layout: "horizontal",
+      selectionStyle: "none"
+    })
+    city = Ti.UI.createTextField({
+      width: 149,
+      height:40,
+      keyboardType:Titanium.UI.KEYBOARD_DEFAULT,
+      returnKeyType:Titanium.UI.RETURNKEY_DONE,
+      borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
+      hintText:L('City')
+    })
+    sep1 = Ti.UI.createView({
+      width: 1,
+      height: 45,
+      left: 0,
+      backgroundColor: '#cccccc'
+    })
+    state = Ti.UI.createTextField({
+      width: 149,
+      height: 40,
+      left: 0,
+      keyboardType:Titanium.UI.KEYBOARD_DEFAULT,
+      returnKeyType:Titanium.UI.RETURNKEY_DONE,
+      borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
+      hintText:L('State')
+    })
+    citystateRow.add(city)
+    citystateRow.add(sep1)
+    citystateRow.add(state)
+    s3.add(citystateRow)
+    zipcountryRow = Ti.UI.createTableViewRow({
+      height: 45,
+      layout: "horizontal",
+      selectionStyle: "none"
+    })
+    zip = Ti.UI.createTextField({
+      width: 149,
+      height:40,
+      keyboardType:Titanium.UI.KEYBOARD_DEFAULT,
+      returnKeyType:Titanium.UI.RETURNKEY_DONE,
+      borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
+      hintText:L('Zip')
+    })
+    sep2 = Ti.UI.createView({
+      width: 1,
+      height: 45,
+      left: 0,
+      backgroundColor: '#cccccc'
+    })
+    # TODO Change to a picker instead of textfield
+    country = Ti.UI.createTextField({
+      width: 149,
+      height:40,
+      keyboardType:Titanium.UI.KEYBOARD_DEFAULT,
+      returnKeyType:Titanium.UI.RETURNKEY_DONE,
+      borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
+      hintText:L('Country')
+    })
+    zipcountryRow.add(zip)
+    zipcountryRow.add(sep2)
+    zipcountryRow.add(country)
+    s3.add(zipcountryRow)
+    data.push(s3)
+
+    # Phone Number section
+    s4 = Ti.UI.createTableViewSection()
+    homeRow = Ti.UI.createTableViewRow({
+      height: 45,
+      layout: "horizontal",
+      selectionStyle: "none"
+    })
+    homeLabel = Ti.UI.createLabel({
+      text: 'Home',
+      font: {fontWeight: 'bold', fontSize: 16},
+      height: 45,
+      width: 75,
+      left: 10
+    })
+    sep3 = Ti.UI.createView({
+      width: 1,
+      height: 45,
+      left: 0,
+      backgroundColor: '#cccccc'
+    })
+    homeText = Ti.UI.createTextField({
+      width: 200,
+      height:40,
+      left: 5,
+      keyboardType:Titanium.UI.KEYBOARD_DEFAULT,
+      returnKeyType:Titanium.UI.RETURNKEY_DONE,
+      borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
+    })
+    homeRow.add(homeLabel)
+    homeRow.add(sep3)
+    homeRow.add(homeText)
+    s4.add(homeRow)
+    mobileRow = Ti.UI.createTableViewRow({
+      height: 45,
+      layout: "horizontal",
+      selectionStyle: "none"
+    })
+    mobileLabel = Ti.UI.createLabel({
+      text: 'Mobile',
+      font: {fontWeight: 'bold', fontSize: 16},
+      height: 45,
+      width: 75,
+      left: 10
+    })
+    sep4 = Ti.UI.createView({
+      width: 1,
+      height: 45,
+      left: 0,
+      backgroundColor: '#cccccc'
+    })
+    mobileText = Ti.UI.createTextField({
+      width: 200,
+      height:40,
+      left: 5,
+      keyboardType:Titanium.UI.KEYBOARD_DEFAULT,
+      returnKeyType:Titanium.UI.RETURNKEY_DONE,
+      borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
+    })
+    mobileRow.add(mobileLabel)
+    mobileRow.add(sep4)
+    mobileRow.add(mobileText)
+    s4.add(mobileRow)
+    data.push(s4)
+
+    # Email field
+    s5 = Ti.UI.createTableViewSection()
+    emailRow = Ti.UI.createTableViewRow({
+      height: 45,
+      layout: "horizontal",
+      selectionStyle: "none"
+    })
+    email = Ti.UI.createTextField({
+      width: 280,
+      height: 40,
+      left: 10,
+      keyboardType:Titanium.UI.KEYBOARD_DEFAULT,
+      returnKeyType:Titanium.UI.RETURNKEY_DONE,
+      borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
+      hintText:L('Email')
+    })
+    emailRow.add(email)
+    s5.add(emailRow)
+    data.push(s5)
+
+    # Finally Make the TableView and add
+    tableView = Ti.UI.createTableView({
+      data: data,
+      style: Titanium.UI.iPhone.TableViewStyle.GROUPED
+    })
+    win.add(tableView)
+
+    return win
   
   createSearchWindow : () ->
     @createListsWindow()
@@ -187,7 +434,7 @@ class UI
       Ti.API.info(list.toJSON())
     )
     tableView.addEventListener('delete', (e) ->
-      alert(JSON.stringify(e.row));
+      alert(JSON.stringify(e.row))
     )
     
     return tableView
@@ -209,15 +456,8 @@ class UI
         bottom: 10,
         right: 10
       })
-      if prospect.firstMale isnt ''
-        title = prospect.firstMale
-        title += ' and ' + prospect.firstFemale if prospect.firstFemale isnt ''
-        title += ' ' + prospect.last if prospect.last isnt ''
-      else if prospect.firstFemale isnt ''
-        title = prospect.firstFemale
-        title += ' ' + prospect.last if prospect.last isnt ''
       contentTitle = Ti.UI.createLabel({
-        text: title,
+        text: prospect.formatName(),
         font: {fontWeight: 'bold', fontSize:18},
         height: 'auto',
         width: 'auto',

@@ -130,7 +130,246 @@
       return win;
     };
     UI.prototype.createAddWindow = function() {
-      return this.createListsWindow();
+      var b, city, citystateRow, country, data, email, emailRow, fname, fnameRow, gender, genderRow, homeLabel, homeRow, homeText, lname, lnameRow, mobileLabel, mobileRow, mobileText, s1, s2, s3, s4, s5, sep1, sep2, sep3, sep4, state, street, streetRow, tableView, win, zip, zipcountryRow;
+      win = Ti.UI.createWindow({
+        title: 'Add Prospect',
+        backgroundColor: '#eeeeee'
+      });
+      if (this.platform === 'iPhone OS') {
+        b = Titanium.UI.createButton({
+          title: 'Close',
+          style: Titanium.UI.iPhone.SystemButtonStyle.PLAIN
+        });
+        b.addEventListener('click', function(e) {
+          return win.close();
+        });
+        win.setRightNavButton(b);
+      }
+      data = [];
+      s1 = Ti.UI.createTableViewSection();
+      fnameRow = Ti.UI.createTableViewRow({
+        height: 40,
+        layout: "vertical",
+        selectionStyle: "none"
+      });
+      fname = Ti.UI.createTextField({
+        height: 40,
+        keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
+        returnKeyType: Titanium.UI.RETURNKEY_DONE,
+        borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
+        hintText: L('First Name')
+      });
+      fnameRow.add(fname);
+      s1.add(fnameRow);
+      lnameRow = Ti.UI.createTableViewRow({
+        height: 40,
+        layout: "vertical",
+        selectionStyle: "none"
+      });
+      lname = Ti.UI.createTextField({
+        height: 40,
+        keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
+        returnKeyType: Titanium.UI.RETURNKEY_DONE,
+        borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
+        hintText: L('Last Name')
+      });
+      lnameRow.add(lname);
+      s1.add(lnameRow);
+      data.push(s1);
+      s2 = Ti.UI.createTableViewSection({
+        borderColor: 'transparent',
+        borderWidth: 0
+      });
+      genderRow = Ti.UI.createTableViewRow({
+        backgroundColor: 'transparent',
+        borderWidth: 0,
+        borderColor: 'transparent',
+        height: 40,
+        selectionStyle: "none"
+      });
+      if (this.platform === 'iPhone OS') {
+        gender = Titanium.UI.createTabbedBar({
+          labels: ['Male', 'Female', 'Couple'],
+          backgroundColor: '#336699',
+          style: Titanium.UI.iPhone.SystemButtonStyle.BAR,
+          height: 45,
+          width: 302
+        });
+        genderRow.add(gender);
+      }
+      s2.add(genderRow);
+      data.push(s2);
+      s3 = Ti.UI.createTableViewSection();
+      streetRow = Ti.UI.createTableViewRow({
+        height: 45,
+        layout: "vertical",
+        selectionStyle: "none"
+      });
+      street = Ti.UI.createTextField({
+        height: 40,
+        keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
+        returnKeyType: Titanium.UI.RETURNKEY_DONE,
+        borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
+        hintText: L('Street')
+      });
+      streetRow.add(street);
+      s3.add(streetRow);
+      citystateRow = Ti.UI.createTableViewRow({
+        height: 45,
+        layout: "horizontal",
+        selectionStyle: "none"
+      });
+      city = Ti.UI.createTextField({
+        width: 149,
+        height: 40,
+        keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
+        returnKeyType: Titanium.UI.RETURNKEY_DONE,
+        borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
+        hintText: L('City')
+      });
+      sep1 = Ti.UI.createView({
+        width: 1,
+        height: 45,
+        left: 0,
+        backgroundColor: '#cccccc'
+      });
+      state = Ti.UI.createTextField({
+        width: 149,
+        height: 40,
+        left: 0,
+        keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
+        returnKeyType: Titanium.UI.RETURNKEY_DONE,
+        borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
+        hintText: L('State')
+      });
+      citystateRow.add(city);
+      citystateRow.add(sep1);
+      citystateRow.add(state);
+      s3.add(citystateRow);
+      zipcountryRow = Ti.UI.createTableViewRow({
+        height: 45,
+        layout: "horizontal",
+        selectionStyle: "none"
+      });
+      zip = Ti.UI.createTextField({
+        width: 149,
+        height: 40,
+        keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
+        returnKeyType: Titanium.UI.RETURNKEY_DONE,
+        borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
+        hintText: L('Zip')
+      });
+      sep2 = Ti.UI.createView({
+        width: 1,
+        height: 45,
+        left: 0,
+        backgroundColor: '#cccccc'
+      });
+      country = Ti.UI.createTextField({
+        width: 149,
+        height: 40,
+        keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
+        returnKeyType: Titanium.UI.RETURNKEY_DONE,
+        borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
+        hintText: L('Country')
+      });
+      zipcountryRow.add(zip);
+      zipcountryRow.add(sep2);
+      zipcountryRow.add(country);
+      s3.add(zipcountryRow);
+      data.push(s3);
+      s4 = Ti.UI.createTableViewSection();
+      homeRow = Ti.UI.createTableViewRow({
+        height: 45,
+        layout: "horizontal",
+        selectionStyle: "none"
+      });
+      homeLabel = Ti.UI.createLabel({
+        text: 'Home',
+        font: {
+          fontWeight: 'bold',
+          fontSize: 16
+        },
+        height: 45,
+        width: 75,
+        left: 10
+      });
+      sep3 = Ti.UI.createView({
+        width: 1,
+        height: 45,
+        left: 0,
+        backgroundColor: '#cccccc'
+      });
+      homeText = Ti.UI.createTextField({
+        width: 200,
+        height: 40,
+        left: 5,
+        keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
+        returnKeyType: Titanium.UI.RETURNKEY_DONE,
+        borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE
+      });
+      homeRow.add(homeLabel);
+      homeRow.add(sep3);
+      homeRow.add(homeText);
+      s4.add(homeRow);
+      mobileRow = Ti.UI.createTableViewRow({
+        height: 45,
+        layout: "horizontal",
+        selectionStyle: "none"
+      });
+      mobileLabel = Ti.UI.createLabel({
+        text: 'Mobile',
+        font: {
+          fontWeight: 'bold',
+          fontSize: 16
+        },
+        height: 45,
+        width: 75,
+        left: 10
+      });
+      sep4 = Ti.UI.createView({
+        width: 1,
+        height: 45,
+        left: 0,
+        backgroundColor: '#cccccc'
+      });
+      mobileText = Ti.UI.createTextField({
+        width: 200,
+        height: 40,
+        left: 5,
+        keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
+        returnKeyType: Titanium.UI.RETURNKEY_DONE,
+        borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE
+      });
+      mobileRow.add(mobileLabel);
+      mobileRow.add(sep4);
+      mobileRow.add(mobileText);
+      s4.add(mobileRow);
+      data.push(s4);
+      s5 = Ti.UI.createTableViewSection();
+      emailRow = Ti.UI.createTableViewRow({
+        height: 45,
+        layout: "horizontal",
+        selectionStyle: "none"
+      });
+      email = Ti.UI.createTextField({
+        width: 280,
+        height: 40,
+        left: 10,
+        keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
+        returnKeyType: Titanium.UI.RETURNKEY_DONE,
+        borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
+        hintText: L('Email')
+      });
+      emailRow.add(email);
+      s5.add(emailRow);
+      data.push(s5);
+      tableView = Ti.UI.createTableView({
+        data: data,
+        style: Titanium.UI.iPhone.TableViewStyle.GROUPED
+      });
+      win.add(tableView);
+      return win;
     };
     UI.prototype.createSearchWindow = function() {
       return this.createListsWindow();
@@ -203,7 +442,7 @@
       return tableView;
     };
     UI.prototype.createProspectTableView = function(prospects) {
-      var addressLabel, content, contentTitle, data, lastContactLabel, prospect, row, self, tableView, title;
+      var addressLabel, content, contentTitle, data, lastContactLabel, prospect, row, self, tableView;
       self = this;
       if (prospects.length < 1) {
         return Ti.UI.createLabel({
@@ -227,22 +466,8 @@
             bottom: 10,
             right: 10
           });
-          if (prospect.firstMale !== '') {
-            title = prospect.firstMale;
-            if (prospect.firstFemale !== '') {
-              title += ' and ' + prospect.firstFemale;
-            }
-            if (prospect.last !== '') {
-              title += ' ' + prospect.last;
-            }
-          } else if (prospect.firstFemale !== '') {
-            title = prospect.firstFemale;
-            if (prospect.last !== '') {
-              title += ' ' + prospect.last;
-            }
-          }
           contentTitle = Ti.UI.createLabel({
-            text: title,
+            text: prospect.formatName(),
             font: {
               fontWeight: 'bold',
               fontSize: 18
