@@ -203,7 +203,8 @@
       return tableView;
     };
     UI.prototype.createProspectTableView = function(prospects) {
-      var address, addressLabel, content, contentTitle, data, lastContactLabel, lastContactPretty, prospect, row, tableView, title;
+      var addressLabel, content, contentTitle, data, lastContactLabel, prospect, row, self, tableView, title;
+      self = this;
       if (prospects.length < 1) {
         return Ti.UI.createLabel({
           text: 'None'
@@ -216,7 +217,7 @@
           prospect = prospects[_i];
           row = Ti.UI.createTableViewRow({
             height: 'auto',
-            hasChild: true
+            hasDetail: true
           });
           content = Ti.UI.createView({
             height: 'auto',
@@ -250,18 +251,8 @@
             width: 'auto',
             left: 5
           });
-          lastContactPretty = (function() {
-            var date, day_diff, diff;
-            date = new Date(prospect.lastContact * 1000);
-            diff = ((new Date()).getTime() - date.getTime()) / 1000;
-            day_diff = Math.floor(diff / 86400);
-            if (isNaN(day_diff) || day_diff < 0 || day_diff >= 31) {
-              return '';
-            }
-            return day_diff === 0 && (diff < 60 && "just now" || diff < 120 && "1 minute ago" || diff < 3600 && Math.floor(diff / 60) + " minutes ago" || diff < 7200 && "1 hour ago" || diff < 86400 && Math.floor(diff / 3600) + " hours ago") || day_diff === 1 && "Yesterday" || day_diff < 7 && day_diff + " days ago" || day_diff < 31 && Math.ceil(day_diff / 7) + " weeks ago";
-          })();
           lastContactLabel = Ti.UI.createLabel({
-            text: 'Last Contact: ' + lastContactPretty,
+            text: 'Last Contact: ' + prospect.formatContactPretty(),
             font: {
               fontWeight: 'normal',
               fontSize: 12
@@ -270,9 +261,8 @@
             width: 'auto',
             left: 5
           });
-          address = '' + ((prospect.street != null) && prospect.street !== '' ? prospect.street : '') + ((prospect.city != null) && prospect.city !== '' ? "\n" + prospect.city : '') + ((prospect.state != null) && prospect.state !== '' ? ", " + prospect.state : '') + ((prospect.zip != null) && prospect.zip !== '' ? " " + prospect.zip : '');
           addressLabel = Ti.UI.createLabel({
-            text: address,
+            text: prospect.formatAddress(),
             font: {
               fontWeight: 'normal',
               fontSize: 12
@@ -285,6 +275,7 @@
           content.add(lastContactLabel);
           content.add(addressLabel);
           row.add(content);
+          row.prospect = prospect;
           _results.push(row);
         }
         return _results;
@@ -293,9 +284,21 @@
         data: data
       });
       tableView.addEventListener('click', function(e) {
-        return alert('haha! you thought this would do something didnt you!');
+        var prospectWin;
+        Ti.API.info(JSON.stringify(e.row));
+        prospectWin = self.createProspectViewWindow(e.row.prospect);
+        return self.tabs.activeTab.open(prospectWin);
       });
       return tableView;
+    };
+    UI.prototype.createProspectViewWindow = function(prospect) {
+      var testLabel, win;
+      win = Ti.UI.createWindow();
+      testLabel = Ti.UI.createLabel({
+        text: prospect.formatName()
+      });
+      win.add(testLabel);
+      return win;
     };
     return UI;
   })();

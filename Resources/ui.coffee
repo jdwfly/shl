@@ -193,12 +193,13 @@ class UI
     return tableView
   
   createProspectTableView : (prospects) ->
+    self = this
     if prospects.length < 1
       return Ti.UI.createLabel({text: 'None'})
     data = for prospect in prospects
       row = Ti.UI.createTableViewRow({
         height: 'auto',
-        hasChild: true
+        hasDetail: true
       })
       content = Ti.UI.createView({
         height: 'auto',
@@ -222,30 +223,15 @@ class UI
         width: 'auto',
         left: 5
       })
-      # TODO Probably should be it's own function somewhere
-      lastContactPretty = (() ->
-        date = new Date(prospect.lastContact * 1000)
-        diff = (((new Date()).getTime() - date.getTime()) / 1000)
-        day_diff = Math.floor(diff / 86400)
-
-        if ( isNaN(day_diff) || day_diff < 0 || day_diff >= 31 )
-          return ''
-
-        day_diff == 0 && (diff < 60 && "just now" || diff < 120 && "1 minute ago" || diff < 3600 && Math.floor( diff / 60 ) + " minutes ago" || diff < 7200 && "1 hour ago" || diff < 86400 && Math.floor( diff / 3600 ) + " hours ago") || day_diff == 1 && "Yesterday" || day_diff < 7 && day_diff + " days ago" || day_diff < 31 && Math.ceil( day_diff / 7 ) + " weeks ago"
-        )()
       lastContactLabel = Ti.UI.createLabel({
-        text: 'Last Contact: ' + lastContactPretty,
+        text: 'Last Contact: ' + prospect.formatContactPretty(),
         font: {fontWeight: 'normal', fontSize: 12},
         height: 'auto',
         width: 'auto',
         left: 5
       })
-      address = '' + (if prospect.street? and prospect.street isnt '' then prospect.street else '') +
-                (if prospect.city? and prospect.city isnt '' then "\n" + prospect.city else '') +
-                (if prospect.state? and prospect.state isnt '' then ", " + prospect.state else '') +
-                (if prospect.zip? and prospect.zip isnt '' then " " + prospect.zip else '')
       addressLabel = Ti.UI.createLabel({
-        text: address,
+        text: prospect.formatAddress(),
         font: {fontWeight: 'normal', fontSize: 12},
         height: 'auto',
         width: 'auto',
@@ -255,11 +241,25 @@ class UI
       content.add(lastContactLabel)
       content.add(addressLabel)
       row.add(content)
+      row.prospect = prospect
       row
     tableView = Ti.UI.createTableView({data:data})
     tableView.addEventListener('click', (e) -> 
-      alert('haha! you thought this would do something didnt you!')
+      Ti.API.info(JSON.stringify(e.row))
+      prospectWin = self.createProspectViewWindow(e.row.prospect)
+      self.tabs.activeTab.open(prospectWin)
     )
     return tableView
+  
+  # prospect = loaded prospect model
+  # returns a window
+  createProspectViewWindow : (prospect) ->
+    win = Ti.UI.createWindow()
+    testLabel = Ti.UI.createLabel({
+      text: prospect.formatName()
+    })
+    win.add(testLabel)
+    
+    return win
       
 shl.ui = new UI
