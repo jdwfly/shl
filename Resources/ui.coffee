@@ -128,18 +128,18 @@ class UI
     return win
   
   createAddWindow : () ->
-    win = Ti.UI.createWindow({
-      title: 'Add Prospect'
-    })
-    webView = Ti.UI.createWebView({
-      url: 'addProspect.html'
-    })
-    Ti.App.addEventListener('webToTi', (e) ->
-      Ti.API.info('webToTi Sent: ' + JSON.stringify(e))
-    )
-    win.add(webView)
-    return win
-    ###
+    if @isAndroid
+      win = Ti.UI.createWindow({
+        title: 'Add Prospect'
+      })
+      webView = Ti.UI.createWebView({
+        url: 'addProspect.html'
+      })
+      Ti.App.addEventListener('webToTi', (e) ->
+        Ti.API.info('webToTi Sent: ' + JSON.stringify(e))
+      )
+      win.add(webView)
+      return win
     win = Ti.UI.createWindow({
       title: 'Add Prospect',
       backgroundColor:'#eeeeee'
@@ -453,13 +453,54 @@ class UI
     )
     data.push(s7)
     
+    if @platform is 'iPhone OS'
+      b = Ti.UI.createButton({
+        systemButton:Ti.UI.iPhone.SystemButton.SAVE
+      })
+      b.addEventListener('click', () ->
+        # Create an object to save to the database
+        createdProspect = shl.Prospect.create({
+          last: lname.value,
+          firstMale: fname.value,
+          street: street.value,
+          city: city.value,
+          state: state.value,
+          zip: zip.value,
+          country: country.value,
+          phoneHome: homeText.value,
+          phoneMoble: mobileText.value,
+          email: email.value,
+          firstContactDate: initialPicker.value,
+          firstContactPoint: pocTextfield.value,
+          previouslySaved: prevSavedRow.hasCheck
+          previouslyBaptized: prevBaptRow.hasCheck
+          attended: attendedRow.hasCheck
+          sundaySchool: enrolledRow.hasCheck
+        })
+        Ti.API.info(createdProspect.toJSON())
+        # Clear all values
+        fname.value = ''
+        lname.value = ''
+        street.value = ''
+        city.value = ''
+        state.value = ''
+        zip.value = ''
+        country.value = ''
+        homeText.value = ''
+        mobileText.value = ''
+        email.value = ''
+        initialPicker.value = ''
+        pocTextfield.value = ''
+      )
+      win.setRightNavButton(b)
+    
     # Finally Make the TableView and add
     tableView = Ti.UI.createTableView({
       data: data,
       style: Titanium.UI.iPhone.TableViewStyle.GROUPED
     })
     win.add(tableView)
-    ###
+    return win
   
   createSearchWindow : () ->
     @createListsWindow()

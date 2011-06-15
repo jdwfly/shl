@@ -1,14 +1,21 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <meta name="viewport" content="width=320,user-scalable=no" />
     <title>Add Prospect</title>
+    <script type="text/javascript">
+    function submitWebToTi () {
+      var payload = {test:"fred"};
+      Ti.App.fireEvent('webToTi', payload);
+      return false;
+    }
+    </script>
   </head>
   <body>
-    This should be firing the event right now.
-    <script>
-var payload = {test:"fred"};
-Ti.App.fireEvent('webToTi', payload);
-
-</script>
+    <form>
+      <input type="text" placeholder="First Name" name="firstMale" /><br />
+      <input type="text" placeholder="Last Name" name="last" /><br />
+      <a href="#" onClick="submitWebToTi()">Submit</a>
+    </form>
   </body>
 </html>
