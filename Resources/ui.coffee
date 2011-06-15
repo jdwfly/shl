@@ -113,7 +113,7 @@ class UI
       win.setRightNavButton(edit)
     
     return win
-    
+  
   createStarredWindow : () ->
     win = Ti.UI.createWindow({
       title: 'Starred'
@@ -128,6 +128,18 @@ class UI
     return win
   
   createAddWindow : () ->
+    win = Ti.UI.createWindow({
+      title: 'Add Prospect'
+    })
+    webView = Ti.UI.createWebView({
+      url: 'addProspect.html'
+    })
+    Ti.App.addEventListener('webToTi', (e) ->
+      Ti.API.info('webToTi Sent: ' + JSON.stringify(e))
+    )
+    win.add(webView)
+    return win
+    ###
     win = Ti.UI.createWindow({
       title: 'Add Prospect',
       backgroundColor:'#eeeeee'
@@ -447,21 +459,20 @@ class UI
       style: Titanium.UI.iPhone.TableViewStyle.GROUPED
     })
     win.add(tableView)
-
-    return win
+    ###
   
   createSearchWindow : () ->
     @createListsWindow()
-    
+  
   createNearbyWindow : () ->
     @createListsWindow()
   
   createSettingsWindow : () ->
     @createListsWindow()
-    
+  
   createHelpWindow : () ->
     @createListsWindow()
-    
+  
   createListTableView : (lists) ->
     self = this
     data = for i in lists
@@ -574,5 +585,5 @@ class UI
     win.add(testLabel)
     
     return win
-      
+  
 shl.ui = new UI
