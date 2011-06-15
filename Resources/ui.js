@@ -490,7 +490,11 @@
           mobileText.value = '';
           email.value = '';
           initialPicker.value = '';
-          return pocTextfield.value = '';
+          pocTextfield.value = '';
+          prevSavedRow.hasCheck = false;
+          prevBaptRow.hasCheck = false;
+          attendedRow.hasCheck = false;
+          return enrolledRow.hasCheck = false;
         });
         win.setRightNavButton(b);
       }

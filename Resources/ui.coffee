@@ -491,6 +491,11 @@ class UI
         email.value = ''
         initialPicker.value = ''
         pocTextfield.value = ''
+        prevSavedRow.hasCheck = false
+        prevBaptRow.hasCheck = false
+        attendedRow.hasCheck = false
+        enrolledRow.hasCheck = false
+        # TODO : open modal window that shows the prospect
       )
       win.setRightNavButton(b)
     
