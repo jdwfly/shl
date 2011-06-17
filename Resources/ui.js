@@ -506,29 +506,37 @@
       return win;
     };
     UI.prototype.createSearchWindow = function() {
-      var prospects, result, search, self, win;
+      var result, search, self, win;
       self = this;
       win = Ti.UI.createWindow({
         title: 'Search'
       });
       search = Titanium.UI.createSearchBar({
         barColor: '#000',
+        backgroundColor: '#000',
         showCancel: true,
         height: 43,
         top: 0
       });
       win.add(search);
-      prospects = [];
-      result = this.createProspectTableView(prospects);
+      search.addEventListener('cancel', function(e) {
+        return search.blur();
+      });
+      search.addEventListener('return', function(e) {
+        return search.blur();
+      });
+      result = this.createProspectTableView([]);
+      result.height = 280;
       win.add(result);
       search.addEventListener('return', function(e) {
+        var prospects;
         prospects = shl.Prospect.find({
           where: {
             last: e.value
           },
           order: 'id ASC'
         });
-        return result = self.createProspectTableView(prospects);
+        return result.updateProspects(prospects);
       });
       return win;
     };
@@ -602,11 +610,6 @@
     UI.prototype.createProspectTableView = function(prospects) {
       var data, self, tableView;
       self = this;
-      if (prospects.length < 1) {
-        return Ti.UI.createLabel({
-          text: 'None'
-        });
-      }
       data = this.processProspectData(prospects);
       tableView = Ti.UI.createTableView({
         data: data
@@ -634,6 +637,9 @@
     };
     UI.prototype.processProspectData = function(prospects) {
       var addressLabel, content, contentTitle, data, lastContactLabel, prospect, row;
+      if (prospects.length < 1) {
+        return [];
+      }
       return data = (function() {
         var _i, _len, _results;
         _results = [];

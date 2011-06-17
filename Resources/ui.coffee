@@ -514,20 +514,27 @@ class UI
     })
     search = Titanium.UI.createSearchBar({
       barColor:'#000',
+      backgroundColor: '#000',
       showCancel:true,
       height:43,
       top:0
     })
-    win.add(search)
-    prospects = []
-    result = @createProspectTableView(prospects)
+    win.add(search)    
+    search.addEventListener('cancel', (e) ->
+      search.blur()
+    )
+    search.addEventListener('return', (e) ->
+      search.blur()
+    )       
+    result = @createProspectTableView([])
+    result.height = 280
     win.add(result)
     search.addEventListener('return', (e) ->
       prospects = shl.Prospect.find({
         where: {last: e.value},
         order: 'id ASC'
       })
-      result = self.createProspectTableView(prospects)
+      result.updateProspects(prospects)
     )
     return win
   
@@ -592,8 +599,6 @@ class UI
   
   createProspectTableView : (prospects) ->
     self = this
-    if prospects.length < 1
-      return Ti.UI.createLabel({text: 'None'})
     data = @processProspectData(prospects)
     tableView = Ti.UI.createTableView({data:data})
     tableView.addEventListener('click', (e) -> 
@@ -618,6 +623,8 @@ class UI
     return win
   
   processProspectData : (prospects) ->
+    if prospects.length < 1
+      return []
     data = for prospect in prospects
       row = Ti.UI.createTableViewRow({
         height: 'auto',
