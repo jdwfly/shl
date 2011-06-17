@@ -130,7 +130,20 @@
       return win;
     };
     UI.prototype.createAddWindow = function() {
-      var attendedRow, city, citystateRow, country, data, email, emailRow, enrolledRow, fname, fnameRow, gender, genderRow, homeLabel, homeRow, homeText, initContactLabel, initialContactRow, initialPicker, lname, lnameRow, mobileLabel, mobileRow, mobileText, pocRow, pocTextfield, prevBaptRow, prevSavedRow, s1, s2, s3, s4, s5, s6, s7, sep1, sep2, sep3, sep4, sep5, state, street, streetRow, tableView, win, zip, zipcountryRow;
+      var attendedRow, b, city, citystateRow, country, data, email, emailRow, enrolledRow, fname, fnameRow, gender, genderRow, homeLabel, homeRow, homeText, initContactLabel, initialContactRow, initialPicker, lname, lnameRow, mobileLabel, mobileRow, mobileText, pocRow, pocTextfield, prevBaptRow, prevSavedRow, s1, s2, s3, s4, s5, s6, s7, sep1, sep2, sep3, sep4, sep5, state, street, streetRow, tableView, webView, win, zip, zipcountryRow;
+      if (this.isAndroid) {
+        win = Ti.UI.createWindow({
+          title: 'Add Prospect'
+        });
+        webView = Ti.UI.createWebView({
+          url: 'addProspect.html'
+        });
+        Ti.App.addEventListener('webToTi', function(e) {
+          return Ti.API.info('webToTi Sent: ' + JSON.stringify(e));
+        });
+        win.add(webView);
+        return win;
+      }
       win = Ti.UI.createWindow({
         title: 'Add Prospect',
         backgroundColor: '#eeeeee'
@@ -441,6 +454,50 @@
         }
       });
       data.push(s7);
+      if (this.platform === 'iPhone OS') {
+        b = Ti.UI.createButton({
+          systemButton: Ti.UI.iPhone.SystemButton.SAVE
+        });
+        b.addEventListener('click', function() {
+          var createdProspect;
+          createdProspect = shl.Prospect.create({
+            last: lname.value,
+            firstMale: fname.value,
+            street: street.value,
+            city: city.value,
+            state: state.value,
+            zip: zip.value,
+            country: country.value,
+            phoneHome: homeText.value,
+            phoneMoble: mobileText.value,
+            email: email.value,
+            firstContactDate: initialPicker.value,
+            firstContactPoint: pocTextfield.value,
+            previouslySaved: prevSavedRow.hasCheck,
+            previouslyBaptized: prevBaptRow.hasCheck,
+            attended: attendedRow.hasCheck,
+            sundaySchool: enrolledRow.hasCheck
+          });
+          Ti.API.info(createdProspect.toJSON());
+          fname.value = '';
+          lname.value = '';
+          street.value = '';
+          city.value = '';
+          state.value = '';
+          zip.value = '';
+          country.value = '';
+          homeText.value = '';
+          mobileText.value = '';
+          email.value = '';
+          initialPicker.value = '';
+          pocTextfield.value = '';
+          prevSavedRow.hasCheck = false;
+          prevBaptRow.hasCheck = false;
+          attendedRow.hasCheck = false;
+          return enrolledRow.hasCheck = false;
+        });
+        win.setRightNavButton(b);
+      }
       tableView = Ti.UI.createTableView({
         data: data,
         style: Titanium.UI.iPhone.TableViewStyle.GROUPED
