@@ -449,7 +449,31 @@
       return win;
     };
     UI.prototype.createSearchWindow = function() {
-      return this.createListsWindow();
+      var prospects, result, search, self, win;
+      self = this;
+      win = Ti.UI.createWindow({
+        title: 'Search'
+      });
+      search = Titanium.UI.createSearchBar({
+        barColor: '#000',
+        showCancel: true,
+        height: 43,
+        top: 0
+      });
+      win.add(search);
+      prospects = [];
+      result = this.createProspectTableView(prospects);
+      win.add(result);
+      search.addEventListener('return', function(e) {
+        prospects = shl.Prospect.find({
+          where: {
+            last: e.value
+          },
+          order: 'id ASC'
+        });
+        return result = self.createProspectTableView(prospects);
+      });
+      return win;
     };
     UI.prototype.createNearbyWindow = function() {
       return this.createListsWindow();

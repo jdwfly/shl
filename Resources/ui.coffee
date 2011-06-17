@@ -451,7 +451,28 @@ class UI
     return win
   
   createSearchWindow : () ->
-    @createListsWindow()
+    self = this
+    win = Ti.UI.createWindow({
+      title: 'Search'
+    })
+    search = Titanium.UI.createSearchBar({
+      barColor:'#000',
+      showCancel:true,
+      height:43,
+      top:0
+    })
+    win.add(search)
+    prospects = []
+    result = @createProspectTableView(prospects)
+    win.add(result)
+    search.addEventListener('return', (e) ->
+      prospects = shl.Prospect.find({
+        where: {last: e.value},
+        order: 'id ASC'
+      })
+      result = self.createProspectTableView(prospects)
+    )
+    return win
     
   createNearbyWindow : () ->
     @createListsWindow()
