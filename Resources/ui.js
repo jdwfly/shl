@@ -600,14 +600,41 @@
       return tableView;
     };
     UI.prototype.createProspectTableView = function(prospects) {
-      var addressLabel, content, contentTitle, data, lastContactLabel, prospect, row, self, tableView;
+      var data, self, tableView;
       self = this;
       if (prospects.length < 1) {
         return Ti.UI.createLabel({
           text: 'None'
         });
       }
-      data = (function() {
+      data = this.processProspectData(prospects);
+      tableView = Ti.UI.createTableView({
+        data: data
+      });
+      tableView.addEventListener('click', function(e) {
+        var prospectWin;
+        Ti.API.info(JSON.stringify(e.row));
+        prospectWin = self.createProspectViewWindow(e.row.prospect);
+        return self.tabs.activeTab.open(prospectWin);
+      });
+      tableView.updateProspects = function(prospects) {
+        data = self.processProspectData(prospects);
+        return this.setData(data);
+      };
+      return tableView;
+    };
+    UI.prototype.createProspectViewWindow = function(prospect) {
+      var testLabel, win;
+      win = Ti.UI.createWindow();
+      testLabel = Ti.UI.createLabel({
+        text: prospect.formatName()
+      });
+      win.add(testLabel);
+      return win;
+    };
+    UI.prototype.processProspectData = function(prospects) {
+      var addressLabel, content, contentTitle, data, lastContactLabel, prospect, row;
+      return data = (function() {
         var _i, _len, _results;
         _results = [];
         for (_i = 0, _len = prospects.length; _i < _len; _i++) {
@@ -663,25 +690,6 @@
         }
         return _results;
       })();
-      tableView = Ti.UI.createTableView({
-        data: data
-      });
-      tableView.addEventListener('click', function(e) {
-        var prospectWin;
-        Ti.API.info(JSON.stringify(e.row));
-        prospectWin = self.createProspectViewWindow(e.row.prospect);
-        return self.tabs.activeTab.open(prospectWin);
-      });
-      return tableView;
-    };
-    UI.prototype.createProspectViewWindow = function(prospect) {
-      var testLabel, win;
-      win = Ti.UI.createWindow();
-      testLabel = Ti.UI.createLabel({
-        text: prospect.formatName()
-      });
-      win.add(testLabel);
-      return win;
     };
     return UI;
   })();

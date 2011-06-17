@@ -530,7 +530,7 @@ class UI
       result = self.createProspectTableView(prospects)
     )
     return win
-    
+  
   createNearbyWindow : () ->
     @createListsWindow()
   
@@ -594,6 +594,30 @@ class UI
     self = this
     if prospects.length < 1
       return Ti.UI.createLabel({text: 'None'})
+    data = @processProspectData(prospects)
+    tableView = Ti.UI.createTableView({data:data})
+    tableView.addEventListener('click', (e) -> 
+      Ti.API.info(JSON.stringify(e.row))
+      prospectWin = self.createProspectViewWindow(e.row.prospect)
+      self.tabs.activeTab.open(prospectWin)
+    )
+    tableView.updateProspects = (prospects) ->
+      data = self.processProspectData(prospects)
+      @setData(data)
+    return tableView
+  
+  # prospect = loaded prospect model
+  # returns a window
+  createProspectViewWindow : (prospect) ->
+    win = Ti.UI.createWindow()
+    testLabel = Ti.UI.createLabel({
+      text: prospect.formatName()
+    })
+    win.add(testLabel)
+    
+    return win
+  
+  processProspectData : (prospects) ->
     data = for prospect in prospects
       row = Ti.UI.createTableViewRow({
         height: 'auto',
@@ -634,23 +658,5 @@ class UI
       row.add(content)
       row.prospect = prospect
       row
-    tableView = Ti.UI.createTableView({data:data})
-    tableView.addEventListener('click', (e) -> 
-      Ti.API.info(JSON.stringify(e.row))
-      prospectWin = self.createProspectViewWindow(e.row.prospect)
-      self.tabs.activeTab.open(prospectWin)
-    )
-    return tableView
-  
-  # prospect = loaded prospect model
-  # returns a window
-  createProspectViewWindow : (prospect) ->
-    win = Ti.UI.createWindow()
-    testLabel = Ti.UI.createLabel({
-      text: prospect.formatName()
-    })
-    win.add(testLabel)
-    
-    return win
   
 shl.ui = new UI
