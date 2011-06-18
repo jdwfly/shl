@@ -612,10 +612,72 @@ class UI
   # returns a window
   createProspectViewWindow : (prospect) ->
     win = Ti.UI.createWindow()
-    testLabel = Ti.UI.createLabel({
-      text: prospect.formatName()
+    data = []
+    
+    if prospect.formatAddress() isnt ''
+      addressSection = Ti.UI.createTableViewSection()
+      addressRow = Ti.UI.createTableViewRow()
+      addressLabel = Ti.UI.createLabel({
+        text: prospect.formatAddress()
+        left: 10
+      })
+      addressRow.add(addressLabel)
+      addressSection.add(addressRow)
+      # TODO : finish coding google maps page here
+      addressSection.addEventListener('click', (e) ->
+        alert('open google maps')
+      )
+      data.push(addressSection)
+    
+    if prospect.phoneHome isnt '' and prospect.phoneMoble isnt ''
+      phoneSection = Ti.UI.createTableViewSection()
+      if prospect.phoneHome isnt ''
+        phoneHomeRow = Ti.UI.createTableViewRow()
+        phoneHomeLabel = Ti.UI.createLabel({
+          text: 'home: ' + prospect.phoneHome,
+          phone: prospect.phoneHome,
+          left: 10
+        })
+        phoneHomeRow.add(phoneHomeLabel)
+        phoneSection.add(phoneHomeRow)
+      if prospect.phoneMoble isnt ''
+        phoneMobleRow = Ti.UI.createTableViewRow()
+        phoneMobleLabel = Ti.UI.createLabel({
+          text: 'mobile: ' + prospect.phoneMoble,
+          phone: prospect.phoneMoble,
+          left: 10
+        })
+        phoneMobleRow.add(phoneMobleLabel)
+        phoneSection.add(phoneMobleRow)
+      # TODO: Test on device to see if this works
+      phoneSection.addEventListener('click', (e) ->
+        Ti.Platform.openURL('tel:' + e.source.phone)
+      )
+      data.push(phoneSection)
+      
+    if prospect.email isnt ''
+      emailSection = Ti.UI.createTableViewSection()
+      emailRow = Ti.UI.createTableViewRow()
+      emailLabel = Ti.UI.createLabel({
+        text: prospect.email,
+        left: 10
+      })
+      emailRow.add(emailLabel)
+      emailSection.add(emailRow)
+      # TODO: Test on device to ensure email sends
+      emailSection.addEventListener('click', (e) ->
+        alert(e.source.text)
+        emailDialog = Ti.UI.createEmailDialog()
+        emailDialog.toRecipients = [e.source.text]
+        emailDialog.open()
+      )
+      data.push(emailSection)
+    
+    tableView = Ti.UI.createTableView({
+      data: data,
+      style: Titanium.UI.iPhone.TableViewStyle.GROUPED
     })
-    win.add(testLabel)
+    win.add(tableView)
     
     return win
   

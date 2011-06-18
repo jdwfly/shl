@@ -622,12 +622,73 @@
       return tableView;
     };
     UI.prototype.createProspectViewWindow = function(prospect) {
-      var testLabel, win;
+      var addressLabel, addressRow, addressSection, data, emailLabel, emailRow, emailSection, phoneHomeLabel, phoneHomeRow, phoneMobleLabel, phoneMobleRow, phoneSection, tableView, win;
       win = Ti.UI.createWindow();
-      testLabel = Ti.UI.createLabel({
-        text: prospect.formatName()
+      data = [];
+      if (prospect.formatAddress() !== '') {
+        addressSection = Ti.UI.createTableViewSection();
+        addressRow = Ti.UI.createTableViewRow();
+        addressLabel = Ti.UI.createLabel({
+          text: prospect.formatAddress(),
+          left: 10
+        });
+        addressRow.add(addressLabel);
+        addressSection.add(addressRow);
+        addressSection.addEventListener('click', function(e) {
+          return alert('open google maps');
+        });
+        data.push(addressSection);
+      }
+      if (prospect.phoneHome !== '' && prospect.phoneMoble !== '') {
+        phoneSection = Ti.UI.createTableViewSection();
+        if (prospect.phoneHome !== '') {
+          phoneHomeRow = Ti.UI.createTableViewRow();
+          phoneHomeLabel = Ti.UI.createLabel({
+            text: 'home: ' + prospect.phoneHome,
+            phone: prospect.phoneHome,
+            left: 10
+          });
+          phoneHomeRow.add(phoneHomeLabel);
+          phoneSection.add(phoneHomeRow);
+        }
+        if (prospect.phoneMoble !== '') {
+          phoneMobleRow = Ti.UI.createTableViewRow();
+          phoneMobleLabel = Ti.UI.createLabel({
+            text: 'mobile: ' + prospect.phoneMoble,
+            phone: prospect.phoneMoble,
+            left: 10
+          });
+          phoneMobleRow.add(phoneMobleLabel);
+          phoneSection.add(phoneMobleRow);
+        }
+        phoneSection.addEventListener('click', function(e) {
+          return Ti.Platform.openURL('tel:' + e.source.phone);
+        });
+        data.push(phoneSection);
+      }
+      if (prospect.email !== '') {
+        emailSection = Ti.UI.createTableViewSection();
+        emailRow = Ti.UI.createTableViewRow();
+        emailLabel = Ti.UI.createLabel({
+          text: prospect.email,
+          left: 10
+        });
+        emailRow.add(emailLabel);
+        emailSection.add(emailRow);
+        emailSection.addEventListener('click', function(e) {
+          var emailDialog;
+          alert(e.source.text);
+          emailDialog = Ti.UI.createEmailDialog();
+          emailDialog.toRecipients = [e.source.text];
+          return emailDialog.open();
+        });
+        data.push(emailSection);
+      }
+      tableView = Ti.UI.createTableView({
+        data: data,
+        style: Titanium.UI.iPhone.TableViewStyle.GROUPED
       });
-      win.add(testLabel);
+      win.add(tableView);
       return win;
     };
     UI.prototype.processProspectData = function(prospects) {
