@@ -275,6 +275,13 @@
     }));*/
     
   });
+  
+  shl.Prospect.search = function (searchString){
+    return shl.Prospect.find({
+      where : {last: searchString},
+      order : 'id ASC'
+    });
+  };
 
   //************************* Contacts **************************************
   shl.Contact = ActiveRecord.create('contacts', {

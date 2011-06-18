@@ -519,7 +519,7 @@ class UI
       height:43,
       top:0
     })
-    win.add(search)    
+    win.add(search)
     search.addEventListener('cancel', (e) ->
       search.blur()
     )
@@ -530,10 +530,7 @@ class UI
     result.height = 280
     win.add(result)
     search.addEventListener('return', (e) ->
-      prospects = shl.Prospect.find({
-        where: {last: e.value},
-        order: 'id ASC'
-      })
+      prospects = shl.Prospect.search(e.value)
       result.updateProspects(prospects)
     )
     return win

@@ -530,12 +530,7 @@
       win.add(result);
       search.addEventListener('return', function(e) {
         var prospects;
-        prospects = shl.Prospect.find({
-          where: {
-            last: e.value
-          },
-          order: 'id ASC'
-        });
+        prospects = shl.Prospect.search(e.value);
         return result.updateProspects(prospects);
       });
       return win;
