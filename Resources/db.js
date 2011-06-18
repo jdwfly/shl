@@ -276,10 +276,11 @@
     
   });
   
-  shl.Prospect.search = function (searchString){
+  shl.Prospect.search = function (q){
+    var z = q + 'z';
     return shl.Prospect.find({
-      where : {last: searchString},
-      order : 'id ASC'
+      where : ['(last COLLATE NOCASE BETWEEN ? AND ?) OR (firstFemale COLLATE NOCASE BETWEEN ? AND ?) OR (firstMale COLLATE NOCASE BETWEEN ? AND ?) OR (street COLLATE NOCASE BETWEEN ? AND ?)', q, z, q, z, q, z, q, z],
+      order : 'id DESC'
     });
   };
 
