@@ -400,7 +400,12 @@
     street: '4321 Main St.',
     city: 'Lancaster',
     state: 'CA',
-    zip: '93535'
+    zip: '93535',
+    country: 'United States',
+    phoneHome: '661-946-4663',
+    phoneMoble: '661-946-4668',
+    email: 'fake@email.com',
+    firstContactPoint: 'soulwinning'
   });
   var testProspect3 = shl.Prospect.create({
     last: 'Brown',
