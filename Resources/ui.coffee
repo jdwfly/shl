@@ -614,6 +614,20 @@ class UI
     win = Ti.UI.createWindow()
     data = []
     
+    nameSection = Ti.UI.createTableViewSection({
+      backgroundColor: 'transparent'
+    })
+    nameRow = Ti.UI.createTableViewRow({
+      height: 100
+    })
+    nameLabel = Ti.UI.createLabel({
+      text: prospect.formatName(),
+      left: 10
+    })
+    nameRow.add(nameLabel)
+    nameSection.add(nameRow)
+    data.push(nameSection)
+    
     if prospect.formatAddress() isnt ''
       addressSection = Ti.UI.createTableViewSection()
       addressRow = Ti.UI.createTableViewRow()

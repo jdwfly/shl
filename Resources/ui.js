@@ -622,9 +622,22 @@
       return tableView;
     };
     UI.prototype.createProspectViewWindow = function(prospect) {
-      var addressLabel, addressRow, addressSection, data, emailLabel, emailRow, emailSection, phoneHomeLabel, phoneHomeRow, phoneMobileLabel, phoneMobileRow, phoneSection, tableView, win;
+      var addressLabel, addressRow, addressSection, data, emailLabel, emailRow, emailSection, nameLabel, nameRow, nameSection, phoneHomeLabel, phoneHomeRow, phoneMobileLabel, phoneMobileRow, phoneSection, tableView, win;
       win = Ti.UI.createWindow();
       data = [];
+      nameSection = Ti.UI.createTableViewSection({
+        backgroundColor: 'transparent'
+      });
+      nameRow = Ti.UI.createTableViewRow({
+        height: 100
+      });
+      nameLabel = Ti.UI.createLabel({
+        text: prospect.formatName(),
+        left: 10
+      });
+      nameRow.add(nameLabel);
+      nameSection.add(nameRow);
+      data.push(nameSection);
       if (prospect.formatAddress() !== '') {
         addressSection = Ti.UI.createTableViewSection();
         addressRow = Ti.UI.createTableViewRow();
