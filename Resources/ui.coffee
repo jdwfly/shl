@@ -468,7 +468,7 @@ class UI
           zip: zip.value,
           country: country.value,
           phoneHome: homeText.value,
-          phoneMoble: mobileText.value,
+          phoneMobile: mobileText.value,
           email: email.value,
           firstContactDate: initialPicker.value,
           firstContactPoint: pocTextfield.value,
@@ -629,7 +629,7 @@ class UI
       )
       data.push(addressSection)
     
-    if prospect.phoneHome isnt '' and prospect.phoneMoble isnt ''
+    if prospect.phoneHome isnt '' and prospect.phoneMobile isnt ''
       phoneSection = Ti.UI.createTableViewSection()
       if prospect.phoneHome isnt ''
         phoneHomeRow = Ti.UI.createTableViewRow()
@@ -640,15 +640,15 @@ class UI
         })
         phoneHomeRow.add(phoneHomeLabel)
         phoneSection.add(phoneHomeRow)
-      if prospect.phoneMoble isnt ''
-        phoneMobleRow = Ti.UI.createTableViewRow()
-        phoneMobleLabel = Ti.UI.createLabel({
-          text: 'mobile: ' + prospect.phoneMoble,
-          phone: prospect.phoneMoble,
+      if prospect.phoneMobile isnt ''
+        phoneMobileRow = Ti.UI.createTableViewRow()
+        phoneMobileLabel = Ti.UI.createLabel({
+          text: 'mobile: ' + prospect.phoneMobile,
+          phone: prospect.phoneMobile,
           left: 10
         })
-        phoneMobleRow.add(phoneMobleLabel)
-        phoneSection.add(phoneMobleRow)
+        phoneMobileRow.add(phoneMobileLabel)
+        phoneSection.add(phoneMobileRow)
       # TODO: Test on device to see if this works
       phoneSection.addEventListener('click', (e) ->
         Ti.Platform.openURL('tel:' + e.source.phone)

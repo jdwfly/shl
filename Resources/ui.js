@@ -469,7 +469,7 @@
             zip: zip.value,
             country: country.value,
             phoneHome: homeText.value,
-            phoneMoble: mobileText.value,
+            phoneMobile: mobileText.value,
             email: email.value,
             firstContactDate: initialPicker.value,
             firstContactPoint: pocTextfield.value,
@@ -622,7 +622,7 @@
       return tableView;
     };
     UI.prototype.createProspectViewWindow = function(prospect) {
-      var addressLabel, addressRow, addressSection, data, emailLabel, emailRow, emailSection, phoneHomeLabel, phoneHomeRow, phoneMobleLabel, phoneMobleRow, phoneSection, tableView, win;
+      var addressLabel, addressRow, addressSection, data, emailLabel, emailRow, emailSection, phoneHomeLabel, phoneHomeRow, phoneMobileLabel, phoneMobileRow, phoneSection, tableView, win;
       win = Ti.UI.createWindow();
       data = [];
       if (prospect.formatAddress() !== '') {
@@ -639,7 +639,7 @@
         });
         data.push(addressSection);
       }
-      if (prospect.phoneHome !== '' && prospect.phoneMoble !== '') {
+      if (prospect.phoneHome !== '' && prospect.phoneMobile !== '') {
         phoneSection = Ti.UI.createTableViewSection();
         if (prospect.phoneHome !== '') {
           phoneHomeRow = Ti.UI.createTableViewRow();
@@ -651,15 +651,15 @@
           phoneHomeRow.add(phoneHomeLabel);
           phoneSection.add(phoneHomeRow);
         }
-        if (prospect.phoneMoble !== '') {
-          phoneMobleRow = Ti.UI.createTableViewRow();
-          phoneMobleLabel = Ti.UI.createLabel({
-            text: 'mobile: ' + prospect.phoneMoble,
-            phone: prospect.phoneMoble,
+        if (prospect.phoneMobile !== '') {
+          phoneMobileRow = Ti.UI.createTableViewRow();
+          phoneMobileLabel = Ti.UI.createLabel({
+            text: 'mobile: ' + prospect.phoneMobile,
+            phone: prospect.phoneMobile,
             left: 10
           });
-          phoneMobleRow.add(phoneMobleLabel);
-          phoneSection.add(phoneMobleRow);
+          phoneMobileRow.add(phoneMobileLabel);
+          phoneSection.add(phoneMobileRow);
         }
         phoneSection.addEventListener('click', function(e) {
           return Ti.Platform.openURL('tel:' + e.source.phone);

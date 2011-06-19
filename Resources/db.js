@@ -170,7 +170,7 @@
     zip : '',
     country : '',
     phoneHome : '',
-    phoneMoble : '',
+    phoneMobile : '',
     email : '',
     firstContactDate : 0,
     firstContactPoint : '',
@@ -290,7 +290,7 @@
     prospect_id : 0,
     date : 0,
     comments : '',
-    indevidual : '',
+    individual : '',
     createdDate : 0,
     modified : 0,
     uuid : ''
@@ -403,7 +403,7 @@
     zip: '93535',
     country: 'United States',
     phoneHome: '661-946-4663',
-    phoneMoble: '661-946-4668',
+    phoneMobile: '661-946-4668',
     email: 'fake@email.com',
     firstContactPoint: 'soulwinning'
   });
