@@ -622,7 +622,7 @@
       return tableView;
     };
     UI.prototype.createProspectViewWindow = function(prospect) {
-      var addressLabel, addressRow, addressSection, contactLabel, contacts, data, emailLabel, emailRow, emailSection, firstContactLabel, firstContactRow, firstContactSection, headerView, nameLabel, phoneHomeLabel, phoneHomeRow, phoneMobileLabel, phoneMobileRow, phoneSection, prospect2, recordContactButton, statusLabel, statusRow, statusSection, statusValueLabel, tableView, win;
+      var addressLabel, addressRow, addressSection, contact, contactLabel, contactSection, contacts, data, emailLabel, emailRow, emailSection, firstContactLabel, firstContactRow, firstContactSection, headerView, nameLabel, phoneHomeLabel, phoneHomeRow, phoneMobileLabel, phoneMobileRow, phoneSection, prospectFull, recordContactButton, row, rowLabel, statusLabel, statusRow, statusSection, statusValueLabel, tableView, win, _i, _len;
       win = Ti.UI.createWindow();
       data = [];
       headerView = Ti.UI.createView({
@@ -757,9 +757,33 @@
       statusRow.add(statusValueLabel);
       statusSection.add(statusRow);
       data.push(statusSection);
-      prospect2 = shl.Prospect.find(prospect.id);
-      contacts = prospect2.getContactList();
-      Ti.API.info(contacts);
+      prospectFull = shl.Prospect.find(prospect.id);
+      contacts = prospectFull.getContactList();
+      contactSection = Ti.UI.createTableViewSection({
+        headerTitle: 'Activity Log'
+      });
+      if (contacts.length < 1) {
+        row = Ti.UI.createTableViewRow({
+          title: 'None'
+        });
+        contactSection.add(row);
+      } else {
+        for (_i = 0, _len = contacts.length; _i < _len; _i++) {
+          contact = contacts[_i];
+          row = Ti.UI.createTableViewRow({
+            height: 'auto',
+            hasChild: 'true'
+          });
+          rowLabel = Ti.UI.createLabel({
+            text: contact.date + " " + contact.type + ": " + contact.comments,
+            width: 280,
+            left: 10
+          });
+          row.add(rowLabel);
+          contactSection.add(row);
+        }
+      }
+      data.push(contactSection);
       tableView = Ti.UI.createTableView({
         data: data,
         headerView: headerView,

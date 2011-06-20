@@ -743,9 +743,29 @@ class UI
     statusSection.add(statusRow)
     data.push(statusSection)
     
-    prospect2 = shl.Prospect.find(prospect.id)
-    contacts = prospect2.getContactList()
-    Ti.API.info(contacts)
+    # Have to load full prospect for function to work
+    prospectFull = shl.Prospect.find(prospect.id)
+    contacts = prospectFull.getContactList()
+    contactSection = Ti.UI.createTableViewSection({headerTitle: 'Activity Log'})
+    if contacts.length < 1
+      row = Ti.UI.createTableViewRow({
+        title: 'None'
+      })
+      contactSection.add(row)
+    else
+      for contact in contacts
+        row = Ti.UI.createTableViewRow({
+          height: 'auto',
+          hasChild: 'true'
+        })
+        rowLabel = Ti.UI.createLabel({
+          text: contact.date + " " + contact.type + ": " + contact.comments,
+          width: 280,
+          left: 10
+        })
+        row.add(rowLabel)
+        contactSection.add(row)
+    data.push(contactSection)
     
     tableView = Ti.UI.createTableView({
       data: data,
