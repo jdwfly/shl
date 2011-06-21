@@ -216,6 +216,9 @@
     },
     formatAddress : function() {
       return '' + ((this.street != null) && this.street !== '' ? this.street : '') + ((this.city != null) && this.city !== '' ? "\n" + this.city : '') + ((this.state != null) && this.state !== '' ? ", " + this.state : '') + ((this.zip != null) && this.zip !== '' ? " " + this.zip : '');
+    },
+    formatAddressGoogle : function() {
+      return '' + ((this.street != null) && this.street !== '' ? this.street : '') + ((this.city != null) && this.city !== '' ? " " + this.city : '') + ((this.state != null) && this.state !== '' ? ", " + this.state : '') + ((this.zip != null) && this.zip !== '' ? " " + this.zip : '');
     }
   });
   shl.Prospect.hasMany('contacts', {
