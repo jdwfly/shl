@@ -571,7 +571,44 @@ class UI
       Ti.API.info(JSON.stringify(e.row))
       if e.row.listID == 'custom'
         # TODO : pull up modal window to add a list
-        alert('add a list')
+        addW = Ti.UI.createWindow({
+          title:'New Custom List',
+          backgroundColor:'#162144'
+        })
+        lname = Ti.UI.createTextField({
+          height:40,
+          width: '80%',
+          left: 10,
+          top: 10,
+          backgroundColor: '#ffffff'
+          keyboardType:Titanium.UI.KEYBOARD_DEFAULT,
+          returnKeyType:Titanium.UI.RETURNKEY_DONE,
+          borderStyle:Titanium.UI.INPUT_BORDERSTYLE_BEZEL,
+          hintText:L('List Name')
+        })
+        addW.add(lname)
+        b = Ti.UI.createButton({
+          title:'Save',
+          width:100,
+          height:30
+        })
+        b.addEventListener('click', () ->
+          # Create an object to save to the database
+          createdList = shl.List.create({
+            name: lname.value,
+            weight: 0,
+            active: 1
+          })
+          # TODO : show a list of prospects to add to the list
+          addW.close()
+        )
+        addW.setRightNavButton(b)
+        #addW.add(b)
+        addW.open({
+          modal:true,
+          modalTransitionStyle: Ti.UI.iPhone.MODAL_TRANSITION_STYLE_FLIP_HORIZONTAL,
+          modalStyle: Ti.UI.iPhone.MODAL_PRESENTATION_FORMSHEET
+        })
       # TODO : create and populate window based on list choice
       # Determine if the list is an auto list
       listWin = Ti.UI.createWindow()

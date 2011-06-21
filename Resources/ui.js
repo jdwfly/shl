@@ -576,10 +576,45 @@
         moveable: true
       });
       tableView.addEventListener('click', function(e) {
-        var listWin, prospects;
+        var addW, b, listWin, lname, prospects;
         Ti.API.info(JSON.stringify(e.row));
         if (e.row.listID === 'custom') {
-          alert('add a list');
+          addW = Ti.UI.createWindow({
+            title: 'New Custom List',
+            backgroundColor: '#162144'
+          });
+          lname = Ti.UI.createTextField({
+            height: 40,
+            width: '80%',
+            left: 10,
+            top: 10,
+            backgroundColor: '#ffffff',
+            keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
+            returnKeyType: Titanium.UI.RETURNKEY_DONE,
+            borderStyle: Titanium.UI.INPUT_BORDERSTYLE_BEZEL,
+            hintText: L('List Name')
+          });
+          addW.add(lname);
+          b = Ti.UI.createButton({
+            title: 'Save',
+            width: 100,
+            height: 30
+          });
+          b.addEventListener('click', function() {
+            var createdList;
+            createdList = shl.List.create({
+              name: lname.value,
+              weight: 0,
+              active: 1
+            });
+            return addW.close();
+          });
+          addW.setRightNavButton(b);
+          addW.open({
+            modal: true,
+            modalTransitionStyle: Ti.UI.iPhone.MODAL_TRANSITION_STYLE_FLIP_HORIZONTAL,
+            modalStyle: Ti.UI.iPhone.MODAL_PRESENTATION_FORMSHEET
+          });
         }
         listWin = Ti.UI.createWindow();
         if (shl.aLists[e.row.title] != null) {

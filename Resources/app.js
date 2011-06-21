@@ -1,7 +1,7 @@
 Ti.UI.setBackgroundColor('#ffffff');
 
 var shl = {};
-shl.debugMode = true;
+shl.debugMode = false;
 Ti.include('active_record.js');
 Ti.include('db.js');
 Ti.include('ui.js');

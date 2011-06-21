@@ -384,7 +384,7 @@
   
   if (!Ti.App.Properties.hasProperty('dbInitComplete')) {
     shl.dbInit();
-    //Ti.App.Properties.setBool('dbInitComplete', true);
+    Ti.App.Properties.setBool('dbInitComplete', true);
   }
   
   //************************* Tests ******************************************
