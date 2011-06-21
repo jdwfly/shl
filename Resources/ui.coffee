@@ -627,6 +627,14 @@ class UI
         Ti.API.info('prospects = ' + prospects.toJSON())
         listWin.add(self.createProspectTableView(prospects))
         self.tabs.activeTab.open(listWin)
+      else if shl.aLists[e.row.listID]?
+        listWin.title = e.row.title
+        currentList = shl.List.find(e.row.listID)
+        Ti.API.info('currentList = ' + currentList.toJSON())
+        prospects = currentList.getProspectList()
+        Ti.API.info('prospects = ' + prospects.toJSON())
+        listWin.add(self.createProspectTableView(prospects))
+        self.tabs.activeTab.open(listWin)
     )
     tableView.addEventListener('move', (e) ->
       Ti.API.info(JSON.stringify(e.index))

@@ -586,7 +586,7 @@
         moveable: true
       });
       tableView.addEventListener('click', function(e) {
-        var addW, b, listWin, lname, prospects;
+        var addW, b, currentList, listWin, lname, prospects;
         Ti.API.info(JSON.stringify(e.row));
         if (e.row.listID === 'custom') {
           addW = Ti.UI.createWindow({
@@ -630,6 +630,14 @@
         if (shl.aLists[e.row.title] != null) {
           listWin.title = e.row.title;
           prospects = shl.Prospect.find(shl.aLists[e.row.title].query);
+          Ti.API.info('prospects = ' + prospects.toJSON());
+          listWin.add(self.createProspectTableView(prospects));
+          return self.tabs.activeTab.open(listWin);
+        } else if (shl.aLists[e.row.listID] != null) {
+          listWin.title = e.row.title;
+          currentList = shl.List.find(e.row.listID);
+          Ti.API.info('currentList = ' + currentList.toJSON());
+          prospects = currentList.getProspectList();
           Ti.API.info('prospects = ' + prospects.toJSON());
           listWin.add(self.createProspectTableView(prospects));
           return self.tabs.activeTab.open(listWin);
