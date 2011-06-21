@@ -468,7 +468,7 @@ class UI
           zip: zip.value,
           country: country.value,
           phoneHome: homeText.value,
-          phoneMoble: mobileText.value,
+          phoneMobile: mobileText.value,
           email: email.value,
           firstContactDate: initialPicker.value,
           firstContactPoint: pocTextfield.value,
@@ -649,10 +649,167 @@ class UI
   # returns a window
   createProspectViewWindow : (prospect) ->
     win = Ti.UI.createWindow()
-    testLabel = Ti.UI.createLabel({
-      text: prospect.formatName()
+    data = []
+    
+    headerView = Ti.UI.createView({
+      height: '100'
     })
-    win.add(testLabel)
+    nameLabel = Ti.UI.createLabel({
+      text: prospect.formatName(),
+      left: 10,
+      top: 7,
+      width: 300,
+      height: 17,
+      color: '#4c596e'
+    })
+    contactLabel = Ti.UI.createLabel({
+      text: 'Last Contact: ' + prospect.formatContactPretty(),
+      left: 10,
+      top: 21,
+      width: 300,
+      height: 17,
+      font: {fontSize: 12},
+      color: '#4c596e'
+    })
+    recordContactButton = Ti.UI.createButton({
+      width: 300,
+      height: 57,
+      top: 39,
+      left: 10,
+      title: 'Record Contact',
+      color: '#fff',
+      backgroundImage: '/images/button_blue.png'
+    })
+    recordContactButton.addEventListener('click', (e) ->
+      # TODO : create modal window to add contact
+      alert('todo')
+    )
+    headerView.add(nameLabel)
+    headerView.add(contactLabel)
+    headerView.add(recordContactButton)
+    
+    if prospect.formatAddress() isnt ''
+      addressSection = Ti.UI.createTableViewSection()
+      addressRow = Ti.UI.createTableViewRow({height: 75})
+      addressLabel = Ti.UI.createLabel({
+        text: prospect.formatAddress()
+        left: 10
+      })
+      addressRow.add(addressLabel)
+      addressSection.add(addressRow)
+      # TODO : finish coding google maps page here
+      addressSection.addEventListener('click', (e) ->
+        alert('open google maps')
+      )
+      data.push(addressSection)
+    
+    if prospect.phoneHome isnt '' and prospect.phoneMobile isnt ''
+      phoneSection = Ti.UI.createTableViewSection()
+      if prospect.phoneHome isnt ''
+        phoneHomeRow = Ti.UI.createTableViewRow()
+        phoneHomeLabel = Ti.UI.createLabel({
+          text: 'home: ' + prospect.phoneHome,
+          phone: prospect.phoneHome,
+          left: 10
+        })
+        phoneHomeRow.add(phoneHomeLabel)
+        phoneSection.add(phoneHomeRow)
+      if prospect.phoneMobile isnt ''
+        phoneMobileRow = Ti.UI.createTableViewRow()
+        phoneMobileLabel = Ti.UI.createLabel({
+          text: 'mobile: ' + prospect.phoneMobile,
+          phone: prospect.phoneMobile,
+          left: 10
+        })
+        phoneMobileRow.add(phoneMobileLabel)
+        phoneSection.add(phoneMobileRow)
+      # TODO: Test on device to see if this works
+      phoneSection.addEventListener('click', (e) ->
+        Ti.Platform.openURL('tel:' + e.source.phone)
+      )
+      data.push(phoneSection)
+      
+    if prospect.email isnt ''
+      emailSection = Ti.UI.createTableViewSection()
+      emailRow = Ti.UI.createTableViewRow()
+      emailLabel = Ti.UI.createLabel({
+        text: prospect.email,
+        left: 10
+      })
+      emailRow.add(emailLabel)
+      emailSection.add(emailRow)
+      # TODO: Test on device to ensure email sends
+      emailSection.addEventListener('click', (e) ->
+        alert(e.source.text)
+        emailDialog = Ti.UI.createEmailDialog()
+        emailDialog.toRecipients = [e.source.text]
+        emailDialog.open()
+      )
+      data.push(emailSection)
+    
+    firstContactSection = Ti.UI.createTableViewSection()
+    firstContactRow = Ti.UI.createTableViewRow({height: 55})
+    # TODO: format the date appropiately
+    firstContactLabel = Ti.UI.createLabel({
+      text: 'First Contact: ' + prospect.firstContactDate + "\n" + prospect.firstContactPoint
+      left: 10
+    })
+    firstContactRow.add(firstContactLabel)
+    firstContactSection.add(firstContactRow)
+    data.push(firstContactSection)
+    
+    statusSection = Ti.UI.createTableViewSection()
+    statusRow = Ti.UI.createTableViewRow({hasChild: true})
+    statusLabel = Ti.UI.createLabel({
+      text: 'Status',
+      left: 10
+    })
+    statusValueLabel = Ti.UI.createLabel({
+      text: prospect.status,
+      width: 'auto',
+      height: 'auto',
+      right: 5,
+      color: '#395587',
+      font: {fontSize: 12}
+    })
+    statusRow.addEventListener('click', (e) ->
+      # TODO: create the next window that lets you change status
+    )
+    statusRow.add(statusLabel)
+    statusRow.add(statusValueLabel)
+    statusSection.add(statusRow)
+    data.push(statusSection)
+    
+    # Have to load full prospect for function to work
+    prospectFull = shl.Prospect.find(prospect.id)
+    contacts = prospectFull.getContactList()
+    contactSection = Ti.UI.createTableViewSection({headerTitle: 'Activity Log'})
+    if contacts.length < 1
+      row = Ti.UI.createTableViewRow({
+        title: 'None'
+      })
+      contactSection.add(row)
+    else
+      for contact in contacts
+        row = Ti.UI.createTableViewRow({
+          height: 'auto',
+          hasChild: 'true'
+        })
+        rowLabel = Ti.UI.createLabel({
+          text: contact.date + " " + contact.type + ": " + contact.comments,
+          width: 280,
+          left: 10
+        })
+        row.add(rowLabel)
+        contactSection.add(row)
+    data.push(contactSection)
+    
+    tableView = Ti.UI.createTableView({
+      data: data,
+      headerView: headerView,
+      style: Titanium.UI.iPhone.TableViewStyle.GROUPED
+    })
+    win.add(tableView)
     
     return win
   

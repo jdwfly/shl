@@ -469,7 +469,7 @@
             zip: zip.value,
             country: country.value,
             phoneHome: homeText.value,
-            phoneMoble: mobileText.value,
+            phoneMobile: mobileText.value,
             email: email.value,
             firstContactDate: initialPicker.value,
             firstContactPoint: pocTextfield.value,
@@ -657,12 +657,174 @@
       return tableView;
     };
     UI.prototype.createProspectViewWindow = function(prospect) {
-      var testLabel, win;
+      var addressLabel, addressRow, addressSection, contact, contactLabel, contactSection, contacts, data, emailLabel, emailRow, emailSection, firstContactLabel, firstContactRow, firstContactSection, headerView, nameLabel, phoneHomeLabel, phoneHomeRow, phoneMobileLabel, phoneMobileRow, phoneSection, prospectFull, recordContactButton, row, rowLabel, statusLabel, statusRow, statusSection, statusValueLabel, tableView, win, _i, _len;
       win = Ti.UI.createWindow();
-      testLabel = Ti.UI.createLabel({
-        text: prospect.formatName()
+      data = [];
+      headerView = Ti.UI.createView({
+        height: '100'
       });
-      win.add(testLabel);
+      nameLabel = Ti.UI.createLabel({
+        text: prospect.formatName(),
+        left: 10,
+        top: 7,
+        width: 300,
+        height: 17,
+        color: '#4c596e'
+      });
+      contactLabel = Ti.UI.createLabel({
+        text: 'Last Contact: ' + prospect.formatContactPretty(),
+        left: 10,
+        top: 21,
+        width: 300,
+        height: 17,
+        font: {
+          fontSize: 12
+        },
+        color: '#4c596e'
+      });
+      recordContactButton = Ti.UI.createButton({
+        width: 300,
+        height: 57,
+        top: 39,
+        left: 10,
+        title: 'Record Contact',
+        color: '#fff',
+        backgroundImage: '/images/button_blue.png'
+      });
+      recordContactButton.addEventListener('click', function(e) {
+        return alert('todo');
+      });
+      headerView.add(nameLabel);
+      headerView.add(contactLabel);
+      headerView.add(recordContactButton);
+      if (prospect.formatAddress() !== '') {
+        addressSection = Ti.UI.createTableViewSection();
+        addressRow = Ti.UI.createTableViewRow({
+          height: 75
+        });
+        addressLabel = Ti.UI.createLabel({
+          text: prospect.formatAddress(),
+          left: 10
+        });
+        addressRow.add(addressLabel);
+        addressSection.add(addressRow);
+        addressSection.addEventListener('click', function(e) {
+          return alert('open google maps');
+        });
+        data.push(addressSection);
+      }
+      if (prospect.phoneHome !== '' && prospect.phoneMobile !== '') {
+        phoneSection = Ti.UI.createTableViewSection();
+        if (prospect.phoneHome !== '') {
+          phoneHomeRow = Ti.UI.createTableViewRow();
+          phoneHomeLabel = Ti.UI.createLabel({
+            text: 'home: ' + prospect.phoneHome,
+            phone: prospect.phoneHome,
+            left: 10
+          });
+          phoneHomeRow.add(phoneHomeLabel);
+          phoneSection.add(phoneHomeRow);
+        }
+        if (prospect.phoneMobile !== '') {
+          phoneMobileRow = Ti.UI.createTableViewRow();
+          phoneMobileLabel = Ti.UI.createLabel({
+            text: 'mobile: ' + prospect.phoneMobile,
+            phone: prospect.phoneMobile,
+            left: 10
+          });
+          phoneMobileRow.add(phoneMobileLabel);
+          phoneSection.add(phoneMobileRow);
+        }
+        phoneSection.addEventListener('click', function(e) {
+          return Ti.Platform.openURL('tel:' + e.source.phone);
+        });
+        data.push(phoneSection);
+      }
+      if (prospect.email !== '') {
+        emailSection = Ti.UI.createTableViewSection();
+        emailRow = Ti.UI.createTableViewRow();
+        emailLabel = Ti.UI.createLabel({
+          text: prospect.email,
+          left: 10
+        });
+        emailRow.add(emailLabel);
+        emailSection.add(emailRow);
+        emailSection.addEventListener('click', function(e) {
+          var emailDialog;
+          alert(e.source.text);
+          emailDialog = Ti.UI.createEmailDialog();
+          emailDialog.toRecipients = [e.source.text];
+          return emailDialog.open();
+        });
+        data.push(emailSection);
+      }
+      firstContactSection = Ti.UI.createTableViewSection();
+      firstContactRow = Ti.UI.createTableViewRow({
+        height: 55
+      });
+      firstContactLabel = Ti.UI.createLabel({
+        text: 'First Contact: ' + prospect.firstContactDate + "\n" + prospect.firstContactPoint,
+        left: 10
+      });
+      firstContactRow.add(firstContactLabel);
+      firstContactSection.add(firstContactRow);
+      data.push(firstContactSection);
+      statusSection = Ti.UI.createTableViewSection();
+      statusRow = Ti.UI.createTableViewRow({
+        hasChild: true
+      });
+      statusLabel = Ti.UI.createLabel({
+        text: 'Status',
+        left: 10
+      });
+      statusValueLabel = Ti.UI.createLabel({
+        text: prospect.status,
+        width: 'auto',
+        height: 'auto',
+        right: 5,
+        color: '#395587',
+        font: {
+          fontSize: 12
+        }
+      });
+      statusRow.addEventListener('click', function(e) {});
+      statusRow.add(statusLabel);
+      statusRow.add(statusValueLabel);
+      statusSection.add(statusRow);
+      data.push(statusSection);
+      prospectFull = shl.Prospect.find(prospect.id);
+      contacts = prospectFull.getContactList();
+      contactSection = Ti.UI.createTableViewSection({
+        headerTitle: 'Activity Log'
+      });
+      if (contacts.length < 1) {
+        row = Ti.UI.createTableViewRow({
+          title: 'None'
+        });
+        contactSection.add(row);
+      } else {
+        for (_i = 0, _len = contacts.length; _i < _len; _i++) {
+          contact = contacts[_i];
+          row = Ti.UI.createTableViewRow({
+            height: 'auto',
+            hasChild: 'true'
+          });
+          rowLabel = Ti.UI.createLabel({
+            text: contact.date + " " + contact.type + ": " + contact.comments,
+            width: 280,
+            left: 10
+          });
+          row.add(rowLabel);
+          contactSection.add(row);
+        }
+      }
+      data.push(contactSection);
+      tableView = Ti.UI.createTableView({
+        data: data,
+        headerView: headerView,
+        style: Titanium.UI.iPhone.TableViewStyle.GROUPED
+      });
+      win.add(tableView);
       return win;
     };
     UI.prototype.processProspectData = function(prospects) {
