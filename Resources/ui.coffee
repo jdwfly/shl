@@ -111,6 +111,15 @@ class UI
         tableView.editing = false
       )
       win.setRightNavButton(edit)
+    win.addEventListener('open', (e) ->
+      win.addEventListener('focus', (e) ->
+        lists = shl.List.find({
+          where: {active: 1},
+          order: 'weight ASC'
+        })
+        
+      )
+    )
     
     return win
   
@@ -628,6 +637,8 @@ class UI
     tableView.addEventListener('delete', (e) ->
       alert(JSON.stringify(e.row))
     )
+    tableView.updateLists = (lists) ->
+      data = self.bogus
     
     return tableView
   

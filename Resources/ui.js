@@ -112,6 +112,16 @@
         });
         win.setRightNavButton(edit);
       }
+      win.addEventListener('open', function(e) {
+        return win.addEventListener('focus', function(e) {
+          return lists = shl.List.find({
+            where: {
+              active: 1
+            },
+            order: 'weight ASC'
+          });
+        });
+      });
       return win;
     };
     UI.prototype.createStarredWindow = function() {
@@ -635,6 +645,9 @@
       tableView.addEventListener('delete', function(e) {
         return alert(JSON.stringify(e.row));
       });
+      tableView.updateLists = function(lists) {
+        return data = self.bogus;
+      };
       return tableView;
     };
     UI.prototype.createProspectTableView = function(prospects) {
