@@ -711,7 +711,11 @@
         addressRow.add(addressLabel);
         addressSection.add(addressRow);
         addressSection.addEventListener('click', function(e) {
-          return alert('open google maps');
+          var query;
+          query = prospect.formatAddressGoogle();
+          query = query.replace(/[ ]/gi, "+");
+          Ti.API.info(query);
+          return Ti.Platform.openURL("http://maps.google.com/maps?q=" + query);
         });
         data.push(addressSection);
       }
@@ -765,7 +769,7 @@
         height: 55
       });
       firstContactLabel = Ti.UI.createLabel({
-        text: 'First Contact: ' + prospect.firstContactDate + "\n" + prospect.firstContactPoint,
+        text: 'First Contact: ' + date('n/j/Y', prospect.firstContactDate) + "\n" + prospect.firstContactPoint,
         left: 10
       });
       firstContactRow.add(firstContactLabel);

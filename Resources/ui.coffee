@@ -699,9 +699,11 @@ class UI
       })
       addressRow.add(addressLabel)
       addressSection.add(addressRow)
-      # TODO : finish coding google maps page here
       addressSection.addEventListener('click', (e) ->
-        alert('open google maps')
+        query = prospect.formatAddressGoogle()
+        query = query.replace /[ ]/gi, "+"
+        Ti.API.info(query)
+        Ti.Platform.openURL("http://maps.google.com/maps?q="+query)
       )
       data.push(addressSection)
     
@@ -751,9 +753,8 @@ class UI
     
     firstContactSection = Ti.UI.createTableViewSection()
     firstContactRow = Ti.UI.createTableViewRow({height: 55})
-    # TODO: format the date appropiately
     firstContactLabel = Ti.UI.createLabel({
-      text: 'First Contact: ' + prospect.firstContactDate + "\n" + prospect.firstContactPoint
+      text: 'First Contact: ' + date('n/j/Y', prospect.firstContactDate) + "\n" + prospect.firstContactPoint
       left: 10
     })
     firstContactRow.add(firstContactLabel)
