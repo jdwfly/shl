@@ -657,8 +657,10 @@
       return tableView;
     };
     UI.prototype.createProspectViewWindow = function(prospect) {
-      var addressLabel, addressRow, addressSection, contact, contactLabel, contactSection, contacts, data, emailLabel, emailRow, emailSection, firstContactLabel, firstContactRow, firstContactSection, headerView, nameLabel, phoneHomeLabel, phoneHomeRow, phoneMobileLabel, phoneMobileRow, phoneSection, prospectFull, recordContactButton, row, rowLabel, statusLabel, statusRow, statusSection, statusValueLabel, tableView, win, _i, _len;
+      var addressLabel, addressRow, addressSection, contact, contactLabel, contactSection, contacts, data, emailLabel, emailRow, emailSection, firstContactLabel, firstContactRow, firstContactSection, headerView, nameLabel, phoneHomeLabel, phoneHomeRow, phoneMobileLabel, phoneMobileRow, phoneSection, recordContactButton, row, rowLabel, self, statusLabel, statusRow, statusSection, statusValueLabel, tableView, win, _i, _len;
+      prospect = shl.Prospect.find(prospect.id);
       win = Ti.UI.createWindow();
+      self = this;
       data = [];
       headerView = Ti.UI.createView({
         height: '100'
@@ -787,13 +789,59 @@
           fontSize: 12
         }
       });
-      statusRow.addEventListener('click', function(e) {});
+      statusRow.addEventListener('click', function(e) {
+        var statusTableView, statusWin;
+        statusWin = Ti.UI.createWindow({
+          title: 'Status'
+        });
+        statusTableView = Ti.UI.createTableView({
+          data: [
+            {
+              title: 'Active Prospect',
+              hasCheck: prospect.status === 'Active Prospect' ? true : false
+            }, {
+              title: 'Inactive Prospect',
+              hasCheck: prospect.status === 'Inactive Prospect' ? true : false
+            }, {
+              title: 'Member',
+              hasCheck: prospect.status === 'Member' ? true : false
+            }, {
+              title: 'Dead End',
+              hasCheck: prospect.status === 'Dead End' ? true : false
+            }
+          ],
+          style: Titanium.UI.iPhone.TableViewStyle.GROUPED
+        });
+        statusTableView.addEventListener('click', function(e) {
+          var i, row, _len, _ref, _results;
+          Ti.API.info(JSON.stringify(e.rowData));
+          _ref = statusTableView.data[0].rows;
+          _results = [];
+          for (i = 0, _len = _ref.length; i < _len; i++) {
+            row = _ref[i];
+            Ti.API.info(JSON.stringify(row));
+            _results.push(i === e.index ? statusTableView.data[0].rows[i].hasCheck = true : statusTableView.data[0].rows[i].hasCheck = false);
+          }
+          return _results;
+        });
+        statusWin.add(statusTableView);
+        statusWin.addEventListener('close', function(e) {
+          var i, row, _len, _ref, _results;
+          _ref = statusTableView.data[0].rows;
+          _results = [];
+          for (i = 0, _len = _ref.length; i < _len; i++) {
+            row = _ref[i];
+            _results.push(row.hasCheck ? (prospect.updateAttribute('status', row.title), statusValueLabel.text = row.title) : void 0);
+          }
+          return _results;
+        });
+        return self.tabs.activeTab.open(statusWin);
+      });
       statusRow.add(statusLabel);
       statusRow.add(statusValueLabel);
       statusSection.add(statusRow);
       data.push(statusSection);
-      prospectFull = shl.Prospect.find(prospect.id);
-      contacts = prospectFull.getContactList();
+      contacts = prospect.getContactList();
       contactSection = Ti.UI.createTableViewSection({
         headerTitle: 'Activity Log'
       });

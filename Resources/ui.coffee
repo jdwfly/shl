@@ -648,7 +648,9 @@ class UI
   # prospect = loaded prospect model
   # returns a window
   createProspectViewWindow : (prospect) ->
+    prospect = shl.Prospect.find(prospect.id)
     win = Ti.UI.createWindow()
+    self = this
     data = []
     
     headerView = Ti.UI.createView({
@@ -773,16 +775,42 @@ class UI
       font: {fontSize: 12}
     })
     statusRow.addEventListener('click', (e) ->
-      # TODO: create the next window that lets you change status
+      statusWin = Ti.UI.createWindow({
+        title: 'Status'
+      })
+      statusTableView = Ti.UI.createTableView({
+        data: [
+          {title: 'Active Prospect', hasCheck: if prospect.status is 'Active Prospect' then true else false},
+          {title: 'Inactive Prospect', hasCheck: if prospect.status is 'Inactive Prospect' then true else false},
+          {title: 'Member', hasCheck: if prospect.status is 'Member' then true else false},
+          {title: 'Dead End', hasCheck: if prospect.status is 'Dead End' then true else false}
+        ],
+        style: Titanium.UI.iPhone.TableViewStyle.GROUPED
+      })
+      statusTableView.addEventListener('click', (e) ->
+        Ti.API.info(JSON.stringify(e.rowData))
+        for row, i in statusTableView.data[0].rows
+          Ti.API.info(JSON.stringify(row))
+          if i is e.index
+            statusTableView.data[0].rows[i].hasCheck = true
+          else
+            statusTableView.data[0].rows[i].hasCheck = false
+      )
+      statusWin.add(statusTableView)
+      statusWin.addEventListener('close', (e) ->
+        for row, i in statusTableView.data[0].rows
+          if row.hasCheck
+            prospect.updateAttribute('status', row.title)
+            statusValueLabel.text = row.title
+      )
+      self.tabs.activeTab.open(statusWin)
     )
     statusRow.add(statusLabel)
     statusRow.add(statusValueLabel)
     statusSection.add(statusRow)
     data.push(statusSection)
     
-    # Have to load full prospect for function to work
-    prospectFull = shl.Prospect.find(prospect.id)
-    contacts = prospectFull.getContactList()
+    contacts = prospect.getContactList()
     contactSection = Ti.UI.createTableViewSection({headerTitle: 'Activity Log'})
     if contacts.length < 1
       row = Ti.UI.createTableViewRow({
