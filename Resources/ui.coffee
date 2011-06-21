@@ -117,7 +117,7 @@ class UI
           where: {active: 1},
           order: 'weight ASC'
         })
-        
+        tableView.updateLists(lists)
       )
     )
     
@@ -555,23 +555,7 @@ class UI
   
   createListTableView : (lists) ->
     self = this
-    data = for i in lists
-      row = Ti.UI.createTableViewRow({
-        height: 'auto',
-        hasChild: true,
-        title: i.name,
-        listID: i.id,
-        editable: false,
-        moveable: true
-      })
-    addCustom = Ti.UI.createTableViewRow({
-      height: 'auto',
-      title: 'Create Custom List...',
-      listID: 'custom',
-      editable: false,
-      moveable: false
-    })
-    data.push(addCustom)
+    data = @processListData(lists)
     tableView = Ti.UI.createTableView({
       data:data,
       moveable: true
@@ -646,7 +630,8 @@ class UI
       alert(JSON.stringify(e.row))
     )
     tableView.updateLists = (lists) ->
-      data = self.bogus
+      data = self.processListData(lists)
+      @setData(data)
     
     return tableView
   
@@ -860,6 +845,26 @@ class UI
     win.add(tableView)
     
     return win
+  
+  processListData : (lists) ->
+    data = for i in lists
+      row = Ti.UI.createTableViewRow({
+        height: 'auto',
+        hasChild: true,
+        title: i.name,
+        listID: i.id,
+        editable: false,
+        moveable: true
+      })
+    addCustom = Ti.UI.createTableViewRow({
+      height: 'auto',
+      title: 'Create Custom List...',
+      listID: 'custom',
+      editable: false,
+      moveable: false
+    })
+    data.push(addCustom)
+    return data
   
   processProspectData : (prospects) ->
     if prospects.length < 1

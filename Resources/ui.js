@@ -114,12 +114,13 @@
       }
       win.addEventListener('open', function(e) {
         return win.addEventListener('focus', function(e) {
-          return lists = shl.List.find({
+          lists = shl.List.find({
             where: {
               active: 1
             },
             order: 'weight ASC'
           });
+          return tableView.updateLists(lists);
         });
       });
       return win;
@@ -555,32 +556,9 @@
       return this.createListsWindow();
     };
     UI.prototype.createListTableView = function(lists) {
-      var addCustom, data, i, row, self, tableView;
+      var data, self, tableView;
       self = this;
-      data = (function() {
-        var _i, _len, _results;
-        _results = [];
-        for (_i = 0, _len = lists.length; _i < _len; _i++) {
-          i = lists[_i];
-          _results.push(row = Ti.UI.createTableViewRow({
-            height: 'auto',
-            hasChild: true,
-            title: i.name,
-            listID: i.id,
-            editable: false,
-            moveable: true
-          }));
-        }
-        return _results;
-      })();
-      addCustom = Ti.UI.createTableViewRow({
-        height: 'auto',
-        title: 'Create Custom List...',
-        listID: 'custom',
-        editable: false,
-        moveable: false
-      });
-      data.push(addCustom);
+      data = this.processListData(lists);
       tableView = Ti.UI.createTableView({
         data: data,
         moveable: true
@@ -654,7 +632,8 @@
         return alert(JSON.stringify(e.row));
       });
       tableView.updateLists = function(lists) {
-        return data = self.bogus;
+        data = self.processListData(lists);
+        return this.setData(data);
       };
       return tableView;
     };
@@ -899,6 +878,34 @@
       });
       win.add(tableView);
       return win;
+    };
+    UI.prototype.processListData = function(lists) {
+      var addCustom, data, i, row;
+      data = (function() {
+        var _i, _len, _results;
+        _results = [];
+        for (_i = 0, _len = lists.length; _i < _len; _i++) {
+          i = lists[_i];
+          _results.push(row = Ti.UI.createTableViewRow({
+            height: 'auto',
+            hasChild: true,
+            title: i.name,
+            listID: i.id,
+            editable: false,
+            moveable: true
+          }));
+        }
+        return _results;
+      })();
+      addCustom = Ti.UI.createTableViewRow({
+        height: 'auto',
+        title: 'Create Custom List...',
+        listID: 'custom',
+        editable: false,
+        moveable: false
+      });
+      data.push(addCustom);
+      return data;
     };
     UI.prototype.processProspectData = function(prospects) {
       var addressLabel, content, contentTitle, data, lastContactLabel, prospect, row;
