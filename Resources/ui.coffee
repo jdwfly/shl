@@ -691,7 +691,38 @@ class UI
     })
     recordContactButton.addEventListener('click', (e) ->
       # TODO : create modal window to add contact
-      alert('todo')
+      recordContactWin = Ti.UI.createWindow({
+        title: 'Record Contact',
+        backgroundColor: '#ffffff'
+      })
+      
+      dateSection = Ti.UI.createTableViewSection({
+        headerTitle: prospect.formatName()
+      })
+      dateRow = Ti.UI.createTableViewRow()
+      
+      if self.platform is 'iPhone OS'
+        closeButton = Ti.UI.createButton({
+          systemButton: Ti.UI.iPhone.SystemButton.CANCEL
+        })
+        closeButton.addEventListener('click', (e) ->
+          recordContactWin.close()
+        )
+        recordContactWin.setLeftNavButton(closeButton)
+        saveButton = Ti.UI.createButton({
+          systemButton: Ti.UI.iPhone.SystemButton.SAVE
+        })
+        saveButton.addEventListener('click', (e) ->
+          # TODO : Actually save the contact
+          recordContactWin.close()
+        )
+        recordContactWin.setRightNavButton(saveButton)
+      
+      recordContactWin.open({
+        modal:true,
+        modalTransitionStyle: Ti.UI.iPhone.MODAL_TRANSITION_STYLE_COVER_VERTICAL,
+        modalStyle: Ti.UI.iPhone.MODAL_PRESENTATION_FORMSHEET
+      })
     )
     headerView.add(nameLabel)
     headerView.add(contactLabel)

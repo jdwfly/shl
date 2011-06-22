@@ -696,7 +696,36 @@
         backgroundImage: '/images/button_blue.png'
       });
       recordContactButton.addEventListener('click', function(e) {
-        return alert('todo');
+        var closeButton, dateRow, dateSection, recordContactWin, saveButton;
+        recordContactWin = Ti.UI.createWindow({
+          title: 'Record Contact',
+          backgroundColor: '#ffffff'
+        });
+        dateSection = Ti.UI.createTableViewSection({
+          headerTitle: prospect.formatName()
+        });
+        dateRow = Ti.UI.createTableViewRow();
+        if (self.platform === 'iPhone OS') {
+          closeButton = Ti.UI.createButton({
+            systemButton: Ti.UI.iPhone.SystemButton.CANCEL
+          });
+          closeButton.addEventListener('click', function(e) {
+            return recordContactWin.close();
+          });
+          recordContactWin.setLeftNavButton(closeButton);
+          saveButton = Ti.UI.createButton({
+            systemButton: Ti.UI.iPhone.SystemButton.SAVE
+          });
+          saveButton.addEventListener('click', function(e) {
+            return recordContactWin.close();
+          });
+          recordContactWin.setRightNavButton(saveButton);
+        }
+        return recordContactWin.open({
+          modal: true,
+          modalTransitionStyle: Ti.UI.iPhone.MODAL_TRANSITION_STYLE_COVER_VERTICAL,
+          modalStyle: Ti.UI.iPhone.MODAL_PRESENTATION_FORMSHEET
+        });
       });
       headerView.add(nameLabel);
       headerView.add(contactLabel);
