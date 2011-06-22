@@ -156,6 +156,7 @@
     ActiveRecord.execute('DROP TABLE IF EXISTS contacts');
     ActiveRecord.execute('DROP TABLE IF EXISTS lists');
     ActiveRecord.execute('DROP TABLE IF EXISTS listitems');
+    ActiveRecord.execute('DROP TABLE IF EXISTS listings');
     Ti.App.Properties.removeProperty('dbInitComplete');
   }
   //******************** Prospect *****************************
@@ -223,6 +224,10 @@
   });
   shl.Prospect.hasMany('contacts', {
     dependent: true
+  });
+  shl.Prospect.hasMany('Listing');
+  shl.Prospect.hasMany('List', {
+    through: 'Listing'
   });
 
   shl.Prospect.beforeCreate( function(prospect) {
@@ -336,9 +341,9 @@
     modified : 0,
     uuid : ''
   });
-  shl.List.hasMany('ListItem');
+  shl.List.hasMany('Listing');
   shl.List.hasMany('Prospect', {
-    through: 'ListItem'
+    through: 'Listing'
   });
 
   shl.List.beforeCreate( function(list) {
@@ -348,19 +353,19 @@
     list.set('modified',currentTime);
   });
 
-  //************************* List Items **************************************
+  //************************* Listings **************************************
 
-  shl.ListItem = ActiveRecord.create('listitems', {
+  shl.Listing = ActiveRecord.create('listings', {
     prospect_id : 0,
     list_id : 0,
     createdDate : 0,
     uuid : ''
   });
 
-  shl.ListItem.belongsTo('Prospect', {
+  shl.Listing.belongsTo('Prospect', {
     dependent: true
   });
-  shl.ListItem.belongsTo('List', {
+  shl.Listing.belongsTo('List', {
     dependent: true
   });
 
@@ -417,6 +422,16 @@
     city: 'Palmdale',
     state: 'CA'
   });
+  var testList = shl.List.create({
+    name: 'TEST',
+    active: 1
+  });
+  testList.createListing({
+    prospect_id : 1
+  });
+  testList.createListing({
+    prospect_id : 2
+  });
   Ti.API.info("***************" + testProspect.toJSON());
   testProspect.save();
   var testContact = testProspect.createContact({
@@ -429,5 +444,5 @@
   Ti.API.info(foundProspect.toJSON());
   var list = foundProspect.getContactList();
   Ti.API.info(list[0].toJSON());
-
+ 
 })();

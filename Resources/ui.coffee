@@ -602,6 +602,7 @@ class UI
           modalTransitionStyle: Ti.UI.iPhone.MODAL_TRANSITION_STYLE_FLIP_HORIZONTAL,
           modalStyle: Ti.UI.iPhone.MODAL_PRESENTATION_FORMSHEET
         })
+        return true
       # TODO : create and populate window based on list choice
       # Determine if the list is an auto list
       listWin = Ti.UI.createWindow()
@@ -611,12 +612,14 @@ class UI
         Ti.API.info('prospects = ' + prospects.toJSON())
         listWin.add(self.createProspectTableView(prospects))
         self.tabs.activeTab.open(listWin)
-      else if shl.aLists[e.row.listID]?
+      else
         listWin.title = e.row.title
         currentList = shl.List.find(e.row.listID)
+        
         Ti.API.info('currentList = ' + currentList.toJSON())
+        Ti.API.info('currentList = ' + JSON.stringify(ActiveRecord))
         prospects = currentList.getProspectList()
-        Ti.API.info('prospects = ' + prospects.toJSON())
+        Ti.API.info('prospects = ' + JSON.stringify(prospects))
         listWin.add(self.createProspectTableView(prospects))
         self.tabs.activeTab.open(listWin)
     )

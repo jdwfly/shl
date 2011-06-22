@@ -603,6 +603,7 @@
             modalTransitionStyle: Ti.UI.iPhone.MODAL_TRANSITION_STYLE_FLIP_HORIZONTAL,
             modalStyle: Ti.UI.iPhone.MODAL_PRESENTATION_FORMSHEET
           });
+          return true;
         }
         listWin = Ti.UI.createWindow();
         if (shl.aLists[e.row.title] != null) {
@@ -611,12 +612,13 @@
           Ti.API.info('prospects = ' + prospects.toJSON());
           listWin.add(self.createProspectTableView(prospects));
           return self.tabs.activeTab.open(listWin);
-        } else if (shl.aLists[e.row.listID] != null) {
+        } else {
           listWin.title = e.row.title;
           currentList = shl.List.find(e.row.listID);
           Ti.API.info('currentList = ' + currentList.toJSON());
+          Ti.API.info('currentList = ' + JSON.stringify(ActiveRecord));
           prospects = currentList.getProspectList();
-          Ti.API.info('prospects = ' + prospects.toJSON());
+          Ti.API.info('prospects = ' + JSON.stringify(prospects));
           listWin.add(self.createProspectTableView(prospects));
           return self.tabs.activeTab.open(listWin);
         }
