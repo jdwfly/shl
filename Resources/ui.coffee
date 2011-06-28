@@ -695,11 +695,100 @@ class UI
         title: 'Record Contact',
         backgroundColor: '#ffffff'
       })
+      tdata = []
       
+      today = new Date()
       dateSection = Ti.UI.createTableViewSection({
         headerTitle: prospect.formatName()
       })
       dateRow = Ti.UI.createTableViewRow()
+      dateField = Ti.UI.createTextField({
+        height: 35,
+        width: 300,
+        left: 7,
+        value: today.getMonth() + '/' + today.getDate() + '/' + today.getFullYear(),
+        keyboardType:Titanium.UI.KEYBOARD_DEFAULT,
+        returnKeyType:Titanium.UI.RETURNKEY_DONE,
+        borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE
+      })
+      dateRow.add(dateField)
+      dateSection.add(dateRow)
+      tdata.push(dateSection)
+      
+      visitSection = Ti.UI.createTableViewSection({
+        headerTitle: 'Type of Contact'
+      })
+      visitRow = Ti.UI.createTableViewRow({
+        title: 'Visit',
+        hasCheck: false
+      })
+      letterRow = Ti.UI.createTableViewRow({
+        title: 'Letter',
+        hasCheck: false
+      })
+      visitedChurchRow = Ti.UI.createTableViewRow({
+        title: 'Visited Church',
+        hasCheck: false
+      })
+      phoneRow = Ti.UI.createTableViewRow({
+        title: 'Phone Call',
+        hasCheck: false
+      })
+      emailRow = Ti.UI.createTableViewRow({
+        title: 'Email',
+        hasCheck: false        
+      })
+      commentRow = Ti.UI.createTableViewRow({
+        title: 'Comment',
+        hasCheck: false
+      })
+      visitSection.add(visitRow)
+      visitSection.add(letterRow)
+      visitSection.add(visitedChurchRow)
+      visitSection.add(phoneRow)
+      visitSection.add(emailRow)
+      visitSection.add(commentRow)
+      visitSection.addEventListener('click', (e) ->
+        for row, i in visitSection.rows
+          # for whatever reason e.index is off by one... probably because of headerTitle
+          if i is (e.index - 1)
+            visitSection.rows[i].hasCheck = true
+          else
+            visitSection.rows[i].hasCheck = false
+      )
+      tdata.push(visitSection)
+      
+      commentSection = Ti.UI.createTableViewSection({
+        headerTitle: 'Comments'
+      })
+      commentsRow = Ti.UI.createTableViewRow({
+        height: 100
+      })
+      commentsTextArea = Ti.UI.createTextArea({
+        width: 280,
+        height: 75,
+        left: 7,
+        keyboardType:Titanium.UI.KEYBOARD_DEFAULT,
+        returnKeyType:Titanium.UI.RETURNKEY_DONE,
+        borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE
+      })
+      commentsRow.add(commentsTextArea)
+      commentSection.add(commentsRow)
+      tdata.push(commentSection)
+      
+      decisionSection = Ti.UI.createTableViewSection()
+      recordDecisionRow = Ti.UI.createTableViewRow({
+        title: 'Record Decision',
+        hasChild: true
+      })
+      decisionSection.add(recordDecisionRow)
+      tdata.push(decisionSection)
+      
+      contactTableView = Ti.UI.createTableView({
+        data: tdata, 
+        style: Titanium.UI.iPhone.TableViewStyle.GROUPED
+      })
+      recordContactWin.add(contactTableView)
       
       if self.platform is 'iPhone OS'
         closeButton = Ti.UI.createButton({
