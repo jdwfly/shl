@@ -734,7 +734,7 @@
       return tableView;
     };
     UI.prototype.createProspectViewWindow = function(prospect) {
-      var addressLabel, addressRow, addressSection, contact, contactLabel, contactSection, contacts, data, emailLabel, emailRow, emailSection, firstContactLabel, firstContactRow, firstContactSection, headerView, nameLabel, phoneHomeLabel, phoneHomeRow, phoneMobileLabel, phoneMobileRow, phoneSection, recordContactButton, row, rowLabel, self, statusLabel, statusRow, statusSection, statusValueLabel, tableView, win, _i, _len;
+      var addressLabel, addressRow, addressSection, contact, contactLabel, contactSection, contacts, data, emailLabel, emailRow, emailSection, firstContactLabel, firstContactRow, firstContactSection, headerView, nameLabel, noneRow, phoneHomeLabel, phoneHomeRow, phoneMobileLabel, phoneMobileRow, phoneSection, recordContactButton, row, rowLabel, self, statusLabel, statusRow, statusSection, statusValueLabel, tableView, win, _i, _len;
       prospect = shl.Prospect.find(prospect.id);
       win = Ti.UI.createWindow();
       self = this;
@@ -791,7 +791,7 @@
             systemButton: Ti.UI.iPhone.SystemButton.SAVE
           });
           saveButton.addEventListener('click', function(e) {
-            var commentsValue, dateValue, groupHasCheck, i, re, row, typeValue, _len, _len2, _ref, _ref2;
+            var commentsValue, createdContacts, dateValue, groupHasCheck, i, re, row, typeValue, _len, _len2, _ref, _ref2;
             re = /^\d{1,2}\/\d{1,2}\/\d{4}$/;
             if (dateField.value !== '' && !dateField.value.match(re)) {
               alert('Invalid date format. Please format date MM/DD/YYYY');
@@ -816,25 +816,27 @@
               return false;
             }
             commentsValue = commentsTextArea.value;
-            prospect.createContact({
+            createdContacts = [];
+            createdContacts.push(prospect.createContact({
               type: typeValue,
               date: dateValue,
               comments: commentsValue
-            });
+            }));
             if (decisionSection.rows.length > 1) {
               _ref2 = decisionSection.rows;
               for (i = 0, _len2 = _ref2.length; i < _len2; i++) {
                 row = _ref2[i];
                 if (!decisionSection.rows[i].hasChild) {
-                  prospect.createContact({
+                  createdContacts.push(prospect.createContact({
                     type: decisionSection.rows[i].decisionType,
                     date: dateValue,
                     individual: decisionSection.rows[i].decisionPerson
-                  });
+                  }));
                 }
               }
             }
             Ti.API.info(prospect.getContactList().toJSON());
+            contactSection.addContactRows(createdContacts);
             return recordContactWin.close();
           });
           recordContactRoot.setRightNavButton(saveButton);
@@ -1247,19 +1249,19 @@
         headerTitle: 'Activity Log'
       });
       if (contacts.length < 1) {
-        row = Ti.UI.createTableViewRow({
-          title: 'None'
+        noneRow = Ti.UI.createTableViewRow({
+          title: 'None',
+          name: 'None'
         });
-        contactSection.add(row);
+        contactSection.add(noneRow);
       } else {
         for (_i = 0, _len = contacts.length; _i < _len; _i++) {
           contact = contacts[_i];
           row = Ti.UI.createTableViewRow({
-            height: 'auto',
-            hasChild: 'true'
+            height: 'auto'
           });
           rowLabel = Ti.UI.createLabel({
-            text: contact.date + " " + contact.type + ": " + contact.comments,
+            text: date('n/j/Y', contact.date) + " " + contact.type + ": " + contact.comments,
             width: 280,
             left: 10
           });
@@ -1267,6 +1269,24 @@
           contactSection.add(row);
         }
       }
+      contactSection.addContactRows = function(contacts) {
+        var contact, _j, _len2;
+        Ti.API.info("Contacts = " + JSON.stringify(contacts));
+        for (_j = 0, _len2 = contacts.length; _j < _len2; _j++) {
+          contact = contacts[_j];
+          row = Ti.UI.createTableViewRow({
+            height: 'auto'
+          });
+          rowLabel = Ti.UI.createLabel({
+            text: date('n/j/Y', contact.date) + " " + contact.type + ": " + contact.comments,
+            width: 280,
+            left: 10
+          });
+          row.add(rowLabel);
+          tableView.appendRow(row);
+        }
+        return tableView.deleteRow(tableView.getIndexByName('None'));
+      };
       data.push(contactSection);
       tableView = Ti.UI.createTableView({
         data: data,

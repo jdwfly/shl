@@ -803,22 +803,24 @@ class UI
           # Get the comments
           commentsValue = commentsTextArea.value
           
-          prospect.createContact({
+          createdContacts = []
+          createdContacts.push(prospect.createContact({
             type: typeValue,
             date: dateValue,
             comments: commentsValue
-          })
+          }))
           
           if decisionSection.rows.length > 1
             for row, i in decisionSection.rows
               if not decisionSection.rows[i].hasChild
-                prospect.createContact({
+                createdContacts.push(prospect.createContact({
                   type: decisionSection.rows[i].decisionType,
                   date: dateValue,
                   individual: decisionSection.rows[i].decisionPerson
-                })
+                }))
           
           Ti.API.info(prospect.getContactList().toJSON())
+          contactSection.addContactRows(createdContacts)
           recordContactWin.close()
         )
         recordContactRoot.setRightNavButton(saveButton)
@@ -1193,23 +1195,38 @@ class UI
     contacts = prospect.getContactList()
     contactSection = Ti.UI.createTableViewSection({headerTitle: 'Activity Log'})
     if contacts.length < 1
-      row = Ti.UI.createTableViewRow({
+      noneRow = Ti.UI.createTableViewRow({
         title: 'None'
+        name: 'None'
       })
-      contactSection.add(row)
+      contactSection.add(noneRow)
     else
       for contact in contacts
         row = Ti.UI.createTableViewRow({
-          height: 'auto',
-          hasChild: 'true'
+          height: 'auto'
         })
         rowLabel = Ti.UI.createLabel({
-          text: contact.date + " " + contact.type + ": " + contact.comments,
+          text: date('n/j/Y', contact.date) + " " + contact.type + ": " + contact.comments,
           width: 280,
           left: 10
         })
         row.add(rowLabel)
         contactSection.add(row)
+    contactSection.addContactRows = (contacts) ->
+      Ti.API.info("Contacts = " + JSON.stringify(contacts))
+      # Loop through contacts and append rows
+      for contact in contacts
+        row = Ti.UI.createTableViewRow({
+          height: 'auto'
+        })
+        rowLabel = Ti.UI.createLabel({
+          text: date('n/j/Y', contact.date) + " " + contact.type + ": " + contact.comments,
+          width: 280,
+          left: 10
+        })
+        row.add(rowLabel)
+        tableView.appendRow(row)
+      tableView.deleteRow(tableView.getIndexByName('None'))
     data.push(contactSection)
     
     tableView = Ti.UI.createTableView({
