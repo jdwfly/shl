@@ -620,7 +620,79 @@ class UI
         Ti.API.info('currentList = ' + JSON.stringify(ActiveRecord))
         prospects = currentList.getProspectList()
         Ti.API.info('prospects = ' + JSON.stringify(prospects))
-        listWin.add(self.createProspectTableView(prospects))
+        listview = self.createProspectTableView(prospects)
+        listview.deleteButtonTitle = 'Remove'
+        listview.editable = true
+        listview.allowsSelectionDuringEditing = true
+        listview.addEventListener('delete',(e) ->
+          currentListing = shl.Listing.find({
+            first : true,
+            where: {
+              list_id : currentList.id,
+              prospect_id : e.row.prospect.id
+            }
+          })
+          currentListing.destroy()
+        )
+        
+        listWin.add(listview)
+        listedit = Titanium.UI.createButton({
+          title:'Edit'
+        })
+        listedit.addEventListener('click', () ->
+          listWin.setRightNavButton(listcancel)
+          listview.editing = true
+          brow = Ti.UI.createTableViewRow({
+            backgroundColor : '#999',
+            height : 50,
+            editable : false,
+            name : 'options'
+          })
+          editBtns = Ti.UI.createView({
+            height : 50,
+            width : 300,
+            layout : 'horizontal'
+          })
+          addBtn = Ti.UI.createButton({
+            title : 'Add',
+            width : 80,
+            height : 38,
+            left : 7
+          })
+          clearBtn = Ti.UI.createButton({
+            title : 'Clear',
+            width : 80,
+            height : 38,
+            left : 7
+          })
+          deleteBtn = Ti.UI.createButton({
+            title : 'Delete',
+            width : 80,
+            height : 38,
+            left : 7
+          })
+          editBtns.add(addBtn)
+          editBtns.add(clearBtn)
+          editBtns.add(deleteBtn)
+          brow.add(editBtns)
+          if listview.data[0].rows.length >= 1
+            listview.insertRowBefore(0,brow)
+          else
+            listview.appendRow(brow)
+        )
+
+        listcancel = Titanium.UI.createButton({
+          title:'Done',
+          style:Titanium.UI.iPhone.SystemButtonStyle.DONE
+        })
+        listcancel.addEventListener('click', () ->
+          listWin.setRightNavButton(listedit)
+          listview.editing = false
+          index = listview.getIndexByName('options');
+          listview.deleteRow(index,{animationStyle:Titanium.UI.iPhone.RowAnimationStyle.UP})
+        )
+        listWin.setRightNavButton(listedit)
+        
         self.tabs.activeTab.open(listWin)
     )
     tableView.addEventListener('move', (e) ->
