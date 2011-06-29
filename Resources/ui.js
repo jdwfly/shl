@@ -883,7 +883,8 @@
           hasChild: true
         });
         recordDecisionRow.addEventListener('click', function(e) {
-          var baptizedRow, decisionMakerSection, femaleRow, footerView, joinedRow, maleRow, otherRow, otherTextField, recordDecisionWin, savedRow, typeData, typeDecisionSection, typeDecisionTableView;
+          var baptizedRow, decisionMakerSection, femaleRow, footerView, joinedRow, maleRow, otherRow, otherTextField, recordDecisionWin, rowIndex, savedRow, typeData, typeDecisionSection, typeDecisionTableView;
+          rowIndex = e.index;
           recordDecisionWin = Ti.UI.createWindow({
             title: 'Record Decision',
             backgroundColor: '#ffffff'
@@ -977,6 +978,46 @@
             backgroundImage: 'images/button_blue.png',
             width: 300,
             height: 50
+          });
+          saveButton.addEventListener('click', function(e) {
+            var decisionTitle, groupHasCheck, i, newDecisionRow, row, _len, _len2, _ref, _ref2;
+            decisionTitle = '';
+            groupHasCheck = false;
+            _ref = typeDecisionSection.rows;
+            for (i = 0, _len = _ref.length; i < _len; i++) {
+              row = _ref[i];
+              if (typeDecisionSection.rows[i].hasCheck === true) {
+                decisionTitle += typeDecisionSection.rows[i].title + ' - ';
+                groupHasCheck = true;
+              }
+            }
+            if (groupHasCheck === false) {
+              alert('You must choose the type of decision.');
+              return false;
+            }
+            groupHasCheck = false;
+            _ref2 = decisionMakerSection.rows;
+            for (i = 0, _len2 = _ref2.length; i < _len2; i++) {
+              row = _ref2[i];
+              if (decisionMakerSection.rows[i].hasCheck === true) {
+                if ((decisionMakerSection.rows[i].title != null) && decisionMakerSection.rows[i].title !== '') {
+                  decisionTitle += decisionMakerSection.rows[i].title;
+                } else {
+                  decisionTitle += otherTextField.value;
+                }
+                groupHasCheck = true;
+              }
+            }
+            if (groupHasCheck === false) {
+              alert('You must choose the person who made the decision.');
+              return false;
+            }
+            newDecisionRow = Ti.UI.createTableViewRow({
+              title: decisionTitle,
+              editable: true
+            });
+            contactTableView.insertRowBefore(rowIndex, newDecisionRow);
+            return recordContactNav.close(recordDecisionWin);
           });
           footerView.add(saveButton);
           typeDecisionTableView = Ti.UI.createTableView({

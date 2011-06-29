@@ -878,6 +878,7 @@ class UI
       })
       recordDecisionRow.addEventListener('click', (e) ->
         # create the add decision window
+        rowIndex = e.index
         recordDecisionWin = Ti.UI.createWindow({
           title: 'Record Decision',
           backgroundColor: '#ffffff'
@@ -962,6 +963,38 @@ class UI
           width: 300,
           height: 50
         })
+        saveButton.addEventListener('click', (e) ->
+          # Save and go back to other window in the navgroup
+          # Loop through the two sections to find the one that hasCheck
+          decisionTitle = ''
+          groupHasCheck = false
+          for row, i in typeDecisionSection.rows
+            if typeDecisionSection.rows[i].hasCheck is true
+              decisionTitle += typeDecisionSection.rows[i].title + ' - '
+              groupHasCheck = true
+          # Makes sure something was checked for the type of decision
+          if groupHasCheck is false
+            alert('You must choose the type of decision.')
+            return false
+          groupHasCheck = false
+          for row, i in decisionMakerSection.rows
+            if decisionMakerSection.rows[i].hasCheck is true
+              if decisionMakerSection.rows[i].title? and decisionMakerSection.rows[i].title isnt ''
+                decisionTitle += decisionMakerSection.rows[i].title
+              else
+                decisionTitle += otherTextField.value
+              groupHasCheck = true
+          # Makes sure something was checked for the person making the decision
+          if groupHasCheck is false
+            alert('You must choose the person who made the decision.')
+            return false
+          newDecisionRow = Ti.UI.createTableViewRow({
+            title: decisionTitle,
+            editable: true
+          })
+          contactTableView.insertRowBefore(rowIndex, newDecisionRow)
+          recordContactNav.close(recordDecisionWin)
+        )
         footerView.add(saveButton)
         
         typeDecisionTableView = Ti.UI.createTableView({
