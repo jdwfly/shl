@@ -791,6 +791,50 @@
             systemButton: Ti.UI.iPhone.SystemButton.SAVE
           });
           saveButton.addEventListener('click', function(e) {
+            var commentsValue, dateValue, groupHasCheck, i, re, row, typeValue, _len, _len2, _ref, _ref2;
+            re = /^\d{1,2}\/\d{1,2}\/\d{4}$/;
+            if (dateField.value !== '' && !dateField.value.match(re)) {
+              alert('Invalid date format. Please format date MM/DD/YYYY');
+              return false;
+            }
+            if (dateField.value === '') {
+              dateValue = 0;
+            } else {
+              dateValue = strtotime(dateField.value);
+            }
+            groupHasCheck = false;
+            _ref = visitSection.rows;
+            for (i = 0, _len = _ref.length; i < _len; i++) {
+              row = _ref[i];
+              if (visitSection.rows[i].hasCheck) {
+                typeValue = visitSection.rows[i].title;
+                groupHasCheck = true;
+              }
+            }
+            if (groupHasCheck === false) {
+              alert('You must select the type of visit.');
+              return false;
+            }
+            commentsValue = commentsTextArea.value;
+            prospect.createContact({
+              type: typeValue,
+              date: dateValue,
+              comments: commentsValue
+            });
+            if (decisionSection.rows.length > 1) {
+              _ref2 = decisionSection.rows;
+              for (i = 0, _len2 = _ref2.length; i < _len2; i++) {
+                row = _ref2[i];
+                if (!decisionSection.rows[i].hasChild) {
+                  prospect.createContact({
+                    type: decisionSection.rows[i].decisionType,
+                    date: dateValue,
+                    individual: decisionSection.rows[i].decisionPerson
+                  });
+                }
+              }
+            }
+            Ti.API.info(prospect.getContactList().toJSON());
             return recordContactWin.close();
           });
           recordContactRoot.setRightNavButton(saveButton);
@@ -980,13 +1024,16 @@
             height: 50
           });
           saveButton.addEventListener('click', function(e) {
-            var decisionTitle, groupHasCheck, i, newDecisionRow, row, _len, _len2, _ref, _ref2;
+            var decisionPerson, decisionTitle, decisionType, groupHasCheck, i, newDecisionRow, row, _len, _len2, _ref, _ref2;
             decisionTitle = '';
+            decisionType = '';
+            decisionPerson = '';
             groupHasCheck = false;
             _ref = typeDecisionSection.rows;
             for (i = 0, _len = _ref.length; i < _len; i++) {
               row = _ref[i];
               if (typeDecisionSection.rows[i].hasCheck === true) {
+                decisionType = typeDecisionSection.rows[i].title;
                 decisionTitle += typeDecisionSection.rows[i].title + ' - ';
                 groupHasCheck = true;
               }
@@ -1001,8 +1048,10 @@
               row = _ref2[i];
               if (decisionMakerSection.rows[i].hasCheck === true) {
                 if ((decisionMakerSection.rows[i].title != null) && decisionMakerSection.rows[i].title !== '') {
+                  decisionPerson = decisionMakerSection.rows[i].title;
                   decisionTitle += decisionMakerSection.rows[i].title;
                 } else {
+                  decisionPerson = otherTextField.value;
                   decisionTitle += otherTextField.value;
                 }
                 groupHasCheck = true;
@@ -1014,6 +1063,8 @@
             }
             newDecisionRow = Ti.UI.createTableViewRow({
               title: decisionTitle,
+              decisionType: decisionType,
+              decisionPerson: decisionPerson,
               editable: true
             });
             contactTableView.insertRowBefore(rowIndex, newDecisionRow);

@@ -782,7 +782,43 @@ class UI
           systemButton: Ti.UI.iPhone.SystemButton.SAVE
         })
         saveButton.addEventListener('click', (e) ->
-          # TODO : Actually save the contact
+          # Convert the date
+          re = /^\d{1,2}\/\d{1,2}\/\d{4}$/
+          if dateField.value isnt '' and not dateField.value.match(re)
+            alert('Invalid date format. Please format date MM/DD/YYYY')
+            return false
+          if dateField.value is ''
+            dateValue = 0
+          else
+            dateValue = strtotime(dateField.value)
+          # Get the type of contact
+          groupHasCheck = false
+          for row, i in visitSection.rows
+            if visitSection.rows[i].hasCheck
+              typeValue = visitSection.rows[i].title
+              groupHasCheck = true
+          if groupHasCheck is false
+            alert('You must select the type of visit.')
+            return false
+          # Get the comments
+          commentsValue = commentsTextArea.value
+          
+          prospect.createContact({
+            type: typeValue,
+            date: dateValue,
+            comments: commentsValue
+          })
+          
+          if decisionSection.rows.length > 1
+            for row, i in decisionSection.rows
+              if not decisionSection.rows[i].hasChild
+                prospect.createContact({
+                  type: decisionSection.rows[i].decisionType,
+                  date: dateValue,
+                  individual: decisionSection.rows[i].decisionPerson
+                })
+          
+          Ti.API.info(prospect.getContactList().toJSON())
           recordContactWin.close()
         )
         recordContactRoot.setRightNavButton(saveButton)
@@ -967,9 +1003,12 @@ class UI
           # Save and go back to other window in the navgroup
           # Loop through the two sections to find the one that hasCheck
           decisionTitle = ''
+          decisionType = ''
+          decisionPerson = ''
           groupHasCheck = false
           for row, i in typeDecisionSection.rows
             if typeDecisionSection.rows[i].hasCheck is true
+              decisionType = typeDecisionSection.rows[i].title
               decisionTitle += typeDecisionSection.rows[i].title + ' - '
               groupHasCheck = true
           # Makes sure something was checked for the type of decision
@@ -980,8 +1019,10 @@ class UI
           for row, i in decisionMakerSection.rows
             if decisionMakerSection.rows[i].hasCheck is true
               if decisionMakerSection.rows[i].title? and decisionMakerSection.rows[i].title isnt ''
+                decisionPerson = decisionMakerSection.rows[i].title
                 decisionTitle += decisionMakerSection.rows[i].title
               else
+                decisionPerson = otherTextField.value
                 decisionTitle += otherTextField.value
               groupHasCheck = true
           # Makes sure something was checked for the person making the decision
@@ -990,6 +1031,8 @@ class UI
             return false
           newDecisionRow = Ti.UI.createTableViewRow({
             title: decisionTitle,
+            decisionType: decisionType,
+            decisionPerson: decisionPerson,
             editable: true
           })
           contactTableView.insertRowBefore(rowIndex, newDecisionRow)
