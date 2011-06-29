@@ -564,7 +564,7 @@
         moveable: true
       });
       tableView.addEventListener('click', function(e) {
-        var addW, b, currentList, listWin, lname, prospects;
+        var addW, b, currentList, listWin, listcancel, listedit, listview, lname, prospects;
         Ti.API.info(JSON.stringify(e.row));
         if (e.row.listID === 'custom') {
           addW = Ti.UI.createWindow({
@@ -619,7 +619,82 @@
           Ti.API.info('currentList = ' + JSON.stringify(ActiveRecord));
           prospects = currentList.getProspectList();
           Ti.API.info('prospects = ' + JSON.stringify(prospects));
-          listWin.add(self.createProspectTableView(prospects));
+          listview = self.createProspectTableView(prospects);
+          listview.deleteButtonTitle = 'Remove';
+          listview.editable = true;
+          listview.allowsSelectionDuringEditing = true;
+          listview.addEventListener('delete', function(e) {
+            var currentListing;
+            currentListing = shl.Listing.find({
+              first: true,
+              where: {
+                list_id: currentList.id,
+                prospect_id: e.row.prospect.id
+              }
+            });
+            return currentListing.destroy();
+          });
+          listWin.add(listview);
+          listedit = Titanium.UI.createButton({
+            title: 'Edit'
+          });
+          listedit.addEventListener('click', function() {
+            var addBtn, brow, clearBtn, deleteBtn, editBtns;
+            listWin.setRightNavButton(listcancel);
+            listview.editing = true;
+            brow = Ti.UI.createTableViewRow({
+              backgroundColor: '#999',
+              height: 50,
+              editable: false,
+              name: 'options'
+            });
+            editBtns = Ti.UI.createView({
+              height: 50,
+              width: 300,
+              layout: 'horizontal'
+            });
+            addBtn = Ti.UI.createButton({
+              title: 'Add',
+              width: 80,
+              height: 38,
+              left: 7
+            });
+            clearBtn = Ti.UI.createButton({
+              title: 'Clear',
+              width: 80,
+              height: 38,
+              left: 7
+            });
+            deleteBtn = Ti.UI.createButton({
+              title: 'Delete',
+              width: 80,
+              height: 38,
+              left: 7
+            });
+            editBtns.add(addBtn);
+            editBtns.add(clearBtn);
+            editBtns.add(deleteBtn);
+            brow.add(editBtns);
+            if (listview.data[0].rows.length >= 1) {
+              return listview.insertRowBefore(0, brow);
+            } else {
+              return listview.appendRow(brow);
+            }
+          });
+          listcancel = Titanium.UI.createButton({
+            title: 'Done',
+            style: Titanium.UI.iPhone.SystemButtonStyle.DONE
+          });
+          listcancel.addEventListener('click', function() {
+            var index;
+            listWin.setRightNavButton(listedit);
+            listview.editing = false;
+            index = listview.getIndexByName('options');
+            return listview.deleteRow(index, {
+              animationStyle: Titanium.UI.iPhone.RowAnimationStyle.UP
+            });
+          });
+          listWin.setRightNavButton(listedit);
           return self.tabs.activeTab.open(listWin);
         }
       });
