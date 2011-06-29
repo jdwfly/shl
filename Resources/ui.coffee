@@ -692,8 +692,31 @@ class UI
     recordContactButton.addEventListener('click', (e) ->
       # TODO : create modal window to add contact
       recordContactWin = Ti.UI.createWindow({
-        title: 'Record Contact',
-        backgroundColor: '#ffffff'
+        backgroundColor: '#ffffff',
+        navBarHidden: true
+      })
+      recordContactRoot = Ti.UI.createWindow({
+        title: 'Record Contact'
+      })
+      if self.platform is 'iPhone OS'
+        closeButton = Ti.UI.createButton({
+          systemButton: Ti.UI.iPhone.SystemButton.CANCEL
+        })
+        closeButton.addEventListener('click', (e) ->
+          recordContactWin.close()
+        )
+        recordContactRoot.setLeftNavButton(closeButton)
+        saveButton = Ti.UI.createButton({
+          systemButton: Ti.UI.iPhone.SystemButton.SAVE
+        })
+        saveButton.addEventListener('click', (e) ->
+          # TODO : Actually save the contact
+          recordContactWin.close()
+        )
+        recordContactRoot.setRightNavButton(saveButton)
+      
+      recordContactNav = Ti.UI.iPhone.createNavigationGroup({
+        window: recordContactRoot
       })
       tdata = []
       
@@ -706,7 +729,7 @@ class UI
         height: 35,
         width: 300,
         left: 7,
-        value: today.getMonth() + '/' + today.getDate() + '/' + today.getFullYear(),
+        value: (today.getMonth()+1) + '/' + today.getDate() + '/' + today.getFullYear(),
         keyboardType:Titanium.UI.KEYBOARD_DEFAULT,
         returnKeyType:Titanium.UI.RETURNKEY_DONE,
         borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE
@@ -750,7 +773,7 @@ class UI
       visitSection.add(commentRow)
       visitSection.addEventListener('click', (e) ->
         for row, i in visitSection.rows
-          # for whatever reason e.index is off by one... probably because of headerTitle
+          # e.index is off by one because there is one row already
           if i is (e.index - 1)
             visitSection.rows[i].hasCheck = true
           else
@@ -781,6 +804,103 @@ class UI
         title: 'Record Decision',
         hasChild: true
       })
+      recordDecisionRow.addEventListener('click', (e) ->
+        # create the add decision window
+        recordDecisionWin = Ti.UI.createWindow({
+          title: 'Record Decision',
+          backgroundColor: '#ffffff'
+        })
+        typeData = []
+        typeDecisionSection = Ti.UI.createTableViewSection({
+          headerTitle: prospect.formatName()
+        })
+        savedRow = Ti.UI.createTableViewRow({
+          title: 'Saved',
+          hasCheck: false
+        })
+        baptizedRow = Ti.UI.createTableViewRow({
+          title: 'Baptized',
+          hasCheck: false
+        })
+        joinedRow = Ti.UI.createTableViewRow({
+          title: 'Joined the Church',
+          hasCheck: false
+        })
+        typeDecisionSection.add(savedRow)
+        typeDecisionSection.add(baptizedRow)
+        typeDecisionSection.add(joinedRow)
+        typeDecisionSection.addEventListener('click', (e) ->
+          for row, i in typeDecisionSection.rows
+            if i is e.index
+              typeDecisionSection.rows[i].hasCheck = true
+            else
+              typeDecisionSection.rows[i].hasCheck = false
+        )
+        typeData.push(typeDecisionSection)
+        
+        decisionMakerSection = Ti.UI.createTableViewSection()
+        if prospect.firstMale isnt ''
+          maleRow = Ti.UI.createTableViewRow({
+            title: prospect.firstMale,
+            hasCheck: false
+          })
+          decisionMakerSection.add(maleRow)
+        if prospect.firstFemale isnt ''
+          femaleRow = Ti.UI.createTableViewRow({
+            title: prospect.firstFemale,
+            hasCheck: false
+          })
+          decisionMakerSection.add(femaleRow)
+        otherRow = Ti.UI.createTableViewRow({
+          hasCheck: false
+        })
+        otherTextField = Ti.UI.createTextField({
+          height: 35,
+          width: 270,
+          left: 7,
+          keyboardType:Titanium.UI.KEYBOARD_DEFAULT,
+          returnKeyType:Titanium.UI.RETURNKEY_DONE,
+          borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
+          hintText: 'Other Family Member'
+        })
+        otherTextField.addEventListener('blur', (e) ->
+          if maleRow? then maleRow.hasCheck = false
+          if femaleRow? then femaleRow.hasCheck = false
+          otherRow.hasCheck = true
+        )
+        otherRow.add(otherTextField)
+        decisionMakerSection.add(otherRow)
+        decisionMakerSection.addEventListener('click', (e) ->
+          for row, i in decisionMakerSection.rows
+            if i is (e.index - 3)
+              decisionMakerSection.rows[i].hasCheck = true
+              otherRow.hasCheck = false
+            else
+              decisionMakerSection.rows[i].hasCheck = false
+        )
+        typeData.push(decisionMakerSection)
+        footerView = Ti.UI.createView({
+          height: 50,
+          width: 300,
+          left: 0
+        })
+        saveButton = Ti.UI.createButton({
+          title: 'Save',
+          backgroundImage: 'images/button_blue.png',
+          width: 300,
+          height: 50
+        })
+        footerView.add(saveButton)
+        
+        typeDecisionTableView = Ti.UI.createTableView({
+          data: typeData,
+          style: Titanium.UI.iPhone.TableViewStyle.GROUPED,
+          footerView: footerView
+        })
+        recordDecisionWin.add(typeDecisionTableView)
+        
+        recordContactNav.open(recordDecisionWin)
+      )
       decisionSection.add(recordDecisionRow)
       tdata.push(decisionSection)
       
@@ -788,24 +908,8 @@ class UI
         data: tdata, 
         style: Titanium.UI.iPhone.TableViewStyle.GROUPED
       })
-      recordContactWin.add(contactTableView)
-      
-      if self.platform is 'iPhone OS'
-        closeButton = Ti.UI.createButton({
-          systemButton: Ti.UI.iPhone.SystemButton.CANCEL
-        })
-        closeButton.addEventListener('click', (e) ->
-          recordContactWin.close()
-        )
-        recordContactWin.setLeftNavButton(closeButton)
-        saveButton = Ti.UI.createButton({
-          systemButton: Ti.UI.iPhone.SystemButton.SAVE
-        })
-        saveButton.addEventListener('click', (e) ->
-          # TODO : Actually save the contact
-          recordContactWin.close()
-        )
-        recordContactWin.setRightNavButton(saveButton)
+      recordContactRoot.add(contactTableView)
+      recordContactWin.add(recordContactNav)
       
       recordContactWin.open({
         modal:true,

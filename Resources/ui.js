@@ -696,10 +696,32 @@
         backgroundImage: '/images/button_blue.png'
       });
       recordContactButton.addEventListener('click', function(e) {
-        var closeButton, commentRow, commentSection, commentsRow, commentsTextArea, contactTableView, dateField, dateRow, dateSection, decisionSection, emailRow, letterRow, phoneRow, recordContactWin, recordDecisionRow, saveButton, tdata, today, visitRow, visitSection, visitedChurchRow;
+        var closeButton, commentRow, commentSection, commentsRow, commentsTextArea, contactTableView, dateField, dateRow, dateSection, decisionSection, emailRow, letterRow, phoneRow, recordContactNav, recordContactRoot, recordContactWin, recordDecisionRow, saveButton, tdata, today, visitRow, visitSection, visitedChurchRow;
         recordContactWin = Ti.UI.createWindow({
-          title: 'Record Contact',
-          backgroundColor: '#ffffff'
+          backgroundColor: '#ffffff',
+          navBarHidden: true
+        });
+        recordContactRoot = Ti.UI.createWindow({
+          title: 'Record Contact'
+        });
+        if (self.platform === 'iPhone OS') {
+          closeButton = Ti.UI.createButton({
+            systemButton: Ti.UI.iPhone.SystemButton.CANCEL
+          });
+          closeButton.addEventListener('click', function(e) {
+            return recordContactWin.close();
+          });
+          recordContactRoot.setLeftNavButton(closeButton);
+          saveButton = Ti.UI.createButton({
+            systemButton: Ti.UI.iPhone.SystemButton.SAVE
+          });
+          saveButton.addEventListener('click', function(e) {
+            return recordContactWin.close();
+          });
+          recordContactRoot.setRightNavButton(saveButton);
+        }
+        recordContactNav = Ti.UI.iPhone.createNavigationGroup({
+          window: recordContactRoot
         });
         tdata = [];
         today = new Date();
@@ -711,7 +733,7 @@
           height: 35,
           width: 300,
           left: 7,
-          value: today.getMonth() + '/' + today.getDate() + '/' + today.getFullYear(),
+          value: (today.getMonth() + 1) + '/' + today.getDate() + '/' + today.getFullYear(),
           keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
           returnKeyType: Titanium.UI.RETURNKEY_DONE,
           borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE
@@ -785,29 +807,119 @@
           title: 'Record Decision',
           hasChild: true
         });
+        recordDecisionRow.addEventListener('click', function(e) {
+          var baptizedRow, decisionMakerSection, femaleRow, footerView, joinedRow, maleRow, otherRow, otherTextField, recordDecisionWin, savedRow, typeData, typeDecisionSection, typeDecisionTableView;
+          recordDecisionWin = Ti.UI.createWindow({
+            title: 'Record Decision',
+            backgroundColor: '#ffffff'
+          });
+          typeData = [];
+          typeDecisionSection = Ti.UI.createTableViewSection({
+            headerTitle: prospect.formatName()
+          });
+          savedRow = Ti.UI.createTableViewRow({
+            title: 'Saved',
+            hasCheck: false
+          });
+          baptizedRow = Ti.UI.createTableViewRow({
+            title: 'Baptized',
+            hasCheck: false
+          });
+          joinedRow = Ti.UI.createTableViewRow({
+            title: 'Joined the Church',
+            hasCheck: false
+          });
+          typeDecisionSection.add(savedRow);
+          typeDecisionSection.add(baptizedRow);
+          typeDecisionSection.add(joinedRow);
+          typeDecisionSection.addEventListener('click', function(e) {
+            var i, row, _len, _ref, _results;
+            _ref = typeDecisionSection.rows;
+            _results = [];
+            for (i = 0, _len = _ref.length; i < _len; i++) {
+              row = _ref[i];
+              _results.push(i === e.index ? typeDecisionSection.rows[i].hasCheck = true : typeDecisionSection.rows[i].hasCheck = false);
+            }
+            return _results;
+          });
+          typeData.push(typeDecisionSection);
+          decisionMakerSection = Ti.UI.createTableViewSection();
+          if (prospect.firstMale !== '') {
+            maleRow = Ti.UI.createTableViewRow({
+              title: prospect.firstMale,
+              hasCheck: false
+            });
+            decisionMakerSection.add(maleRow);
+          }
+          if (prospect.firstFemale !== '') {
+            femaleRow = Ti.UI.createTableViewRow({
+              title: prospect.firstFemale,
+              hasCheck: false
+            });
+            decisionMakerSection.add(femaleRow);
+          }
+          otherRow = Ti.UI.createTableViewRow({
+            hasCheck: false
+          });
+          otherTextField = Ti.UI.createTextField({
+            height: 35,
+            width: 270,
+            left: 7,
+            keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
+            returnKeyType: Titanium.UI.RETURNKEY_DONE,
+            borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
+            hintText: 'Other Family Member'
+          });
+          otherTextField.addEventListener('blur', function(e) {
+            if (maleRow != null) {
+              maleRow.hasCheck = false;
+            }
+            if (femaleRow != null) {
+              femaleRow.hasCheck = false;
+            }
+            return otherRow.hasCheck = true;
+          });
+          otherRow.add(otherTextField);
+          decisionMakerSection.add(otherRow);
+          decisionMakerSection.addEventListener('click', function(e) {
+            var i, row, _len, _ref, _results;
+            _ref = decisionMakerSection.rows;
+            _results = [];
+            for (i = 0, _len = _ref.length; i < _len; i++) {
+              row = _ref[i];
+              _results.push(i === (e.index - 3) ? (decisionMakerSection.rows[i].hasCheck = true, otherRow.hasCheck = false) : decisionMakerSection.rows[i].hasCheck = false);
+            }
+            return _results;
+          });
+          typeData.push(decisionMakerSection);
+          footerView = Ti.UI.createView({
+            height: 50,
+            width: 300,
+            left: 0
+          });
+          saveButton = Ti.UI.createButton({
+            title: 'Save',
+            backgroundImage: 'images/button_blue.png',
+            width: 300,
+            height: 50
+          });
+          footerView.add(saveButton);
+          typeDecisionTableView = Ti.UI.createTableView({
+            data: typeData,
+            style: Titanium.UI.iPhone.TableViewStyle.GROUPED,
+            footerView: footerView
+          });
+          recordDecisionWin.add(typeDecisionTableView);
+          return recordContactNav.open(recordDecisionWin);
+        });
         decisionSection.add(recordDecisionRow);
         tdata.push(decisionSection);
         contactTableView = Ti.UI.createTableView({
           data: tdata,
           style: Titanium.UI.iPhone.TableViewStyle.GROUPED
         });
-        recordContactWin.add(contactTableView);
-        if (self.platform === 'iPhone OS') {
-          closeButton = Ti.UI.createButton({
-            systemButton: Ti.UI.iPhone.SystemButton.CANCEL
-          });
-          closeButton.addEventListener('click', function(e) {
-            return recordContactWin.close();
-          });
-          recordContactWin.setLeftNavButton(closeButton);
-          saveButton = Ti.UI.createButton({
-            systemButton: Ti.UI.iPhone.SystemButton.SAVE
-          });
-          saveButton.addEventListener('click', function(e) {
-            return recordContactWin.close();
-          });
-          recordContactWin.setRightNavButton(saveButton);
-        }
+        recordContactRoot.add(contactTableView);
+        recordContactWin.add(recordContactNav);
         return recordContactWin.open({
           modal: true,
           modalTransitionStyle: Ti.UI.iPhone.MODAL_TRANSITION_STYLE_COVER_VERTICAL,
