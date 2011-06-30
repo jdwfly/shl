@@ -8,7 +8,7 @@
         <target device="android">true</target>
     </deployment-targets>
     <id>org.lancasterbaptist.shl</id>
-    <name>shl</name>
+    <name>Outreach</name>
     <version>1.0</version>
     <publisher>Lancaster Baptist Church</publisher>
     <url>http://www.lancasterbaptist.org/</url>

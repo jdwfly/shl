@@ -58,7 +58,9 @@
       tabs.addTab(nearbyTab);
       tabs.addTab(settingsTab);
       tabs.addTab(helpTab);
-      tabs.open();
+      tabs.open({
+        transition: Ti.UI.iPhone.AnimationStyle.FLIP_FROM_LEFT
+      });
       return tabs;
     };
     UI.prototype.createListsWindow = function() {
