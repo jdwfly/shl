@@ -377,12 +377,21 @@ class UI
         editWin = self.createProspectFormWin(prospect)
         editWin.addEventListener('close', (e) ->
           # Update the current information on the page
-          prospect = shl.Prospect.find(prospect.id)
-          Ti.API.info(prospect.toJSON())
-          nameLabel.text = prospect.formatName()
-          contactLabel.text = 'Last Contact: ' + prospect.formatContactPretty()
-          if addressSection?
-            addressLabel.text = prospect.formatAddress()
+          if e.source.exitValue
+            prospect = shl.Prospect.find(prospect.id)
+            Ti.API.info(prospect.toJSON())
+            nameLabel.text = prospect.formatName()
+            contactLabel.text = 'Last Contact: ' + prospect.formatContactPretty()
+            if addressSection?
+              addressLabel.text = prospect.formatAddress()
+            if phoneHomeLabel?
+              phoneHomeLabel.text = 'home: ' + prospect.phoneHome
+            if phoneMobileLabel?
+              phoneMobileLabel.text = 'mobile: ' + prospect.phoneMobile
+            if emailLabel?
+              emailLabel.text = prospect.email
+            firstContactLabel.text = 'First Contact: ' + date('n/j/Y', prospect.firstContactDate) + "\n" + prospect.firstContactPoint
+            
         )
         editWin.open({
           modal:true,
@@ -1256,7 +1265,7 @@ class UI
       returnKeyType:Titanium.UI.RETURNKEY_DONE,
       borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
       hintText:L('1/10/2011'),
-      value: if prospect? then prospect.firstContactDate else ''
+      value: if prospect? then date('n/j/Y', prospect.firstContactDate) else ''
     })
     initialContactRow.add(initContactLabel)
     initialContactRow.add(sep5)
@@ -1325,13 +1334,14 @@ class UI
             phoneHome: homeText.value,
             phoneMobile: mobileText.value,
             email: email.value,
-            firstContactDate: initialPicker.value,
+            firstContactDate: strtotime(initialPicker.value),
             firstContactPoint: pocTextfield.value,
             previouslySaved: prevSavedRow.hasCheck
             previouslyBaptized: prevBaptRow.hasCheck
             attended: attendedRow.hasCheck
             sundaySchool: enrolledRow.hasCheck
           })
+          win.exitValue = true
           win.close()
         else
           # Create an object to save to the database
@@ -1346,7 +1356,7 @@ class UI
             phoneHome: homeText.value,
             phoneMobile: mobileText.value,
             email: email.value,
-            firstContactDate: initialPicker.value,
+            firstContactDate: strtotime(initialPicker.value),
             firstContactPoint: pocTextfield.value,
             previouslySaved: prevSavedRow.hasCheck
             previouslyBaptized: prevBaptRow.hasCheck
@@ -1379,6 +1389,7 @@ class UI
           systemButton:Ti.UI.iPhone.SystemButton.CANCEL
         })
         cancel.addEventListener('click', (e) ->
+          win.exitValue = false
           win.close()
         )
         win.setLeftNavButton(cancel)

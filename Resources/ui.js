@@ -391,12 +391,24 @@
           var editWin;
           editWin = self.createProspectFormWin(prospect);
           editWin.addEventListener('close', function(e) {
-            prospect = shl.Prospect.find(prospect.id);
-            Ti.API.info(prospect.toJSON());
-            nameLabel.text = prospect.formatName();
-            contactLabel.text = 'Last Contact: ' + prospect.formatContactPretty();
-            if (typeof addressSection !== "undefined" && addressSection !== null) {
-              return addressLabel.text = prospect.formatAddress();
+            if (e.source.exitValue) {
+              prospect = shl.Prospect.find(prospect.id);
+              Ti.API.info(prospect.toJSON());
+              nameLabel.text = prospect.formatName();
+              contactLabel.text = 'Last Contact: ' + prospect.formatContactPretty();
+              if (typeof addressSection !== "undefined" && addressSection !== null) {
+                addressLabel.text = prospect.formatAddress();
+              }
+              if (typeof phoneHomeLabel !== "undefined" && phoneHomeLabel !== null) {
+                phoneHomeLabel.text = 'home: ' + prospect.phoneHome;
+              }
+              if (typeof phoneMobileLabel !== "undefined" && phoneMobileLabel !== null) {
+                phoneMobileLabel.text = 'mobile: ' + prospect.phoneMobile;
+              }
+              if (typeof emailLabel !== "undefined" && emailLabel !== null) {
+                emailLabel.text = prospect.email;
+              }
+              return firstContactLabel.text = 'First Contact: ' + date('n/j/Y', prospect.firstContactDate) + "\n" + prospect.firstContactPoint;
             }
           });
           return editWin.open({
@@ -1346,7 +1358,7 @@
         returnKeyType: Titanium.UI.RETURNKEY_DONE,
         borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
         hintText: L('1/10/2011'),
-        value: prospect != null ? prospect.firstContactDate : ''
+        value: prospect != null ? date('n/j/Y', prospect.firstContactDate) : ''
       });
       initialContactRow.add(initContactLabel);
       initialContactRow.add(sep5);
@@ -1417,13 +1429,14 @@
               phoneHome: homeText.value,
               phoneMobile: mobileText.value,
               email: email.value,
-              firstContactDate: initialPicker.value,
+              firstContactDate: strtotime(initialPicker.value),
               firstContactPoint: pocTextfield.value,
               previouslySaved: prevSavedRow.hasCheck,
               previouslyBaptized: prevBaptRow.hasCheck,
               attended: attendedRow.hasCheck,
               sundaySchool: enrolledRow.hasCheck
             });
+            win.exitValue = true;
             return win.close();
           } else {
             createdProspect = shl.Prospect.create({
@@ -1437,7 +1450,7 @@
               phoneHome: homeText.value,
               phoneMobile: mobileText.value,
               email: email.value,
-              firstContactDate: initialPicker.value,
+              firstContactDate: strtotime(initialPicker.value),
               firstContactPoint: pocTextfield.value,
               previouslySaved: prevSavedRow.hasCheck,
               previouslyBaptized: prevBaptRow.hasCheck,
@@ -1469,6 +1482,7 @@
             systemButton: Ti.UI.iPhone.SystemButton.CANCEL
           });
           cancel.addEventListener('click', function(e) {
+            win.exitValue = false;
             return win.close();
           });
           win.setLeftNavButton(cancel);
