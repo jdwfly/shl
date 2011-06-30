@@ -553,6 +553,113 @@ class UI
   createHelpWindow : () ->
     @createListsWindow()
   
+  createAddProspectsWindow : (listId) ->
+    self = this
+    win = Ti.UI.createWindow({
+      title : 'Add Prospects'
+    })
+    doneBtn = Ti.UI.createButton({
+      title:'Done',
+      width:100,
+      height:30
+    })
+    doneBtn.addEventListener('click', () ->
+      win.close()
+    )
+    win.setRightNavButton(doneBtn)
+    prospects = shl.Prospect.find()
+    if prospects.length < 1
+      return win
+    createRow = (prospect)->
+      row = Ti.UI.createTableViewRow({
+        height: 70
+      })
+      contentTitle = Ti.UI.createLabel({
+        text: prospect.formatName(),
+        font: {fontWeight: 'bold', fontSize:18},
+        height: 30,
+        top : 5,
+        width: 'auto',
+        left: 5
+      })
+      addressLabel = Ti.UI.createLabel({
+        text: prospect.formatAddress(),
+        font: {fontWeight: 'normal', fontSize: 12},
+        height: 35,
+        width: 'auto',
+        height: 'auto',
+        top: 33,
+        left: 5,
+        bottom: 5
+      })
+      row.add(contentTitle)
+      row.add(addressLabel)
+      row.prospect = prospect
+      addBtn = Ti.UI.createButton({
+        backgroundImage:'/images/addDefault.png',
+        height:27,
+        width:27,
+        right:10,
+        top: 20
+      })
+      addBtn.addEventListener('click', () ->
+        Ti.API.info(prospect)
+        shl.Listing.create {
+          list_id : listId,
+          prospect_id : prospect.id
+        }
+        row.backgroundColor = '#AAAAAA'
+        setTimeout( () ->
+          deleteBtn.show()
+        ,100)
+        addBtn.hide()
+        contentTitle.animate({left:50, duration:100})
+        addressLabel.animate({left:50, duration:100})
+      )
+      row.add(addBtn)
+      deleteBtn = Ti.UI.createButton({
+        backgroundImage:'/images/minusDefault.png',
+        height:27,
+        width:27,
+        left:10,
+        top: 20,
+        visible:false
+      })
+      deleteBtn.addEventListener('click', () ->
+        todelete = shl.Listing.find({
+          where : {
+            prospect_id : prospect.id,
+            list_id : listId
+          }
+        })
+        for listing in todelete
+          listing.destroy()
+        row.backgroundColor = '#ffffff'
+        deleteBtn.hide()
+        addBtn.show()
+        contentTitle.animate({left:10, duration:100})
+        addressLabel.animate({left:10, duration:100})
+      )
+      row.add(deleteBtn)
+      currentList = shl.List.find(listId)
+      prospectsList = currentList.getProspectList()
+      listMembers = for prosp in prospectsList
+        prosp.id
+      if prospect.id in listMembers
+        deleteBtn.visible = true
+        addBtn.visible = false
+        contentTitle.left = 55
+        addressLabel.left = 55
+      row
+    
+    data = for prospect in prospects
+      createRow(prospect)
+    
+    tableView = Ti.UI.createTableView({data:data})
+    
+    win.add(tableView)
+    #TODO set this diferently for Android
+    return win
   createListTableView : (lists) ->
     self = this
     data = @processListData(lists)
@@ -655,27 +762,53 @@ class UI
           })
           addBtn = Ti.UI.createButton({
             title : 'Add',
-            width : 80,
+            width : 88,
             height : 38,
-            left : 7
+            left : 9,
+            top : 6
           })
+          addBtn.addEventListener('click', () ->
+            addProspectsWin = self.createAddProspectsWindow(e.row.listID)
+            addProspectsWin.open({
+              modal:true,
+              modalTransitionStyle: Ti.UI.iPhone.MODAL_TRANSITION_STYLE_COVER_VERTICAL,
+              modalStyle: Ti.UI.iPhone.MODAL_PRESENTATION_FORMSHEET
+            })
+          )
           clearBtn = Ti.UI.createButton({
             title : 'Clear',
-            width : 80,
+            width : 88,
             height : 38,
-            left : 7
+            left : 9,
+            top : 6
           })
+          clearBtn.addEventListener('click', () ->
+            a = Titanium.UI.createAlertDialog({
+              title:'Clear list?',
+              buttonNames : ['OK','Cancel'],
+              cancel : 1
+            })
+            a.addEventListener('click', (e) ->
+              Ti.API.info(e.index)
+              if e.index == 0
+                listings = currentList.getListingList()
+                for listing in listings
+                  listing.destroy()
+            )
+            a.show()
+          )
           deleteBtn = Ti.UI.createButton({
             title : 'Delete',
-            width : 80,
+            width : 88,
             height : 38,
-            left : 7
+            left : 9,
+            top : 6
           })
           editBtns.add(addBtn)
           editBtns.add(clearBtn)
           editBtns.add(deleteBtn)
           brow.add(editBtns)
-          if listview.data[0].rows.length >= 1
+          if listview.data[0] and listview.data[0].rows.length >= 1
             listview.insertRowBefore(0,brow)
           else
             listview.appendRow(brow)
@@ -715,9 +848,10 @@ class UI
     data = @processProspectData(prospects)
     tableView = Ti.UI.createTableView({data:data})
     tableView.addEventListener('click', (e) -> 
-      Ti.API.info(JSON.stringify(e.row))
-      prospectWin = self.createProspectViewWindow(e.row.prospect)
-      self.tabs.activeTab.open(prospectWin)
+      if not tableView.editing
+        Ti.API.info(JSON.stringify(e.row))
+        prospectWin = self.createProspectViewWindow(e.row.prospect)
+        self.tabs.activeTab.open(prospectWin)
     )
     tableView.updateProspects = (prospects) ->
       data = self.processProspectData(prospects)
