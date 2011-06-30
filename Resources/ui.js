@@ -64,7 +64,9 @@
       tabs.addTab(nearbyTab);
       tabs.addTab(settingsTab);
       tabs.addTab(helpTab);
-      tabs.open();
+      tabs.open({
+        transition: Ti.UI.iPhone.AnimationStyle.FLIP_FROM_LEFT
+      });
       return tabs;
     };
     UI.prototype.createListsWindow = function() {
@@ -147,7 +149,7 @@
       return win;
     };
     UI.prototype.createAddWindow = function() {
-      var attendedRow, b, city, citystateRow, country, data, email, emailRow, enrolledRow, fname, fnameRow, gender, genderRow, homeLabel, homeRow, homeText, initContactLabel, initialContactRow, initialPicker, lname, lnameRow, mobileLabel, mobileRow, mobileText, pocRow, pocTextfield, prevBaptRow, prevSavedRow, s1, s2, s3, s4, s5, s6, s7, sep1, sep2, sep3, sep4, sep5, state, street, streetRow, tableView, webView, win, zip, zipcountryRow;
+      var webView, win;
       if (this.isAndroid) {
         win = Ti.UI.createWindow({
           title: 'Add Prospect'
@@ -161,365 +163,7 @@
         win.add(webView);
         return win;
       }
-      win = Ti.UI.createWindow({
-        title: 'Add Prospect',
-        backgroundColor: '#eeeeee'
-      });
-      data = [];
-      s1 = Ti.UI.createTableViewSection();
-      fnameRow = Ti.UI.createTableViewRow({
-        height: 40,
-        layout: "vertical",
-        selectionStyle: "none"
-      });
-      fname = Ti.UI.createTextField({
-        height: 40,
-        left: 10,
-        keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
-        returnKeyType: Titanium.UI.RETURNKEY_DONE,
-        borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
-        hintText: L('First Name')
-      });
-      fnameRow.add(fname);
-      s1.add(fnameRow);
-      lnameRow = Ti.UI.createTableViewRow({
-        height: 40,
-        layout: "vertical",
-        selectionStyle: "none"
-      });
-      lname = Ti.UI.createTextField({
-        height: 40,
-        left: 10,
-        keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
-        returnKeyType: Titanium.UI.RETURNKEY_DONE,
-        borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
-        hintText: L('Last Name')
-      });
-      lnameRow.add(lname);
-      s1.add(lnameRow);
-      data.push(s1);
-      s2 = Ti.UI.createTableViewSection({
-        borderColor: 'transparent',
-        borderWidth: 0
-      });
-      genderRow = Ti.UI.createTableViewRow({
-        backgroundColor: 'transparent',
-        borderWidth: 0,
-        borderColor: 'transparent',
-        height: 40,
-        selectionStyle: "none"
-      });
-      if (this.platform === 'iPhone OS') {
-        gender = Titanium.UI.createTabbedBar({
-          labels: ['Male', 'Female', 'Couple'],
-          backgroundColor: '#336699',
-          style: Titanium.UI.iPhone.SystemButtonStyle.BAR,
-          height: 45,
-          width: 302
-        });
-        genderRow.add(gender);
-      }
-      s2.add(genderRow);
-      data.push(s2);
-      s3 = Ti.UI.createTableViewSection();
-      streetRow = Ti.UI.createTableViewRow({
-        height: 45,
-        layout: "vertical",
-        selectionStyle: "none"
-      });
-      street = Ti.UI.createTextField({
-        height: 40,
-        left: 10,
-        keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
-        returnKeyType: Titanium.UI.RETURNKEY_DONE,
-        borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
-        hintText: L('Street')
-      });
-      streetRow.add(street);
-      s3.add(streetRow);
-      citystateRow = Ti.UI.createTableViewRow({
-        height: 45,
-        layout: "horizontal",
-        selectionStyle: "none"
-      });
-      city = Ti.UI.createTextField({
-        width: 139,
-        height: 40,
-        left: 10,
-        keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
-        returnKeyType: Titanium.UI.RETURNKEY_DONE,
-        borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
-        hintText: L('City')
-      });
-      sep1 = Ti.UI.createView({
-        width: 1,
-        height: 45,
-        left: 0,
-        backgroundColor: '#cccccc'
-      });
-      state = Ti.UI.createTextField({
-        width: 139,
-        height: 40,
-        left: 10,
-        keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
-        returnKeyType: Titanium.UI.RETURNKEY_DONE,
-        borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
-        hintText: L('State')
-      });
-      citystateRow.add(city);
-      citystateRow.add(sep1);
-      citystateRow.add(state);
-      s3.add(citystateRow);
-      zipcountryRow = Ti.UI.createTableViewRow({
-        height: 45,
-        layout: "horizontal",
-        selectionStyle: "none"
-      });
-      zip = Ti.UI.createTextField({
-        width: 139,
-        height: 40,
-        left: 10,
-        keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
-        returnKeyType: Titanium.UI.RETURNKEY_DONE,
-        borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
-        hintText: L('Zip')
-      });
-      sep2 = Ti.UI.createView({
-        width: 1,
-        height: 45,
-        left: 0,
-        backgroundColor: '#cccccc'
-      });
-      country = Ti.UI.createTextField({
-        width: 139,
-        height: 40,
-        left: 10,
-        keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
-        returnKeyType: Titanium.UI.RETURNKEY_DONE,
-        borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
-        hintText: L('Country')
-      });
-      zipcountryRow.add(zip);
-      zipcountryRow.add(sep2);
-      zipcountryRow.add(country);
-      s3.add(zipcountryRow);
-      data.push(s3);
-      s4 = Ti.UI.createTableViewSection();
-      homeRow = Ti.UI.createTableViewRow({
-        height: 45,
-        layout: "horizontal",
-        selectionStyle: "none"
-      });
-      homeLabel = Ti.UI.createLabel({
-        text: 'Home',
-        font: {
-          fontWeight: 'bold',
-          fontSize: 16
-        },
-        height: 45,
-        width: 75,
-        left: 10
-      });
-      sep3 = Ti.UI.createView({
-        width: 1,
-        height: 45,
-        left: 0,
-        backgroundColor: '#cccccc'
-      });
-      homeText = Ti.UI.createTextField({
-        width: 200,
-        height: 40,
-        left: 5,
-        keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
-        returnKeyType: Titanium.UI.RETURNKEY_DONE,
-        borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE
-      });
-      homeRow.add(homeLabel);
-      homeRow.add(sep3);
-      homeRow.add(homeText);
-      s4.add(homeRow);
-      mobileRow = Ti.UI.createTableViewRow({
-        height: 45,
-        layout: "horizontal",
-        selectionStyle: "none"
-      });
-      mobileLabel = Ti.UI.createLabel({
-        text: 'Mobile',
-        font: {
-          fontWeight: 'bold',
-          fontSize: 16
-        },
-        height: 45,
-        width: 75,
-        left: 10
-      });
-      sep4 = Ti.UI.createView({
-        width: 1,
-        height: 45,
-        left: 0,
-        backgroundColor: '#cccccc'
-      });
-      mobileText = Ti.UI.createTextField({
-        width: 200,
-        height: 40,
-        left: 5,
-        keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
-        returnKeyType: Titanium.UI.RETURNKEY_DONE,
-        borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE
-      });
-      mobileRow.add(mobileLabel);
-      mobileRow.add(sep4);
-      mobileRow.add(mobileText);
-      s4.add(mobileRow);
-      data.push(s4);
-      s5 = Ti.UI.createTableViewSection();
-      emailRow = Ti.UI.createTableViewRow({
-        height: 45,
-        layout: "horizontal",
-        selectionStyle: "none"
-      });
-      email = Ti.UI.createTextField({
-        width: 280,
-        height: 40,
-        left: 10,
-        keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
-        returnKeyType: Titanium.UI.RETURNKEY_DONE,
-        borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
-        hintText: L('Email')
-      });
-      emailRow.add(email);
-      s5.add(emailRow);
-      data.push(s5);
-      s6 = Ti.UI.createTableViewSection();
-      initialContactRow = Ti.UI.createTableViewRow({
-        height: 45,
-        layout: 'horizontal',
-        selectionSytle: 'none'
-      });
-      initContactLabel = Ti.UI.createLabel({
-        text: 'Initial Contact',
-        font: {
-          fontWeight: 'bold',
-          fontSize: 16
-        },
-        height: 45,
-        width: 160,
-        left: 10
-      });
-      sep5 = Ti.UI.createView({
-        width: 1,
-        height: 45,
-        left: 0,
-        backgroundColor: '#cccccc'
-      });
-      initialPicker = Ti.UI.createTextField({
-        height: 45,
-        width: 120,
-        left: 7,
-        keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
-        returnKeyType: Titanium.UI.RETURNKEY_DONE,
-        borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
-        hintText: L('1/10/2011')
-      });
-      initialContactRow.add(initContactLabel);
-      initialContactRow.add(sep5);
-      initialContactRow.add(initialPicker);
-      s6.add(initialContactRow);
-      pocRow = Ti.UI.createTableViewRow({
-        height: 45,
-        layout: 'horizontal',
-        selectionSytle: 'none'
-      });
-      pocTextfield = Ti.UI.createTextField({
-        width: 280,
-        height: 40,
-        left: 10,
-        keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
-        returnKeyType: Titanium.UI.RETURNKEY_DONE,
-        borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
-        hintText: L('Point of Contact')
-      });
-      pocRow.add(pocTextfield);
-      s6.add(pocRow);
-      data.push(s6);
-      s7 = Ti.UI.createTableViewSection();
-      prevSavedRow = Ti.UI.createTableViewRow({
-        title: 'Previously Saved',
-        hasCheck: false
-      });
-      prevBaptRow = Ti.UI.createTableViewRow({
-        title: 'Previously Baptized',
-        hasCheck: false
-      });
-      attendedRow = Ti.UI.createTableViewRow({
-        title: 'Attended Church',
-        hasCheck: false
-      });
-      enrolledRow = Ti.UI.createTableViewRow({
-        title: 'Enrolled in Sunday School',
-        hasCheck: false
-      });
-      s7.add(prevSavedRow);
-      s7.add(prevBaptRow);
-      s7.add(attendedRow);
-      s7.add(enrolledRow);
-      s7.addEventListener('click', function(e) {
-        if (e.row.hasCheck) {
-          return e.row.hasCheck = false;
-        } else {
-          return e.row.hasCheck = true;
-        }
-      });
-      data.push(s7);
-      if (this.platform === 'iPhone OS') {
-        b = Ti.UI.createButton({
-          systemButton: Ti.UI.iPhone.SystemButton.SAVE
-        });
-        b.addEventListener('click', function() {
-          var createdProspect;
-          createdProspect = shl.Prospect.create({
-            last: lname.value,
-            firstMale: fname.value,
-            street: street.value,
-            city: city.value,
-            state: state.value,
-            zip: zip.value,
-            country: country.value,
-            phoneHome: homeText.value,
-            phoneMobile: mobileText.value,
-            email: email.value,
-            firstContactDate: initialPicker.value,
-            firstContactPoint: pocTextfield.value,
-            previouslySaved: prevSavedRow.hasCheck,
-            previouslyBaptized: prevBaptRow.hasCheck,
-            attended: attendedRow.hasCheck,
-            sundaySchool: enrolledRow.hasCheck
-          });
-          Ti.API.info(createdProspect.toJSON());
-          fname.value = '';
-          lname.value = '';
-          street.value = '';
-          city.value = '';
-          state.value = '';
-          zip.value = '';
-          country.value = '';
-          homeText.value = '';
-          mobileText.value = '';
-          email.value = '';
-          initialPicker.value = '';
-          pocTextfield.value = '';
-          prevSavedRow.hasCheck = false;
-          prevBaptRow.hasCheck = false;
-          attendedRow.hasCheck = false;
-          return enrolledRow.hasCheck = false;
-        });
-        win.setRightNavButton(b);
-      }
-      tableView = Ti.UI.createTableView({
-        data: data,
-        style: Titanium.UI.iPhone.TableViewStyle.GROUPED
-      });
-      win.add(tableView);
+      win = this.createProspectFormWin();
       return win;
     };
     UI.prototype.createSearchWindow = function() {
@@ -922,11 +566,47 @@
       return tableView;
     };
     UI.prototype.createProspectViewWindow = function(prospect) {
-      var addressLabel, addressRow, addressSection, contact, contactLabel, contactSection, contacts, data, emailLabel, emailRow, emailSection, firstContactLabel, firstContactRow, firstContactSection, headerView, nameLabel, phoneHomeLabel, phoneHomeRow, phoneMobileLabel, phoneMobileRow, phoneSection, recordContactButton, row, rowLabel, self, statusLabel, statusRow, statusSection, statusValueLabel, tableView, win, _i, _len;
+      var addressLabel, addressRow, addressSection, contact, contactLabel, contactSection, contacts, data, editButton, emailLabel, emailRow, emailSection, firstContactLabel, firstContactRow, firstContactSection, headerView, nameLabel, noneRow, phoneHomeLabel, phoneHomeRow, phoneMobileLabel, phoneMobileRow, phoneSection, recordContactButton, row, rowLabel, self, statusLabel, statusRow, statusSection, statusValueLabel, tableView, win, _i, _len;
       prospect = shl.Prospect.find(prospect.id);
       win = Ti.UI.createWindow();
       self = this;
       data = [];
+      if (this.platform === 'iPhone OS') {
+        editButton = Ti.UI.createButton({
+          systemButton: Ti.UI.iPhone.SystemButton.EDIT
+        });
+        editButton.addEventListener('click', function(e) {
+          var editWin;
+          editWin = self.createProspectFormWin(prospect);
+          editWin.addEventListener('close', function(e) {
+            if (e.source.exitValue) {
+              prospect = shl.Prospect.find(prospect.id);
+              Ti.API.info(prospect.toJSON());
+              nameLabel.text = prospect.formatName();
+              contactLabel.text = 'Last Contact: ' + prospect.formatContactPretty();
+              if (typeof addressSection !== "undefined" && addressSection !== null) {
+                addressLabel.text = prospect.formatAddress();
+              }
+              if (typeof phoneHomeLabel !== "undefined" && phoneHomeLabel !== null) {
+                phoneHomeLabel.text = 'home: ' + prospect.phoneHome;
+              }
+              if (typeof phoneMobileLabel !== "undefined" && phoneMobileLabel !== null) {
+                phoneMobileLabel.text = 'mobile: ' + prospect.phoneMobile;
+              }
+              if (typeof emailLabel !== "undefined" && emailLabel !== null) {
+                emailLabel.text = prospect.email;
+              }
+              return firstContactLabel.text = 'First Contact: ' + date('n/j/Y', prospect.firstContactDate) + "\n" + prospect.firstContactPoint;
+            }
+          });
+          return editWin.open({
+            modal: true,
+            modalTransitionStyle: Ti.UI.iPhone.MODAL_TRANSITION_STYLE_COVER_VERTICAL,
+            modalStyle: Ti.UI.iPhone.MODAL_PRESENTATION_FORMSHEET
+          });
+        });
+        win.setRightNavButton(editButton);
+      }
       headerView = Ti.UI.createView({
         height: '100'
       });
@@ -959,10 +639,78 @@
         backgroundImage: '/images/button_blue.png'
       });
       recordContactButton.addEventListener('click', function(e) {
-        var closeButton, commentRow, commentSection, commentsRow, commentsTextArea, contactTableView, dateField, dateRow, dateSection, decisionSection, emailRow, letterRow, phoneRow, recordContactWin, recordDecisionRow, saveButton, tdata, today, visitRow, visitSection, visitedChurchRow;
+        var closeButton, commentRow, commentSection, commentsRow, commentsTextArea, contactTableView, dateField, dateRow, dateSection, decisionSection, emailRow, letterRow, phoneRow, recordContactNav, recordContactRoot, recordContactWin, recordDecisionRow, saveButton, tdata, today, visitRow, visitSection, visitedChurchRow;
         recordContactWin = Ti.UI.createWindow({
-          title: 'Record Contact',
-          backgroundColor: '#ffffff'
+          backgroundColor: '#ffffff',
+          navBarHidden: true
+        });
+        recordContactRoot = Ti.UI.createWindow({
+          title: 'Record Contact'
+        });
+        if (self.platform === 'iPhone OS') {
+          closeButton = Ti.UI.createButton({
+            systemButton: Ti.UI.iPhone.SystemButton.CANCEL
+          });
+          closeButton.addEventListener('click', function(e) {
+            return recordContactWin.close();
+          });
+          recordContactRoot.setLeftNavButton(closeButton);
+          saveButton = Ti.UI.createButton({
+            systemButton: Ti.UI.iPhone.SystemButton.SAVE
+          });
+          saveButton.addEventListener('click', function(e) {
+            var commentsValue, createdContacts, dateValue, groupHasCheck, i, re, row, typeValue, _len, _len2, _ref, _ref2;
+            re = /^\d{1,2}\/\d{1,2}\/\d{4}$/;
+            if (dateField.value !== '' && !dateField.value.match(re)) {
+              alert('Invalid date format. Please format date MM/DD/YYYY');
+              return false;
+            }
+            if (dateField.value === '') {
+              dateValue = 0;
+            } else {
+              dateValue = strtotime(dateField.value);
+            }
+            groupHasCheck = false;
+            _ref = visitSection.rows;
+            for (i = 0, _len = _ref.length; i < _len; i++) {
+              row = _ref[i];
+              if (visitSection.rows[i].hasCheck) {
+                typeValue = visitSection.rows[i].title;
+                groupHasCheck = true;
+              }
+            }
+            if (groupHasCheck === false) {
+              alert('You must select the type of visit.');
+              return false;
+            }
+            commentsValue = commentsTextArea.value;
+            createdContacts = [];
+            createdContacts.push(prospect.createContact({
+              type: typeValue,
+              date: dateValue,
+              comments: commentsValue
+            }));
+            if (decisionSection.rows.length > 1) {
+              _ref2 = decisionSection.rows;
+              for (i = 0, _len2 = _ref2.length; i < _len2; i++) {
+                row = _ref2[i];
+                if (!decisionSection.rows[i].hasChild) {
+                  createdContacts.push(prospect.createContact({
+                    type: decisionSection.rows[i].decisionType,
+                    date: dateValue,
+                    individual: decisionSection.rows[i].decisionPerson
+                  }));
+                }
+              }
+            }
+            Ti.API.info(prospect.getContactList().toJSON());
+            contactSection.addContactRows(createdContacts);
+            return recordContactWin.close();
+          });
+          recordContactRoot.setRightNavButton(saveButton);
+        }
+        recordContactNav = Ti.UI.iPhone.createNavigationGroup({
+          window: recordContactRoot
         });
         tdata = [];
         today = new Date();
@@ -974,7 +722,7 @@
           height: 35,
           width: 300,
           left: 7,
-          value: today.getMonth() + '/' + today.getDate() + '/' + today.getFullYear(),
+          value: (today.getMonth() + 1) + '/' + today.getDate() + '/' + today.getFullYear(),
           keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
           returnKeyType: Titanium.UI.RETURNKEY_DONE,
           borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE
@@ -1048,29 +796,167 @@
           title: 'Record Decision',
           hasChild: true
         });
+        recordDecisionRow.addEventListener('click', function(e) {
+          var baptizedRow, decisionMakerSection, femaleRow, footerView, joinedRow, maleRow, otherRow, otherTextField, recordDecisionWin, rowIndex, savedRow, typeData, typeDecisionSection, typeDecisionTableView;
+          rowIndex = e.index;
+          recordDecisionWin = Ti.UI.createWindow({
+            title: 'Record Decision',
+            backgroundColor: '#ffffff'
+          });
+          typeData = [];
+          typeDecisionSection = Ti.UI.createTableViewSection({
+            headerTitle: prospect.formatName()
+          });
+          savedRow = Ti.UI.createTableViewRow({
+            title: 'Saved',
+            hasCheck: false
+          });
+          baptizedRow = Ti.UI.createTableViewRow({
+            title: 'Baptized',
+            hasCheck: false
+          });
+          joinedRow = Ti.UI.createTableViewRow({
+            title: 'Joined the Church',
+            hasCheck: false
+          });
+          typeDecisionSection.add(savedRow);
+          typeDecisionSection.add(baptizedRow);
+          typeDecisionSection.add(joinedRow);
+          typeDecisionSection.addEventListener('click', function(e) {
+            var i, row, _len, _ref, _results;
+            _ref = typeDecisionSection.rows;
+            _results = [];
+            for (i = 0, _len = _ref.length; i < _len; i++) {
+              row = _ref[i];
+              _results.push(i === e.index ? typeDecisionSection.rows[i].hasCheck = true : typeDecisionSection.rows[i].hasCheck = false);
+            }
+            return _results;
+          });
+          typeData.push(typeDecisionSection);
+          decisionMakerSection = Ti.UI.createTableViewSection();
+          if (prospect.firstMale !== '') {
+            maleRow = Ti.UI.createTableViewRow({
+              title: prospect.firstMale,
+              hasCheck: false
+            });
+            decisionMakerSection.add(maleRow);
+          }
+          if (prospect.firstFemale !== '') {
+            femaleRow = Ti.UI.createTableViewRow({
+              title: prospect.firstFemale,
+              hasCheck: false
+            });
+            decisionMakerSection.add(femaleRow);
+          }
+          otherRow = Ti.UI.createTableViewRow({
+            hasCheck: false
+          });
+          otherTextField = Ti.UI.createTextField({
+            height: 35,
+            width: 270,
+            left: 7,
+            keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
+            returnKeyType: Titanium.UI.RETURNKEY_DONE,
+            borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
+            hintText: 'Other Family Member'
+          });
+          otherTextField.addEventListener('blur', function(e) {
+            if (maleRow != null) {
+              maleRow.hasCheck = false;
+            }
+            if (femaleRow != null) {
+              femaleRow.hasCheck = false;
+            }
+            return otherRow.hasCheck = true;
+          });
+          otherRow.add(otherTextField);
+          decisionMakerSection.add(otherRow);
+          decisionMakerSection.addEventListener('click', function(e) {
+            var i, row, _len, _ref, _results;
+            _ref = decisionMakerSection.rows;
+            _results = [];
+            for (i = 0, _len = _ref.length; i < _len; i++) {
+              row = _ref[i];
+              _results.push(i === (e.index - 3) ? (decisionMakerSection.rows[i].hasCheck = true, otherRow.hasCheck = false) : decisionMakerSection.rows[i].hasCheck = false);
+            }
+            return _results;
+          });
+          typeData.push(decisionMakerSection);
+          footerView = Ti.UI.createView({
+            height: 50,
+            width: 300,
+            left: 0
+          });
+          saveButton = Ti.UI.createButton({
+            title: 'Save',
+            backgroundImage: 'images/button_blue.png',
+            width: 300,
+            height: 50
+          });
+          saveButton.addEventListener('click', function(e) {
+            var decisionPerson, decisionTitle, decisionType, groupHasCheck, i, newDecisionRow, row, _len, _len2, _ref, _ref2;
+            decisionTitle = '';
+            decisionType = '';
+            decisionPerson = '';
+            groupHasCheck = false;
+            _ref = typeDecisionSection.rows;
+            for (i = 0, _len = _ref.length; i < _len; i++) {
+              row = _ref[i];
+              if (typeDecisionSection.rows[i].hasCheck === true) {
+                decisionType = typeDecisionSection.rows[i].title;
+                decisionTitle += typeDecisionSection.rows[i].title + ' - ';
+                groupHasCheck = true;
+              }
+            }
+            if (groupHasCheck === false) {
+              alert('You must choose the type of decision.');
+              return false;
+            }
+            groupHasCheck = false;
+            _ref2 = decisionMakerSection.rows;
+            for (i = 0, _len2 = _ref2.length; i < _len2; i++) {
+              row = _ref2[i];
+              if (decisionMakerSection.rows[i].hasCheck === true) {
+                if ((decisionMakerSection.rows[i].title != null) && decisionMakerSection.rows[i].title !== '') {
+                  decisionPerson = decisionMakerSection.rows[i].title;
+                  decisionTitle += decisionMakerSection.rows[i].title;
+                } else {
+                  decisionPerson = otherTextField.value;
+                  decisionTitle += otherTextField.value;
+                }
+                groupHasCheck = true;
+              }
+            }
+            if (groupHasCheck === false) {
+              alert('You must choose the person who made the decision.');
+              return false;
+            }
+            newDecisionRow = Ti.UI.createTableViewRow({
+              title: decisionTitle,
+              decisionType: decisionType,
+              decisionPerson: decisionPerson,
+              editable: true
+            });
+            contactTableView.insertRowBefore(rowIndex, newDecisionRow);
+            return recordContactNav.close(recordDecisionWin);
+          });
+          footerView.add(saveButton);
+          typeDecisionTableView = Ti.UI.createTableView({
+            data: typeData,
+            style: Titanium.UI.iPhone.TableViewStyle.GROUPED,
+            footerView: footerView
+          });
+          recordDecisionWin.add(typeDecisionTableView);
+          return recordContactNav.open(recordDecisionWin);
+        });
         decisionSection.add(recordDecisionRow);
         tdata.push(decisionSection);
         contactTableView = Ti.UI.createTableView({
           data: tdata,
           style: Titanium.UI.iPhone.TableViewStyle.GROUPED
         });
-        recordContactWin.add(contactTableView);
-        if (self.platform === 'iPhone OS') {
-          closeButton = Ti.UI.createButton({
-            systemButton: Ti.UI.iPhone.SystemButton.CANCEL
-          });
-          closeButton.addEventListener('click', function(e) {
-            return recordContactWin.close();
-          });
-          recordContactWin.setLeftNavButton(closeButton);
-          saveButton = Ti.UI.createButton({
-            systemButton: Ti.UI.iPhone.SystemButton.SAVE
-          });
-          saveButton.addEventListener('click', function(e) {
-            return recordContactWin.close();
-          });
-          recordContactWin.setRightNavButton(saveButton);
-        }
+        recordContactRoot.add(contactTableView);
+        recordContactWin.add(recordContactNav);
         return recordContactWin.open({
           modal: true,
           modalTransitionStyle: Ti.UI.iPhone.MODAL_TRANSITION_STYLE_COVER_VERTICAL,
@@ -1231,19 +1117,19 @@
         headerTitle: 'Activity Log'
       });
       if (contacts.length < 1) {
-        row = Ti.UI.createTableViewRow({
-          title: 'None'
+        noneRow = Ti.UI.createTableViewRow({
+          title: 'None',
+          name: 'None'
         });
-        contactSection.add(row);
+        contactSection.add(noneRow);
       } else {
         for (_i = 0, _len = contacts.length; _i < _len; _i++) {
           contact = contacts[_i];
           row = Ti.UI.createTableViewRow({
-            height: 'auto',
-            hasChild: 'true'
+            height: 'auto'
           });
           rowLabel = Ti.UI.createLabel({
-            text: contact.date + " " + contact.type + ": " + contact.comments,
+            text: date('n/j/Y', contact.date) + " " + contact.type + ": " + contact.comments,
             width: 280,
             left: 10
           });
@@ -1251,6 +1137,24 @@
           contactSection.add(row);
         }
       }
+      contactSection.addContactRows = function(contacts) {
+        var contact, _j, _len2;
+        Ti.API.info("Contacts = " + JSON.stringify(contacts));
+        for (_j = 0, _len2 = contacts.length; _j < _len2; _j++) {
+          contact = contacts[_j];
+          row = Ti.UI.createTableViewRow({
+            height: 'auto'
+          });
+          rowLabel = Ti.UI.createLabel({
+            text: date('n/j/Y', contact.date) + " " + contact.type + ": " + contact.comments,
+            width: 280,
+            left: 10
+          });
+          row.add(rowLabel);
+          tableView.appendRow(row);
+        }
+        return tableView.deleteRow(tableView.getIndexByName('None'));
+      };
       data.push(contactSection);
       tableView = Ti.UI.createTableView({
         data: data,
@@ -1349,6 +1253,452 @@
         }
         return _results;
       })();
+    };
+    UI.prototype.createProspectFormWin = function(prospect) {
+      var attendedRow, b, cancel, city, citystateRow, country, data, email, emailRow, enrolledRow, fname, fnameRow, homeLabel, homeRow, homeText, initContactLabel, initialContactRow, initialPicker, lname, lnameRow, mobileLabel, mobileRow, mobileText, pocRow, pocTextfield, prevBaptRow, prevSavedRow, s1, s3, s4, s5, s6, s7, self, sep1, sep2, sep3, sep4, sep5, sname, snameRow, state, street, streetRow, tableView, win, zip, zipcountryRow;
+      self = this;
+      win = Ti.UI.createWindow({
+        title: prospect != null ? 'Edit Prospect' : 'Add Prospect',
+        backgroundColor: '#eeeeee'
+      });
+      data = [];
+      s1 = Ti.UI.createTableViewSection();
+      fnameRow = Ti.UI.createTableViewRow({
+        height: 40,
+        layout: "vertical",
+        selectionStyle: "none"
+      });
+      fname = Ti.UI.createTextField({
+        height: 40,
+        left: 10,
+        keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
+        returnKeyType: Titanium.UI.RETURNKEY_DONE,
+        borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
+        hintText: L('First Name Male'),
+        value: prospect != null ? prospect.firstMale : ''
+      });
+      fnameRow.add(fname);
+      s1.add(fnameRow);
+      snameRow = Ti.UI.createTableViewRow({
+        height: 40,
+        layout: "vertical",
+        selectionStyle: "none"
+      });
+      sname = Ti.UI.createTextField({
+        height: 40,
+        left: 10,
+        keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
+        returnKeyType: Titanium.UI.RETURNKEY_DONE,
+        borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
+        hintText: L('First Name Female'),
+        value: prospect != null ? prospect.firstFemale : ''
+      });
+      snameRow.add(sname);
+      s1.add(snameRow);
+      lnameRow = Ti.UI.createTableViewRow({
+        height: 40,
+        layout: "vertical",
+        selectionStyle: "none"
+      });
+      lname = Ti.UI.createTextField({
+        height: 40,
+        left: 10,
+        keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
+        returnKeyType: Titanium.UI.RETURNKEY_DONE,
+        borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
+        hintText: L('Last Name'),
+        value: prospect != null ? prospect.last : ''
+      });
+      lnameRow.add(lname);
+      s1.add(lnameRow);
+      data.push(s1);
+      /*
+          s2 = Ti.UI.createTableViewSection({
+            borderColor: 'transparent',
+            borderWidth: 0
+          })
+          genderRow = Ti.UI.createTableViewRow({
+            backgroundColor: 'transparent',
+            borderWidth: 0,
+            borderColor: 'transparent',
+            height: 40,
+            selectionStyle: "none"
+          })
+          if @platform is 'iPhone OS'
+            gender = Titanium.UI.createTabbedBar({
+              labels: ['Male', 'Female', 'Couple'],
+              backgroundColor: '#336699',
+              style: Titanium.UI.iPhone.SystemButtonStyle.BAR,
+              height: 45,
+              width: 302
+            })
+            # TODO : Create function to add/remove rows on click
+            genderRow.addEventListener('click', (e) ->
+              alert(@index)
+            )
+            genderRow.add(gender)
+          s2.add(genderRow)
+          data.push(s2)
+          */
+      s3 = Ti.UI.createTableViewSection();
+      streetRow = Ti.UI.createTableViewRow({
+        height: 45,
+        layout: "vertical",
+        selectionStyle: "none"
+      });
+      street = Ti.UI.createTextField({
+        height: 40,
+        left: 10,
+        keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
+        returnKeyType: Titanium.UI.RETURNKEY_DONE,
+        borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
+        hintText: L('Street'),
+        value: prospect != null ? prospect.street : ''
+      });
+      streetRow.add(street);
+      s3.add(streetRow);
+      citystateRow = Ti.UI.createTableViewRow({
+        height: 45,
+        layout: "horizontal",
+        selectionStyle: "none"
+      });
+      city = Ti.UI.createTextField({
+        width: 139,
+        height: 40,
+        left: 10,
+        keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
+        returnKeyType: Titanium.UI.RETURNKEY_DONE,
+        borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
+        hintText: L('City'),
+        value: prospect != null ? prospect.city : ''
+      });
+      sep1 = Ti.UI.createView({
+        width: 1,
+        height: 45,
+        left: 0,
+        backgroundColor: '#cccccc'
+      });
+      state = Ti.UI.createTextField({
+        width: 139,
+        height: 40,
+        left: 10,
+        keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
+        returnKeyType: Titanium.UI.RETURNKEY_DONE,
+        borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
+        hintText: L('State'),
+        value: prospect != null ? prospect.state : ''
+      });
+      citystateRow.add(city);
+      citystateRow.add(sep1);
+      citystateRow.add(state);
+      s3.add(citystateRow);
+      zipcountryRow = Ti.UI.createTableViewRow({
+        height: 45,
+        layout: "horizontal",
+        selectionStyle: "none"
+      });
+      zip = Ti.UI.createTextField({
+        width: 139,
+        height: 40,
+        left: 10,
+        keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
+        returnKeyType: Titanium.UI.RETURNKEY_DONE,
+        borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
+        hintText: L('Zip'),
+        value: prospect != null ? prospect.zip : ''
+      });
+      sep2 = Ti.UI.createView({
+        width: 1,
+        height: 45,
+        left: 0,
+        backgroundColor: '#cccccc'
+      });
+      country = Ti.UI.createTextField({
+        width: 139,
+        height: 40,
+        left: 10,
+        keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
+        returnKeyType: Titanium.UI.RETURNKEY_DONE,
+        borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
+        hintText: L('Country'),
+        value: prospect != null ? prospect.country : ''
+      });
+      zipcountryRow.add(zip);
+      zipcountryRow.add(sep2);
+      zipcountryRow.add(country);
+      s3.add(zipcountryRow);
+      data.push(s3);
+      s4 = Ti.UI.createTableViewSection();
+      homeRow = Ti.UI.createTableViewRow({
+        height: 45,
+        layout: "horizontal",
+        selectionStyle: "none"
+      });
+      homeLabel = Ti.UI.createLabel({
+        text: 'Home',
+        font: {
+          fontWeight: 'bold',
+          fontSize: 16
+        },
+        height: 45,
+        width: 75,
+        left: 10
+      });
+      sep3 = Ti.UI.createView({
+        width: 1,
+        height: 45,
+        left: 0,
+        backgroundColor: '#cccccc'
+      });
+      homeText = Ti.UI.createTextField({
+        width: 200,
+        height: 40,
+        left: 5,
+        keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
+        returnKeyType: Titanium.UI.RETURNKEY_DONE,
+        borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
+        value: prospect != null ? prospect.phoneHome : ''
+      });
+      homeRow.add(homeLabel);
+      homeRow.add(sep3);
+      homeRow.add(homeText);
+      s4.add(homeRow);
+      mobileRow = Ti.UI.createTableViewRow({
+        height: 45,
+        layout: "horizontal",
+        selectionStyle: "none"
+      });
+      mobileLabel = Ti.UI.createLabel({
+        text: 'Mobile',
+        font: {
+          fontWeight: 'bold',
+          fontSize: 16
+        },
+        height: 45,
+        width: 75,
+        left: 10
+      });
+      sep4 = Ti.UI.createView({
+        width: 1,
+        height: 45,
+        left: 0,
+        backgroundColor: '#cccccc'
+      });
+      mobileText = Ti.UI.createTextField({
+        width: 200,
+        height: 40,
+        left: 5,
+        keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
+        returnKeyType: Titanium.UI.RETURNKEY_DONE,
+        borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
+        value: prospect != null ? prospect.phoneMobile : ''
+      });
+      mobileRow.add(mobileLabel);
+      mobileRow.add(sep4);
+      mobileRow.add(mobileText);
+      s4.add(mobileRow);
+      data.push(s4);
+      s5 = Ti.UI.createTableViewSection();
+      emailRow = Ti.UI.createTableViewRow({
+        height: 45,
+        layout: "horizontal",
+        selectionStyle: "none"
+      });
+      email = Ti.UI.createTextField({
+        width: 280,
+        height: 40,
+        left: 10,
+        keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
+        returnKeyType: Titanium.UI.RETURNKEY_DONE,
+        borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
+        hintText: L('Email'),
+        value: prospect != null ? prospect.email : ''
+      });
+      emailRow.add(email);
+      s5.add(emailRow);
+      data.push(s5);
+      s6 = Ti.UI.createTableViewSection();
+      initialContactRow = Ti.UI.createTableViewRow({
+        height: 45,
+        layout: 'horizontal',
+        selectionSytle: 'none'
+      });
+      initContactLabel = Ti.UI.createLabel({
+        text: 'Initial Contact',
+        font: {
+          fontWeight: 'bold',
+          fontSize: 16
+        },
+        height: 45,
+        width: 160,
+        left: 10
+      });
+      sep5 = Ti.UI.createView({
+        width: 1,
+        height: 45,
+        left: 0,
+        backgroundColor: '#cccccc'
+      });
+      initialPicker = Ti.UI.createTextField({
+        height: 45,
+        width: 120,
+        left: 7,
+        keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
+        returnKeyType: Titanium.UI.RETURNKEY_DONE,
+        borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
+        hintText: L('1/10/2011'),
+        value: prospect != null ? date('n/j/Y', prospect.firstContactDate) : ''
+      });
+      initialContactRow.add(initContactLabel);
+      initialContactRow.add(sep5);
+      initialContactRow.add(initialPicker);
+      s6.add(initialContactRow);
+      pocRow = Ti.UI.createTableViewRow({
+        height: 45,
+        layout: 'horizontal',
+        selectionSytle: 'none'
+      });
+      pocTextfield = Ti.UI.createTextField({
+        width: 280,
+        height: 40,
+        left: 10,
+        keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
+        returnKeyType: Titanium.UI.RETURNKEY_DONE,
+        borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
+        hintText: L('Point of Contact'),
+        value: prospect != null ? prospect.firstContactPoint : ''
+      });
+      pocRow.add(pocTextfield);
+      s6.add(pocRow);
+      data.push(s6);
+      s7 = Ti.UI.createTableViewSection();
+      prevSavedRow = Ti.UI.createTableViewRow({
+        title: 'Previously Saved',
+        hasCheck: prospect != null ? prospect.previouslySaved : false
+      });
+      prevBaptRow = Ti.UI.createTableViewRow({
+        title: 'Previously Baptized',
+        hasCheck: prospect != null ? prospect.previouslyBaptized : false
+      });
+      attendedRow = Ti.UI.createTableViewRow({
+        title: 'Attended Church',
+        hasCheck: prospect != null ? prospect.attended : false
+      });
+      enrolledRow = Ti.UI.createTableViewRow({
+        title: 'Enrolled in Sunday School',
+        hasCheck: prospect != null ? prospect.sundaySchool : false
+      });
+      s7.add(prevSavedRow);
+      s7.add(prevBaptRow);
+      s7.add(attendedRow);
+      s7.add(enrolledRow);
+      s7.addEventListener('click', function(e) {
+        if (e.row.hasCheck) {
+          return e.row.hasCheck = false;
+        } else {
+          return e.row.hasCheck = true;
+        }
+      });
+      data.push(s7);
+      if (this.platform === 'iPhone OS') {
+        b = Ti.UI.createButton({
+          systemButton: Ti.UI.iPhone.SystemButton.SAVE
+        });
+        b.addEventListener('click', function() {
+          var closeButton, createdProspect, viewProspectWin;
+          if (prospect != null) {
+            shl.Prospect.update(prospect.id, {
+              last: lname.value,
+              firstMale: fname.value,
+              firstFemale: sname.value,
+              street: street.value,
+              city: city.value,
+              state: state.value,
+              zip: zip.value,
+              country: country.value,
+              phoneHome: homeText.value,
+              phoneMobile: mobileText.value,
+              email: email.value,
+              firstContactDate: strtotime(initialPicker.value),
+              firstContactPoint: pocTextfield.value,
+              previouslySaved: prevSavedRow.hasCheck,
+              previouslyBaptized: prevBaptRow.hasCheck,
+              attended: attendedRow.hasCheck,
+              sundaySchool: enrolledRow.hasCheck
+            });
+            win.exitValue = true;
+            return win.close();
+          } else {
+            createdProspect = shl.Prospect.create({
+              last: lname.value,
+              firstMale: fname.value,
+              firstFemale: sname.value,
+              street: street.value,
+              city: city.value,
+              state: state.value,
+              zip: zip.value,
+              country: country.value,
+              phoneHome: homeText.value,
+              phoneMobile: mobileText.value,
+              email: email.value,
+              firstContactDate: strtotime(initialPicker.value),
+              firstContactPoint: pocTextfield.value,
+              previouslySaved: prevSavedRow.hasCheck,
+              previouslyBaptized: prevBaptRow.hasCheck,
+              attended: attendedRow.hasCheck,
+              sundaySchool: enrolledRow.hasCheck
+            });
+            Ti.API.info(createdProspect.toJSON());
+            fname.value = '';
+            sname.value = '';
+            lname.value = '';
+            street.value = '';
+            city.value = '';
+            state.value = '';
+            zip.value = '';
+            country.value = '';
+            homeText.value = '';
+            mobileText.value = '';
+            email.value = '';
+            initialPicker.value = '';
+            pocTextfield.value = '';
+            prevSavedRow.hasCheck = false;
+            prevBaptRow.hasCheck = false;
+            attendedRow.hasCheck = false;
+            enrolledRow.hasCheck = false;
+            viewProspectWin = self.createProspectViewWindow(createdProspect);
+            closeButton = Ti.UI.createButton({
+              systemButton: Ti.UI.iPhone.SystemButton.DONE
+            });
+            closeButton.addEventListener('click', function(e) {
+              return viewProspectWin.close();
+            });
+            viewProspectWin.setRightNavButton(closeButton);
+            return viewProspectWin.open({
+              modal: true,
+              modalTransitionStyle: Ti.UI.iPhone.MODAL_TRANSITION_STYLE_COVER_VERTICAL,
+              modalStyle: Ti.UI.iPhone.MODAL_PRESENTATION_FORMSHEET
+            });
+          }
+        });
+        win.setRightNavButton(b);
+        if (prospect != null) {
+          cancel = Ti.UI.createButton({
+            systemButton: Ti.UI.iPhone.SystemButton.CANCEL
+          });
+          cancel.addEventListener('click', function(e) {
+            win.exitValue = false;
+            return win.close();
+          });
+          win.setLeftNavButton(cancel);
+        }
+      }
+      tableView = Ti.UI.createTableView({
+        data: data,
+        style: Titanium.UI.iPhone.TableViewStyle.GROUPED
+      });
+      win.add(tableView);
+      return win;
     };
     return UI;
   })();
