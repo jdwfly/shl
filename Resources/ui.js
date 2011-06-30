@@ -1067,7 +1067,8 @@
       })();
     };
     UI.prototype.createProspectFormWin = function(prospect) {
-      var attendedRow, b, cancel, city, citystateRow, country, data, email, emailRow, enrolledRow, fname, fnameRow, homeLabel, homeRow, homeText, initContactLabel, initialContactRow, initialPicker, lname, lnameRow, mobileLabel, mobileRow, mobileText, pocRow, pocTextfield, prevBaptRow, prevSavedRow, s1, s3, s4, s5, s6, s7, sep1, sep2, sep3, sep4, sep5, sname, snameRow, state, street, streetRow, tableView, win, zip, zipcountryRow;
+      var attendedRow, b, cancel, city, citystateRow, country, data, email, emailRow, enrolledRow, fname, fnameRow, homeLabel, homeRow, homeText, initContactLabel, initialContactRow, initialPicker, lname, lnameRow, mobileLabel, mobileRow, mobileText, pocRow, pocTextfield, prevBaptRow, prevSavedRow, s1, s3, s4, s5, s6, s7, self, sep1, sep2, sep3, sep4, sep5, sname, snameRow, state, street, streetRow, tableView, win, zip, zipcountryRow;
+      self = this;
       win = Ti.UI.createWindow({
         title: prospect != null ? 'Edit Prospect' : 'Add Prospect',
         backgroundColor: '#eeeeee'
@@ -1416,11 +1417,12 @@
           systemButton: Ti.UI.iPhone.SystemButton.SAVE
         });
         b.addEventListener('click', function() {
-          var createdProspect;
+          var closeButton, createdProspect, viewProspectWin;
           if (prospect != null) {
             shl.Prospect.update(prospect.id, {
               last: lname.value,
               firstMale: fname.value,
+              firstFemale: sname.value,
               street: street.value,
               city: city.value,
               state: state.value,
@@ -1442,6 +1444,7 @@
             createdProspect = shl.Prospect.create({
               last: lname.value,
               firstMale: fname.value,
+              firstFemale: sname.value,
               street: street.value,
               city: city.value,
               state: state.value,
@@ -1459,6 +1462,7 @@
             });
             Ti.API.info(createdProspect.toJSON());
             fname.value = '';
+            sname.value = '';
             lname.value = '';
             street.value = '';
             city.value = '';
@@ -1473,7 +1477,20 @@
             prevSavedRow.hasCheck = false;
             prevBaptRow.hasCheck = false;
             attendedRow.hasCheck = false;
-            return enrolledRow.hasCheck = false;
+            enrolledRow.hasCheck = false;
+            viewProspectWin = self.createProspectViewWindow(createdProspect);
+            closeButton = Ti.UI.createButton({
+              systemButton: Ti.UI.iPhone.SystemButton.DONE
+            });
+            closeButton.addEventListener('click', function(e) {
+              return viewProspectWin.close();
+            });
+            viewProspectWin.setRightNavButton(closeButton);
+            return viewProspectWin.open({
+              modal: true,
+              modalTransitionStyle: Ti.UI.iPhone.MODAL_TRANSITION_STYLE_COVER_VERTICAL,
+              modalStyle: Ti.UI.iPhone.MODAL_PRESENTATION_FORMSHEET
+            });
           }
         });
         win.setRightNavButton(b);

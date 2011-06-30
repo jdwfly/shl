@@ -391,7 +391,6 @@ class UI
             if emailLabel?
               emailLabel.text = prospect.email
             firstContactLabel.text = 'First Contact: ' + date('n/j/Y', prospect.firstContactDate) + "\n" + prospect.firstContactPoint
-            
         )
         editWin.open({
           modal:true,
@@ -972,6 +971,7 @@ class UI
       row
   # Create the form to either add or edit a prospect
   createProspectFormWin : (prospect) ->
+    self = this
     win = Ti.UI.createWindow({
       title: if prospect? then 'Edit Prospect' else 'Add Prospect',
       backgroundColor:'#eeeeee'
@@ -1326,6 +1326,7 @@ class UI
           shl.Prospect.update(prospect.id,{
             last: lname.value,
             firstMale: fname.value,
+            firstFemale: sname.value,
             street: street.value,
             city: city.value,
             state: state.value,
@@ -1336,9 +1337,9 @@ class UI
             email: email.value,
             firstContactDate: strtotime(initialPicker.value),
             firstContactPoint: pocTextfield.value,
-            previouslySaved: prevSavedRow.hasCheck
-            previouslyBaptized: prevBaptRow.hasCheck
-            attended: attendedRow.hasCheck
+            previouslySaved: prevSavedRow.hasCheck,
+            previouslyBaptized: prevBaptRow.hasCheck,
+            attended: attendedRow.hasCheck,
             sundaySchool: enrolledRow.hasCheck
           })
           win.exitValue = true
@@ -1348,6 +1349,7 @@ class UI
           createdProspect = shl.Prospect.create({
             last: lname.value,
             firstMale: fname.value,
+            firstFemale: sname.value,
             street: street.value,
             city: city.value,
             state: state.value,
@@ -1358,14 +1360,15 @@ class UI
             email: email.value,
             firstContactDate: strtotime(initialPicker.value),
             firstContactPoint: pocTextfield.value,
-            previouslySaved: prevSavedRow.hasCheck
-            previouslyBaptized: prevBaptRow.hasCheck
-            attended: attendedRow.hasCheck
+            previouslySaved: prevSavedRow.hasCheck,
+            previouslyBaptized: prevBaptRow.hasCheck,
+            attended: attendedRow.hasCheck,
             sundaySchool: enrolledRow.hasCheck
           })
           Ti.API.info(createdProspect.toJSON())
           # Clear all values
           fname.value = ''
+          sname.value = ''
           lname.value = ''
           street.value = ''
           city.value = ''
@@ -1382,6 +1385,19 @@ class UI
           attendedRow.hasCheck = false
           enrolledRow.hasCheck = false
           # TODO : open modal window that shows the prospect
+          viewProspectWin = self.createProspectViewWindow(createdProspect)
+          closeButton = Ti.UI.createButton({
+            systemButton:Ti.UI.iPhone.SystemButton.DONE
+          })
+          closeButton.addEventListener('click', (e) ->
+            viewProspectWin.close()
+          )
+          viewProspectWin.setRightNavButton(closeButton)
+          viewProspectWin.open({
+            modal:true,
+            modalTransitionStyle: Ti.UI.iPhone.MODAL_TRANSITION_STYLE_COVER_VERTICAL,
+            modalStyle: Ti.UI.iPhone.MODAL_PRESENTATION_FORMSHEET
+          })
       )
       win.setRightNavButton(b)
       if prospect?
