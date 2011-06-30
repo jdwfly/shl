@@ -375,6 +375,15 @@ class UI
       editButton.addEventListener('click', (e) ->
         # Open modal window to edit prospect
         editWin = self.createProspectFormWin(prospect)
+        editWin.addEventListener('close', (e) ->
+          # Update the current information on the page
+          prospect = shl.Prospect.find(prospect.id)
+          Ti.API.info(prospect.toJSON())
+          nameLabel.text = prospect.formatName()
+          contactLabel.text = 'Last Contact: ' + prospect.formatContactPretty()
+          if addressSection?
+            addressLabel.text = prospect.formatAddress()
+        )
         editWin.open({
           modal:true,
           modalTransitionStyle: Ti.UI.iPhone.MODAL_TRANSITION_STYLE_COVER_VERTICAL,
@@ -1303,44 +1312,66 @@ class UI
         systemButton:Ti.UI.iPhone.SystemButton.SAVE
       })
       b.addEventListener('click', () ->
-        # Create an object to save to the database
-        createdProspect = shl.Prospect.create({
-          last: lname.value,
-          firstMale: fname.value,
-          street: street.value,
-          city: city.value,
-          state: state.value,
-          zip: zip.value,
-          country: country.value,
-          phoneHome: homeText.value,
-          phoneMobile: mobileText.value,
-          email: email.value,
-          firstContactDate: initialPicker.value,
-          firstContactPoint: pocTextfield.value,
-          previouslySaved: prevSavedRow.hasCheck
-          previouslyBaptized: prevBaptRow.hasCheck
-          attended: attendedRow.hasCheck
-          sundaySchool: enrolledRow.hasCheck
-        })
-        Ti.API.info(createdProspect.toJSON())
-        # Clear all values
-        fname.value = ''
-        lname.value = ''
-        street.value = ''
-        city.value = ''
-        state.value = ''
-        zip.value = ''
-        country.value = ''
-        homeText.value = ''
-        mobileText.value = ''
-        email.value = ''
-        initialPicker.value = ''
-        pocTextfield.value = ''
-        prevSavedRow.hasCheck = false
-        prevBaptRow.hasCheck = false
-        attendedRow.hasCheck = false
-        enrolledRow.hasCheck = false
-        # TODO : open modal window that shows the prospect
+        if prospect?
+          # Update the existing prospect
+          shl.Prospect.update(prospect.id,{
+            last: lname.value,
+            firstMale: fname.value,
+            street: street.value,
+            city: city.value,
+            state: state.value,
+            zip: zip.value,
+            country: country.value,
+            phoneHome: homeText.value,
+            phoneMobile: mobileText.value,
+            email: email.value,
+            firstContactDate: initialPicker.value,
+            firstContactPoint: pocTextfield.value,
+            previouslySaved: prevSavedRow.hasCheck
+            previouslyBaptized: prevBaptRow.hasCheck
+            attended: attendedRow.hasCheck
+            sundaySchool: enrolledRow.hasCheck
+          })
+          win.close()
+        else
+          # Create an object to save to the database
+          createdProspect = shl.Prospect.create({
+            last: lname.value,
+            firstMale: fname.value,
+            street: street.value,
+            city: city.value,
+            state: state.value,
+            zip: zip.value,
+            country: country.value,
+            phoneHome: homeText.value,
+            phoneMobile: mobileText.value,
+            email: email.value,
+            firstContactDate: initialPicker.value,
+            firstContactPoint: pocTextfield.value,
+            previouslySaved: prevSavedRow.hasCheck
+            previouslyBaptized: prevBaptRow.hasCheck
+            attended: attendedRow.hasCheck
+            sundaySchool: enrolledRow.hasCheck
+          })
+          Ti.API.info(createdProspect.toJSON())
+          # Clear all values
+          fname.value = ''
+          lname.value = ''
+          street.value = ''
+          city.value = ''
+          state.value = ''
+          zip.value = ''
+          country.value = ''
+          homeText.value = ''
+          mobileText.value = ''
+          email.value = ''
+          initialPicker.value = ''
+          pocTextfield.value = ''
+          prevSavedRow.hasCheck = false
+          prevBaptRow.hasCheck = false
+          attendedRow.hasCheck = false
+          enrolledRow.hasCheck = false
+          # TODO : open modal window that shows the prospect
       )
       win.setRightNavButton(b)
       if prospect?

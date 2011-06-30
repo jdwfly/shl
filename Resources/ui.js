@@ -390,6 +390,15 @@
         editButton.addEventListener('click', function(e) {
           var editWin;
           editWin = self.createProspectFormWin(prospect);
+          editWin.addEventListener('close', function(e) {
+            prospect = shl.Prospect.find(prospect.id);
+            Ti.API.info(prospect.toJSON());
+            nameLabel.text = prospect.formatName();
+            contactLabel.text = 'Last Contact: ' + prospect.formatContactPretty();
+            if (typeof addressSection !== "undefined" && addressSection !== null) {
+              return addressLabel.text = prospect.formatAddress();
+            }
+          });
           return editWin.open({
             modal: true,
             modalTransitionStyle: Ti.UI.iPhone.MODAL_TRANSITION_STYLE_COVER_VERTICAL,
@@ -1396,41 +1405,63 @@
         });
         b.addEventListener('click', function() {
           var createdProspect;
-          createdProspect = shl.Prospect.create({
-            last: lname.value,
-            firstMale: fname.value,
-            street: street.value,
-            city: city.value,
-            state: state.value,
-            zip: zip.value,
-            country: country.value,
-            phoneHome: homeText.value,
-            phoneMobile: mobileText.value,
-            email: email.value,
-            firstContactDate: initialPicker.value,
-            firstContactPoint: pocTextfield.value,
-            previouslySaved: prevSavedRow.hasCheck,
-            previouslyBaptized: prevBaptRow.hasCheck,
-            attended: attendedRow.hasCheck,
-            sundaySchool: enrolledRow.hasCheck
-          });
-          Ti.API.info(createdProspect.toJSON());
-          fname.value = '';
-          lname.value = '';
-          street.value = '';
-          city.value = '';
-          state.value = '';
-          zip.value = '';
-          country.value = '';
-          homeText.value = '';
-          mobileText.value = '';
-          email.value = '';
-          initialPicker.value = '';
-          pocTextfield.value = '';
-          prevSavedRow.hasCheck = false;
-          prevBaptRow.hasCheck = false;
-          attendedRow.hasCheck = false;
-          return enrolledRow.hasCheck = false;
+          if (prospect != null) {
+            shl.Prospect.update(prospect.id, {
+              last: lname.value,
+              firstMale: fname.value,
+              street: street.value,
+              city: city.value,
+              state: state.value,
+              zip: zip.value,
+              country: country.value,
+              phoneHome: homeText.value,
+              phoneMobile: mobileText.value,
+              email: email.value,
+              firstContactDate: initialPicker.value,
+              firstContactPoint: pocTextfield.value,
+              previouslySaved: prevSavedRow.hasCheck,
+              previouslyBaptized: prevBaptRow.hasCheck,
+              attended: attendedRow.hasCheck,
+              sundaySchool: enrolledRow.hasCheck
+            });
+            return win.close();
+          } else {
+            createdProspect = shl.Prospect.create({
+              last: lname.value,
+              firstMale: fname.value,
+              street: street.value,
+              city: city.value,
+              state: state.value,
+              zip: zip.value,
+              country: country.value,
+              phoneHome: homeText.value,
+              phoneMobile: mobileText.value,
+              email: email.value,
+              firstContactDate: initialPicker.value,
+              firstContactPoint: pocTextfield.value,
+              previouslySaved: prevSavedRow.hasCheck,
+              previouslyBaptized: prevBaptRow.hasCheck,
+              attended: attendedRow.hasCheck,
+              sundaySchool: enrolledRow.hasCheck
+            });
+            Ti.API.info(createdProspect.toJSON());
+            fname.value = '';
+            lname.value = '';
+            street.value = '';
+            city.value = '';
+            state.value = '';
+            zip.value = '';
+            country.value = '';
+            homeText.value = '';
+            mobileText.value = '';
+            email.value = '';
+            initialPicker.value = '';
+            pocTextfield.value = '';
+            prevSavedRow.hasCheck = false;
+            prevBaptRow.hasCheck = false;
+            attendedRow.hasCheck = false;
+            return enrolledRow.hasCheck = false;
+          }
         });
         win.setRightNavButton(b);
         if (prospect != null) {
