@@ -1208,7 +1208,8 @@
     UI.prototype.processProspectData = function(prospects) {
       var addressLabel, content, contentTitle, data, lastContactLabel, prospect, row;
       if (prospects.length < 1) {
-        return [];
+        row = Ti.UI.createTableViewRow();
+        return [row];
       }
       return data = (function() {
         var _i, _len, _results;

@@ -1076,7 +1076,8 @@ class UI
   
   processProspectData : (prospects) ->
     if prospects.length < 1
-      return []
+      row = Ti.UI.createTableViewRow()
+      return [row]
     data = for prospect in prospects
       row = Ti.UI.createTableViewRow({
         height: 'auto',
