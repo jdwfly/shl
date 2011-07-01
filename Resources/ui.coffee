@@ -38,6 +38,7 @@ class UI
       window: search,
       icon: 'images/06-magnify.png'
     })
+    ###
     nearbyTab = Ti.UI.createTab({
       title: 'Nearby',
       window: nearby,
@@ -53,15 +54,16 @@ class UI
       window: help,
       icon: 'images/90-life-buoy.png'
     })
+    ###
     
     # Add tabs to the tabgroup
     tabs.addTab(listsTab)
     tabs.addTab(starredTab)
     tabs.addTab(addTab)
     tabs.addTab(searchTab)
-    tabs.addTab(nearbyTab)
-    tabs.addTab(settingsTab)
-    tabs.addTab(helpTab)
+    #tabs.addTab(nearbyTab)
+    #tabs.addTab(settingsTab)
+    #tabs.addTab(helpTab)
     tabs.open({transition:Ti.UI.iPhone.AnimationStyle.FLIP_FROM_LEFT})
     
     return tabs

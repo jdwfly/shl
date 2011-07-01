@@ -13,7 +13,7 @@
       this.tabs = this.createApplicationTabGroup();
     }
     UI.prototype.createApplicationTabGroup = function() {
-      var add, addTab, help, helpTab, lists, listsTab, nearby, nearbyTab, search, searchTab, settings, settingsTab, starred, starredTab, tabs;
+      var add, addTab, help, lists, listsTab, nearby, search, searchTab, settings, starred, starredTab, tabs;
       tabs = Ti.UI.createTabGroup();
       lists = this.createListsWindow();
       starred = this.createStarredWindow();
@@ -42,28 +42,27 @@
         window: search,
         icon: 'images/06-magnify.png'
       });
-      nearbyTab = Ti.UI.createTab({
-        title: 'Nearby',
-        window: nearby,
-        icon: 'images/73-radar.png'
-      });
-      settingsTab = Ti.UI.createTab({
-        title: 'Settings',
-        window: settings,
-        icon: 'images/20-gear2.png'
-      });
-      helpTab = Ti.UI.createTab({
-        title: 'Help',
-        window: help,
-        icon: 'images/90-life-buoy.png'
-      });
+      /*
+          nearbyTab = Ti.UI.createTab({
+            title: 'Nearby',
+            window: nearby,
+            icon: 'images/73-radar.png'
+          })
+          settingsTab = Ti.UI.createTab({
+            title: 'Settings',
+            window: settings,
+            icon: 'images/20-gear2.png'
+          })
+          helpTab = Ti.UI.createTab({
+            title: 'Help',
+            window: help,
+            icon: 'images/90-life-buoy.png'
+          })
+          */
       tabs.addTab(listsTab);
       tabs.addTab(starredTab);
       tabs.addTab(addTab);
       tabs.addTab(searchTab);
-      tabs.addTab(nearbyTab);
-      tabs.addTab(settingsTab);
-      tabs.addTab(helpTab);
       tabs.open({
         transition: Ti.UI.iPhone.AnimationStyle.FLIP_FROM_LEFT
       });
