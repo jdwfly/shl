@@ -1206,7 +1206,7 @@
       return data;
     };
     UI.prototype.processProspectData = function(prospects) {
-      var addressLabel, content, contentTitle, data, lastContactLabel, prospect, row;
+      var addressLabel, content, contentTitle, data, lastContactLabel, nextstepColor, nextstepLabel, prospect, row;
       if (prospects.length < 1) {
         row = Ti.UI.createTableViewRow();
         return [row];
@@ -1258,6 +1258,31 @@
             width: 'auto',
             left: 5
           });
+          if (prospect.nextStep === 'Salvation') {
+            nextstepColor = '#ae2a2a';
+          } else if (prospect.nextStep === 'Baptism') {
+            nextstepColor = '#22678f';
+          } else if (prospect.nextStep === 'Attendance') {
+            nextstepColor = '#cba81a';
+          } else if (prospect.nextStep === 'Membership') {
+            nextstepColor = '#608f22';
+          }
+          nextstepLabel = Ti.UI.createLabel({
+            text: " " + prospect.nextStep + " ",
+            font: {
+              fontWeight: 'normal',
+              fontSize: 10
+            },
+            backgroundColor: nextstepColor,
+            borderRadius: 5,
+            backgroundPaddingLeft: 5,
+            backgroundPaddingRight: 5,
+            height: 15,
+            width: 'auto',
+            right: 5,
+            top: 5
+          });
+          row.add(nextstepLabel);
           content.add(contentTitle);
           content.add(lastContactLabel);
           content.add(addressLabel);
