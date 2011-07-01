@@ -150,7 +150,7 @@
   }
 
   /* Set the Adapter to Titanium and connect to the default 'app.sqlite' database */
-  ActiveRecord.connect(ActiveRecord.Adapters.Titanium, "Outreach");
+  ActiveRecord.connect(ActiveRecord.Adapters.Ti, "Outreach");
   if (shl.debugMode){
     ActiveRecord.execute('DROP TABLE IF EXISTS prospects');
     ActiveRecord.execute('DROP TABLE IF EXISTS contacts');
