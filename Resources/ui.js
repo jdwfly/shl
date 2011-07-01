@@ -360,7 +360,7 @@
         moveable: true
       });
       tableView.addEventListener('click', function(e) {
-        var addW, b, currentList, listWin, listcancel, listedit, listview, lname, prospects;
+        var addW, b, currentList, listWin, listcancel, listedit, listview, lname, prospects, query;
         Ti.API.info(JSON.stringify(e.row));
         if (e.row.listID === 'custom') {
           addW = Ti.UI.createWindow({
@@ -402,11 +402,26 @@
           return true;
         }
         listWin = Ti.UI.createWindow();
+        listWin.addEventListener('open', function(f) {
+          return listWin.addEventListener('focus', function(g) {
+            var currentList, prospects;
+            if (typeof query !== "undefined" && query !== null) {
+              prospects = shl.Prospect.find(query);
+            } else {
+              currentList = shl.List.find(e.row.listID);
+              prospects = currentList.getProspectList();
+            }
+            data = self.processProspectData(prospects);
+            return listview.setData(data);
+          });
+        });
         if (shl.aLists[e.row.title] != null) {
           listWin.title = e.row.title;
+          query = shl.aLists[e.row.title].query;
           prospects = shl.Prospect.find(shl.aLists[e.row.title].query);
           Ti.API.info('prospects = ' + prospects.toJSON());
-          listWin.add(self.createProspectTableView(prospects));
+          listview = self.createProspectTableView(prospects);
+          listWin.add(listview);
           return self.tabs.activeTab.open(listWin);
         } else {
           listWin.title = e.row.title;
@@ -1024,7 +1039,6 @@
         emailSection.add(emailRow);
         emailSection.addEventListener('click', function(e) {
           var emailDialog;
-          alert(e.source.text);
           emailDialog = Ti.UI.createEmailDialog();
           emailDialog.toRecipients = [e.source.text];
           return emailDialog.open();

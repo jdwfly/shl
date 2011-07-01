@@ -349,11 +349,24 @@ class UI
       # TODO : create and populate window based on list choice
       # Determine if the list is an auto list
       listWin = Ti.UI.createWindow()
+      listWin.addEventListener('open', (f) ->
+        listWin.addEventListener('focus', (g) ->
+          if query?
+            prospects = shl.Prospect.find(query)
+          else
+            currentList = shl.List.find(e.row.listID)
+            prospects = currentList.getProspectList()
+          data = self.processProspectData(prospects)
+          listview.setData(data)
+        )
+      )
       if shl.aLists[e.row.title]?
         listWin.title = e.row.title
+        query = shl.aLists[e.row.title].query
         prospects = shl.Prospect.find(shl.aLists[e.row.title].query)
         Ti.API.info('prospects = ' + prospects.toJSON())
-        listWin.add(self.createProspectTableView(prospects))
+        listview = self.createProspectTableView(prospects)
+        listWin.add(listview)
         self.tabs.activeTab.open(listWin)
       else
         listWin.title = e.row.title
@@ -927,7 +940,6 @@ class UI
       emailSection.add(emailRow)
       # TODO: Test on device to ensure email sends
       emailSection.addEventListener('click', (e) ->
-        alert(e.source.text)
         emailDialog = Ti.UI.createEmailDialog()
         emailDialog.toRecipients = [e.source.text]
         emailDialog.open()
