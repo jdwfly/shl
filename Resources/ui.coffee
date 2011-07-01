@@ -1121,14 +1121,15 @@ class UI
       else if prospect.nextStep is 'Membership'
         nextstepColor = '#608f22'
       nextstepLabel = Ti.UI.createLabel({
-        text: " " + prospect.nextStep + " ",
+        text: "  " + prospect.nextStep + "  ",
         font: {fontWeight: 'normal', fontSize: 10},
         backgroundColor: nextstepColor,
+        color: '#ffffff'
         borderRadius: 5,
         backgroundPaddingLeft: 5,
         backgroundPaddingRight: 5,
-        height: 15,
-        width: 'auto',
+        height: 20,
+        width: 55,
         right: 5,
         top: 5
       })
