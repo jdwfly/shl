@@ -1688,11 +1688,7 @@
               return viewProspectWin.close();
             });
             viewProspectWin.setRightNavButton(closeButton);
-            return viewProspectWin.open({
-              modal: true,
-              modalTransitionStyle: Ti.UI.iPhone.MODAL_TRANSITION_STYLE_COVER_VERTICAL,
-              modalStyle: Ti.UI.iPhone.MODAL_PRESENTATION_FORMSHEET
-            });
+            return self.tabs.activeTab.open(viewProspectWin);
           }
         });
         win.setRightNavButton(b);

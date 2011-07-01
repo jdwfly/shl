@@ -1539,11 +1539,7 @@ class UI
             viewProspectWin.close()
           )
           viewProspectWin.setRightNavButton(closeButton)
-          viewProspectWin.open({
-            modal:true,
-            modalTransitionStyle: Ti.UI.iPhone.MODAL_TRANSITION_STYLE_COVER_VERTICAL,
-            modalStyle: Ti.UI.iPhone.MODAL_PRESENTATION_FORMSHEET
-          })
+          self.tabs.activeTab.open(viewProspectWin)
       )
       win.setRightNavButton(b)
       if prospect?
