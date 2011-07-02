@@ -106,16 +106,28 @@
           systemButton: Ti.UI.iPhone.SystemButton.EDIT
         });
         edit.addEventListener('click', function(e) {
+          var allLists;
           win.setRightNavButton(cancel);
+          allLists = shl.List.find({
+            order: 'weight ASC'
+          });
+          tableView.updateLists(allLists);
           return tableView.editing = true;
         });
         cancel = Ti.UI.createButton({
           systemButton: Ti.UI.iPhone.SystemButton.DONE,
-          title: 'Cancel'
+          title: 'Done'
         });
         cancel.addEventListener('click', function(e) {
           win.setRightNavButton(edit);
-          return tableView.editing = false;
+          tableView.editing = false;
+          lists = shl.List.find({
+            where: {
+              active: 1
+            },
+            order: 'weight ASC'
+          });
+          return tableView.updateLists(lists);
         });
         win.setRightNavButton(edit);
       }
@@ -359,7 +371,7 @@
         moveable: true
       });
       tableView.addEventListener('click', function(e) {
-        var addW, b, currentList, listWin, listcancel, listedit, listview, lname, prospects, query;
+        var addW, allLists, b, currentList, listWin, listcancel, listedit, listview, lname, prospects, query;
         Ti.API.info(JSON.stringify(e.row));
         if (e.row.listID === 'custom') {
           addW = Ti.UI.createWindow({
@@ -398,6 +410,13 @@
             modalTransitionStyle: Ti.UI.iPhone.MODAL_TRANSITION_STYLE_FLIP_HORIZONTAL,
             modalStyle: Ti.UI.iPhone.MODAL_PRESENTATION_FORMSHEET
           });
+          return true;
+        }
+        if (e.row.listID === 'more') {
+          allLists = shl.List.find({
+            order: 'weight ASC'
+          });
+          tableView.updateLists(allLists);
           return true;
         }
         listWin = Ti.UI.createWindow();
@@ -1210,7 +1229,7 @@
       return win;
     };
     UI.prototype.processListData = function(lists) {
-      var addCustom, data, i, row;
+      var addCustom, data, i, row, viewMore;
       data = (function() {
         var _i, _len, _results;
         _results = [];
@@ -1235,6 +1254,14 @@
         moveable: false
       });
       data.push(addCustom);
+      viewMore = Ti.UI.createTableViewRow({
+        height: 'auto',
+        title: 'View All Lists',
+        listID: 'more',
+        editable: false,
+        moveable: false
+      });
+      data.push(viewMore);
       return data;
     };
     UI.prototype.processProspectData = function(prospects) {

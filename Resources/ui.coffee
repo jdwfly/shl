@@ -102,15 +102,24 @@ class UI
       })
       edit.addEventListener('click', (e) ->
         win.setRightNavButton(cancel)
+        allLists = shl.List.find({
+          order: 'weight ASC'
+        })
+        tableView.updateLists(allLists)
         tableView.editing = true
       )
       cancel = Ti.UI.createButton({
         systemButton: Ti.UI.iPhone.SystemButton.DONE,
-        title: 'Cancel'
+        title: 'Done'
       })
       cancel.addEventListener('click', (e) ->
         win.setRightNavButton(edit)
         tableView.editing = false
+        lists = shl.List.find({
+          where: {active: 1},
+          order: 'weight ASC'
+        })
+        tableView.updateLists(lists)
       )
       win.setRightNavButton(edit)
     win.addEventListener('open', (e) ->
@@ -347,6 +356,12 @@ class UI
           modalTransitionStyle: Ti.UI.iPhone.MODAL_TRANSITION_STYLE_FLIP_HORIZONTAL,
           modalStyle: Ti.UI.iPhone.MODAL_PRESENTATION_FORMSHEET
         })
+        return true
+      if e.row.listID == 'more'
+        allLists = shl.List.find({
+          order: 'weight ASC'
+        })
+        tableView.updateLists(allLists)
         return true
       # TODO : create and populate window based on list choice
       # Determine if the list is an auto list
@@ -1103,6 +1118,14 @@ class UI
       moveable: false
     })
     data.push(addCustom)
+    viewMore = Ti.UI.createTableViewRow({
+      height: 'auto',
+      title: 'View All Lists',
+      listID: 'more',
+      editable: false,
+      moveable: false
+    })
+    data.push(viewMore)
     return data
   
   processProspectData : (prospects) ->
