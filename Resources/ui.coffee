@@ -358,6 +358,8 @@ class UI
           else
             currentList = shl.List.find(e.row.listID)
             prospects = currentList.getProspectList()
+            listWin.setRightNavButton(listedit)
+            listview.editing = false
           data = self.processProspectData(prospects)
           listview.setData(data)
         )
@@ -439,12 +441,18 @@ class UI
               buttonNames : ['OK','Cancel'],
               cancel : 1
             })
-            a.addEventListener('click', (e) ->
+            a.addEventListener('click', (g) ->
               Ti.API.info(e.index)
-              if e.index == 0
+              if g.index == 0
                 listings = currentList.getListingList()
                 for listing in listings
                   listing.destroy()
+                currentList = shl.List.find(e.row.listID)
+                prospects = currentList.getProspectList()
+                listWin.setRightNavButton(listedit)
+                listview.editing = false
+                data = self.processProspectData(prospects)
+                listview.setData(data)
             )
             a.show()
           )
@@ -455,6 +463,23 @@ class UI
             left : 9,
             top : 6
           })
+          deleteBtn.addEventListener('click', (g)->
+            a = Titanium.UI.createAlertDialog({
+              title:'Delete list?',
+              buttonNames : ['OK','Cancel'],
+              cancel : 1
+            })
+            a.addEventListener('click', (g) ->
+              Ti.API.info(e.index)
+              if g.index == 0
+                listings = currentList.getListingList()
+                for listing in listings
+                  listing.destroy()
+                currentList.destroy()
+                listWin.close()
+            )
+            a.show()
+          )
           editBtns.add(addBtn)
           editBtns.add(clearBtn)
           editBtns.add(deleteBtn)

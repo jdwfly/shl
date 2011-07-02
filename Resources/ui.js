@@ -409,6 +409,8 @@
             } else {
               currentList = shl.List.find(e.row.listID);
               prospects = currentList.getProspectList();
+              listWin.setRightNavButton(listedit);
+              listview.editing = false;
             }
             data = self.processProspectData(prospects);
             return listview.setData(data);
@@ -493,17 +495,21 @@
                 buttonNames: ['OK', 'Cancel'],
                 cancel: 1
               });
-              a.addEventListener('click', function(e) {
-                var listing, listings, _i, _len, _results;
+              a.addEventListener('click', function(g) {
+                var listing, listings, _i, _len;
                 Ti.API.info(e.index);
-                if (e.index === 0) {
+                if (g.index === 0) {
                   listings = currentList.getListingList();
-                  _results = [];
                   for (_i = 0, _len = listings.length; _i < _len; _i++) {
                     listing = listings[_i];
-                    _results.push(listing.destroy());
+                    listing.destroy();
                   }
-                  return _results;
+                  currentList = shl.List.find(e.row.listID);
+                  prospects = currentList.getProspectList();
+                  listWin.setRightNavButton(listedit);
+                  listview.editing = false;
+                  data = self.processProspectData(prospects);
+                  return listview.setData(data);
                 }
               });
               return a.show();
@@ -514,6 +520,28 @@
               height: 38,
               left: 9,
               top: 6
+            });
+            deleteBtn.addEventListener('click', function(g) {
+              var a;
+              a = Titanium.UI.createAlertDialog({
+                title: 'Delete list?',
+                buttonNames: ['OK', 'Cancel'],
+                cancel: 1
+              });
+              a.addEventListener('click', function(g) {
+                var listing, listings, _i, _len;
+                Ti.API.info(e.index);
+                if (g.index === 0) {
+                  listings = currentList.getListingList();
+                  for (_i = 0, _len = listings.length; _i < _len; _i++) {
+                    listing = listings[_i];
+                    listing.destroy();
+                  }
+                  currentList.destroy();
+                  return listWin.close();
+                }
+              });
+              return a.show();
             });
             editBtns.add(addBtn);
             editBtns.add(clearBtn);

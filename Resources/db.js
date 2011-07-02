@@ -388,6 +388,10 @@
         });
       }
     }
+    shl.List.create({
+      name: 'Starred',
+      active: 0
+    });
   };
   
   if (!Ti.App.Properties.hasProperty('dbInitComplete')) {
