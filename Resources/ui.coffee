@@ -497,8 +497,14 @@ class UI
   createProspectTableView : (prospects) ->
     self = this
     data = @processProspectData(prospects)
-    tableView = Ti.UI.createTableView({data:data})
-    tableView.addEventListener('click', (e) -> 
+    tableView = Ti.UI.createTableView({
+      data:data
+    })
+    tableView.addEventListener('click', (e) ->
+      # don't do anything if the star was clicked
+      dataSourceString = e.source + ''
+      if dataSourceString.indexOf('TiUIImageView') isnt -1
+        return true
       if not tableView.editing
         Ti.API.info(JSON.stringify(e.row))
         prospectWin = self.createProspectViewWindow(e.row.prospect)
@@ -1081,12 +1087,13 @@ class UI
     data = for prospect in prospects
       row = Ti.UI.createTableViewRow({
         height: 'auto',
-        hasDetail: true
+        hasDetail: true,
+        selectedBackgroundColor: '#ffffff'
       })
       content = Ti.UI.createView({
         height: 'auto',
         layout: 'vertical',
-        left: 10,
+        left: 25,
         top: 10,
         bottom: 10,
         right: 10
@@ -1122,18 +1129,33 @@ class UI
         nextstepColor = '#608f22'
       nextstepLabel = Ti.UI.createLabel({
         text: "  " + prospect.nextStep + "  ",
-        font: {fontWeight: 'normal', fontSize: 10},
+        font: {fontWeight: 'normal', fontSize: 8},
         backgroundColor: nextstepColor,
+        backgroundSelectedColor: nextstepColor,
         color: '#ffffff'
         borderRadius: 5,
         backgroundPaddingLeft: 5,
         backgroundPaddingRight: 5,
-        height: 20,
-        width: 55,
+        height: 15,
+        width: 43,
         right: 5,
         top: 5
       })
+      starImage = Ti.UI.createImageView({
+        url: 'images/star-off.png',
+        width: 30,
+        height: 30,
+        left: 0,
+        top: 5
+      })
+      starImage.addEventListener('click', (e) ->
+        if @url is 'images/star-off.png'
+          @url = 'images/star-on.png'
+        else
+          @url = 'images/star-off.png'
+      )
       row.add(nextstepLabel)
+      row.add(starImage)
       content.add(contentTitle)
       content.add(lastContactLabel)
       content.add(addressLabel)

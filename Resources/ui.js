@@ -566,7 +566,11 @@
         data: data
       });
       tableView.addEventListener('click', function(e) {
-        var prospectWin;
+        var dataSourceString, prospectWin;
+        dataSourceString = e.source + '';
+        if (dataSourceString.indexOf('TiUIImageView') !== -1) {
+          return true;
+        }
         if (!tableView.editing) {
           Ti.API.info(JSON.stringify(e.row));
           prospectWin = self.createProspectViewWindow(e.row.prospect);
@@ -1206,7 +1210,7 @@
       return data;
     };
     UI.prototype.processProspectData = function(prospects) {
-      var addressLabel, content, contentTitle, data, lastContactLabel, nextstepColor, nextstepLabel, prospect, row;
+      var addressLabel, content, contentTitle, data, lastContactLabel, nextstepColor, nextstepLabel, prospect, row, starImage;
       if (prospects.length < 1) {
         row = Ti.UI.createTableViewRow();
         return [row];
@@ -1218,12 +1222,13 @@
           prospect = prospects[_i];
           row = Ti.UI.createTableViewRow({
             height: 'auto',
-            hasDetail: true
+            hasDetail: true,
+            selectedBackgroundColor: '#ffffff'
           });
           content = Ti.UI.createView({
             height: 'auto',
             layout: 'vertical',
-            left: 10,
+            left: 25,
             top: 10,
             bottom: 10,
             right: 10
@@ -1271,19 +1276,35 @@
             text: "  " + prospect.nextStep + "  ",
             font: {
               fontWeight: 'normal',
-              fontSize: 10
+              fontSize: 8
             },
             backgroundColor: nextstepColor,
+            backgroundSelectedColor: nextstepColor,
             color: '#ffffff',
             borderRadius: 5,
             backgroundPaddingLeft: 5,
             backgroundPaddingRight: 5,
-            height: 20,
-            width: 55,
+            height: 15,
+            width: 43,
             right: 5,
             top: 5
           });
+          starImage = Ti.UI.createImageView({
+            url: 'images/star-off.png',
+            width: 30,
+            height: 30,
+            left: 0,
+            top: 5
+          });
+          starImage.addEventListener('click', function(e) {
+            if (this.url === 'images/star-off.png') {
+              return this.url = 'images/star-on.png';
+            } else {
+              return this.url = 'images/star-off.png';
+            }
+          });
           row.add(nextstepLabel);
+          row.add(starImage);
           content.add(contentTitle);
           content.add(lastContactLabel);
           content.add(addressLabel);
