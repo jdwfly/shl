@@ -1176,7 +1176,7 @@ class UI
     data = for prospect in prospects
       row = Ti.UI.createTableViewRow({
         height: 'auto',
-        hasDetail: true,
+        hasChild: true,
         selectedBackgroundColor: '#ffffff'
       })
       content = Ti.UI.createView({

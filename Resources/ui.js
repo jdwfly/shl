@@ -1320,7 +1320,7 @@
           prospect = prospects[_i];
           row = Ti.UI.createTableViewRow({
             height: 'auto',
-            hasDetail: true,
+            hasChild: true,
             selectedBackgroundColor: '#ffffff'
           });
           content = Ti.UI.createView({
