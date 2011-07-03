@@ -129,7 +129,6 @@
           });
           return tableView.updateLists(lists);
         });
-        win.setRightNavButton(edit);
       }
       win.addEventListener('open', function(e) {
         return win.addEventListener('focus', function(e) {
@@ -373,17 +372,16 @@
         moveable: true
       });
       tableView.addEventListener('click', function(e) {
-        var addW, allLists, b, currentList, listWin, listcancel, listedit, listview, lname, prospects, query;
+        var addW, allLists, b, c, currentList, index, listWin, listcancel, listedit, listview, lname, newRow, prospects, query;
         Ti.API.info(JSON.stringify(e.row));
         if (e.row.listID === 'custom') {
           addW = Ti.UI.createWindow({
             title: 'New Custom List',
-            backgroundColor: '#162144'
+            backgroundColor: '#BBBBBB'
           });
           lname = Ti.UI.createTextField({
             height: 40,
-            width: '80%',
-            left: 10,
+            width: 300,
             top: 10,
             backgroundColor: '#ffffff',
             keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
@@ -393,9 +391,12 @@
           });
           addW.add(lname);
           b = Ti.UI.createButton({
+            width: 300,
+            height: 57,
+            top: 60,
             title: 'Save',
-            width: 100,
-            height: 30
+            color: '#fff',
+            backgroundImage: '/images/button_blue.png'
           });
           b.addEventListener('click', function() {
             var createdList;
@@ -406,16 +407,49 @@
             });
             return addW.close();
           });
-          addW.setRightNavButton(b);
+          addW.add(b);
+          c = Ti.UI.createButton({
+            width: 300,
+            height: 57,
+            top: 125,
+            title: 'Cancel',
+            color: '#fff',
+            backgroundImage: '/images/button_blue.png'
+          });
+          c.addEventListener('click', function() {
+            return addW.close();
+          });
+          addW.add(c);
           addW.open({
             modal: true,
-            modalTransitionStyle: Ti.UI.iPhone.MODAL_TRANSITION_STYLE_FLIP_HORIZONTAL,
+            modalTransitionStyle: Ti.UI.iPhone.MODAL_TRANSITION_STYLE_COVER_VERTICAL,
             modalStyle: Ti.UI.iPhone.MODAL_PRESENTATION_FORMSHEET
           });
           return true;
         }
         if (e.row.listID === 'more') {
           allLists = shl.List.find({
+            order: 'weight ASC'
+          });
+          tableView.updateLists(allLists);
+          index = tableView.getIndexByName('more');
+          tableView.deleteRow(index);
+          newRow = Ti.UI.createTableViewRow({
+            height: 'auto',
+            title: 'Hide Extra Lists',
+            listID: 'less',
+            editable: false,
+            moveable: false,
+            name: 'less'
+          });
+          tableView.appendRow(newRow);
+          return true;
+        }
+        if (e.row.listID === 'less') {
+          allLists = shl.List.find({
+            where: {
+              active: 1
+            },
             order: 'weight ASC'
           });
           tableView.updateLists(allLists);
@@ -579,7 +613,6 @@
             style: Titanium.UI.iPhone.SystemButtonStyle.DONE
           });
           listcancel.addEventListener('click', function() {
-            var index;
             listWin.setRightNavButton(listedit);
             listview.editing = false;
             index = listview.getIndexByName('options');
@@ -1261,7 +1294,8 @@
         title: 'View All Lists',
         listID: 'more',
         editable: false,
-        moveable: false
+        moveable: false,
+        name: 'more'
       });
       data.push(viewMore);
       return data;
