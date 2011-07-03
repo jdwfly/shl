@@ -138,15 +138,14 @@ class UI
     win = Ti.UI.createWindow({
       title: 'Starred'
     })
-    starList = shl.List.findByName('Starred')
+    starList = shl.List.find(1)
     prospects = starList.getProspectList()
     Ti.API.info('prospects = ' + prospects)
-    win.add(@createProspectTableView(prospects))
-    win.addEventListener('open', (e) ->
-      win.addEventListener('focus', (e) ->
-        prospects = starList.getProspectList()
-        tableView.updateProspects(prospects)
-      )
+    tableView = @createProspectTableView(prospects)
+    win.add(tableView)
+    win.addEventListener('focus', (e) ->
+      prospects = starList.getProspectList()
+      tableView.updateProspects(prospects)
     )
     return win
   
@@ -1203,6 +1202,7 @@ class UI
         width: 'auto',
         left: 5
       })
+      ###
       if prospect.nextStep is 'Salvation'
         nextstepColor = '#ae2a2a'
       else if prospect.nextStep is 'Baptism'
@@ -1225,6 +1225,7 @@ class UI
         right: 5,
         top: 5
       })
+      ###
       starImage = Ti.UI.createImageView({
         url: if prospect.isStarred() then 'images/star-on.png' else 'images/star-off.png',
         width: 30,
@@ -1236,18 +1237,22 @@ class UI
       starImage.addEventListener('click', (e) ->
         if @url is 'images/star-off.png'
           @url = 'images/star-on.png'
-          starList = shl.List.findByName('Starred')
+          starList = shl.List.find(1)
           starList.createListing({
             prospect_id: @prospectID
           })
         else
           @url = 'images/star-off.png'
-          starList = shl.List.findByName('Starred')
-          starList.destoryListing({
-            prospect_id: @prospectID
+          z = shl.Listing.find({
+            where: {
+              list_id: 1,
+              prospect_id: @prospectID
+            }
           })
+          alert(z.destroy)
+          z.destroy()
       )
-      row.add(nextstepLabel)
+      #row.add(nextstepLabel)
       row.add(starImage)
       content.add(contentTitle)
       content.add(lastContactLabel)

@@ -144,19 +144,18 @@
       return win;
     };
     UI.prototype.createStarredWindow = function() {
-      var prospects, starList, win;
+      var prospects, starList, tableView, win;
       win = Ti.UI.createWindow({
         title: 'Starred'
       });
-      starList = shl.List.findByName('Starred');
+      starList = shl.List.find(1);
       prospects = starList.getProspectList();
       Ti.API.info('prospects = ' + prospects);
-      win.add(this.createProspectTableView(prospects));
-      win.addEventListener('open', function(e) {
-        return win.addEventListener('focus', function(e) {
-          prospects = starList.getProspectList();
-          return tableView.updateProspects(prospects);
-        });
+      tableView = this.createProspectTableView(prospects);
+      win.add(tableView);
+      win.addEventListener('focus', function(e) {
+        prospects = starList.getProspectList();
+        return tableView.updateProspects(prospects);
       });
       return win;
     };
@@ -1301,7 +1300,7 @@
       return data;
     };
     UI.prototype.processProspectData = function(prospects) {
-      var addressLabel, content, contentTitle, data, lastContactLabel, nextstepColor, nextstepLabel, prospect, row, starImage;
+      var addressLabel, content, contentTitle, data, lastContactLabel, prospect, row, starImage;
       if (prospects.length < 1) {
         row = Ti.UI.createTableViewRow();
         return [row];
@@ -1354,32 +1353,30 @@
             width: 'auto',
             left: 5
           });
-          if (prospect.nextStep === 'Salvation') {
-            nextstepColor = '#ae2a2a';
-          } else if (prospect.nextStep === 'Baptism') {
-            nextstepColor = '#22678f';
-          } else if (prospect.nextStep === 'Attendance') {
-            nextstepColor = '#cba81a';
-          } else if (prospect.nextStep === 'Membership') {
-            nextstepColor = '#608f22';
-          }
-          nextstepLabel = Ti.UI.createLabel({
-            text: "  " + prospect.nextStep + "  ",
-            font: {
-              fontWeight: 'normal',
-              fontSize: 8
-            },
-            backgroundColor: nextstepColor,
-            backgroundSelectedColor: nextstepColor,
-            color: '#ffffff',
-            borderRadius: 5,
-            backgroundPaddingLeft: 5,
-            backgroundPaddingRight: 5,
-            height: 15,
-            width: 43,
-            right: 5,
-            top: 5
-          });
+          /*
+                if prospect.nextStep is 'Salvation'
+                  nextstepColor = '#ae2a2a'
+                else if prospect.nextStep is 'Baptism'
+                  nextstepColor = '#22678f'
+                else if prospect.nextStep is 'Attendance'
+                  nextstepColor = '#cba81a'
+                else if prospect.nextStep is 'Membership'
+                  nextstepColor = '#608f22'
+                nextstepLabel = Ti.UI.createLabel({
+                  text: "  " + prospect.nextStep + "  ",
+                  font: {fontWeight: 'normal', fontSize: 8},
+                  backgroundColor: nextstepColor,
+                  backgroundSelectedColor: nextstepColor,
+                  color: '#ffffff'
+                  borderRadius: 5,
+                  backgroundPaddingLeft: 5,
+                  backgroundPaddingRight: 5,
+                  height: 15,
+                  width: 43,
+                  right: 5,
+                  top: 5
+                })
+                */
           starImage = Ti.UI.createImageView({
             url: prospect.isStarred() ? 'images/star-on.png' : 'images/star-off.png',
             width: 30,
@@ -1389,22 +1386,25 @@
             prospectID: prospect.id
           });
           starImage.addEventListener('click', function(e) {
-            var starList;
+            var starList, z;
             if (this.url === 'images/star-off.png') {
               this.url = 'images/star-on.png';
-              starList = shl.List.findByName('Starred');
+              starList = shl.List.find(1);
               return starList.createListing({
                 prospect_id: this.prospectID
               });
             } else {
               this.url = 'images/star-off.png';
-              starList = shl.List.findByName('Starred');
-              return starList.destoryListing({
-                prospect_id: this.prospectID
+              z = shl.Listing.find({
+                where: {
+                  list_id: 1,
+                  prospect_id: this.prospectID
+                }
               });
+              alert(z.destroy);
+              return z.destroy();
             }
           });
-          row.add(nextstepLabel);
           row.add(starImage);
           content.add(contentTitle);
           content.add(lastContactLabel);
