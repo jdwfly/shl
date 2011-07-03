@@ -379,6 +379,12 @@
 //*************** Init *************************
   
   shl.dbInit = function() {
+    shl.List.create({
+      name: 'Starred',
+      active: 0,
+      weight: 40,
+      id: 1
+    });
     for (list in shl.aLists) {
       if (shl.aLists.hasOwnProperty(list)) {
         shl.List.create({
@@ -388,10 +394,6 @@
         });
       }
     }
-    shl.List.create({
-      name: 'Starred',
-      active: 0
-    });
   };
   
   if (!Ti.App.Properties.hasProperty('dbInitComplete')) {

@@ -121,7 +121,7 @@ class UI
         })
         tableView.updateLists(lists)
       )
-      win.setRightNavButton(edit)
+      # win.setRightNavButton(edit)
     win.addEventListener('open', (e) ->
       win.addEventListener('focus', (e) ->
         lists = shl.List.find({
@@ -320,12 +320,11 @@ class UI
         # TODO : pull up modal window to add a list
         addW = Ti.UI.createWindow({
           title:'New Custom List',
-          backgroundColor:'#162144'
+          backgroundColor: '#BBBBBB'
         })
         lname = Ti.UI.createTextField({
           height:40,
-          width: '80%',
-          left: 10,
+          width: 300,
           top: 10,
           backgroundColor: '#ffffff'
           keyboardType:Titanium.UI.KEYBOARD_DEFAULT,
@@ -335,9 +334,12 @@ class UI
         })
         addW.add(lname)
         b = Ti.UI.createButton({
-          title:'Save',
-          width:100,
-          height:30
+          width: 300,
+          height: 57,
+          top: 60,
+          title: 'Save',
+          color: '#fff',
+          backgroundImage: '/images/button_blue.png'
         })
         b.addEventListener('click', () ->
           # Create an object to save to the database
@@ -349,16 +351,46 @@ class UI
           # TODO : show a list of prospects to add to the list
           addW.close()
         )
-        addW.setRightNavButton(b)
-        #addW.add(b)
+        #addW.setRightNavButton(b)
+        addW.add(b)
+        c = Ti.UI.createButton({
+          width: 300,
+          height: 57,
+          top: 125,
+          title: 'Cancel',
+          color: '#fff',
+          backgroundImage: '/images/button_blue.png'
+        })
+        c.addEventListener('click', () ->
+          addW.close()
+        )
+        addW.add(c)
         addW.open({
           modal:true,
-          modalTransitionStyle: Ti.UI.iPhone.MODAL_TRANSITION_STYLE_FLIP_HORIZONTAL,
+          modalTransitionStyle: Ti.UI.iPhone.MODAL_TRANSITION_STYLE_COVER_VERTICAL,
           modalStyle: Ti.UI.iPhone.MODAL_PRESENTATION_FORMSHEET
         })
         return true
       if e.row.listID == 'more'
         allLists = shl.List.find({
+          order: 'weight ASC'
+        })
+        tableView.updateLists(allLists)
+        index = tableView.getIndexByName('more');
+        tableView.deleteRow(index)
+        newRow = Ti.UI.createTableViewRow({
+          height: 'auto',
+          title: 'Hide Extra Lists',
+          listID: 'less',
+          editable: false,
+          moveable: false,
+          name: 'less'
+        })
+        tableView.appendRow(newRow)
+        return true
+      if e.row.listID == 'less'
+        allLists = shl.List.find({
+          where: {active: 1},
           order: 'weight ASC'
         })
         tableView.updateLists(allLists)
@@ -1123,7 +1155,8 @@ class UI
       title: 'View All Lists',
       listID: 'more',
       editable: false,
-      moveable: false
+      moveable: false,
+      name: 'more'
     })
     data.push(viewMore)
     return data
