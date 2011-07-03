@@ -142,6 +142,12 @@ class UI
     prospects = starList.getProspectList()
     Ti.API.info('prospects = ' + prospects)
     tableView = @createProspectTableView(prospects)
+    win.addEventListener('click', (e) ->
+      dataSourceString = e.source + ''
+      if dataSourceString.indexOf('TiUIImageView') isnt -1
+        win.fireEvent('focus')
+        return true
+    )
     win.add(tableView)
     win.addEventListener('focus', (e) ->
       prospects = starList.getProspectList()
@@ -1244,12 +1250,12 @@ class UI
         else
           @url = 'images/star-off.png'
           z = shl.Listing.find({
+            first: true,
             where: {
               list_id: 1,
               prospect_id: @prospectID
             }
           })
-          alert(z.destroy)
           z.destroy()
       )
       #row.add(nextstepLabel)

@@ -152,6 +152,14 @@
       prospects = starList.getProspectList();
       Ti.API.info('prospects = ' + prospects);
       tableView = this.createProspectTableView(prospects);
+      win.addEventListener('click', function(e) {
+        var dataSourceString;
+        dataSourceString = e.source + '';
+        if (dataSourceString.indexOf('TiUIImageView') !== -1) {
+          win.fireEvent('focus');
+          return true;
+        }
+      });
       win.add(tableView);
       win.addEventListener('focus', function(e) {
         prospects = starList.getProspectList();
@@ -1396,12 +1404,12 @@
             } else {
               this.url = 'images/star-off.png';
               z = shl.Listing.find({
+                first: true,
                 where: {
                   list_id: 1,
                   prospect_id: this.prospectID
                 }
               });
-              alert(z.destroy);
               return z.destroy();
             }
           });
