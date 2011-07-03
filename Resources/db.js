@@ -220,6 +220,14 @@
     },
     formatAddressGoogle : function() {
       return '' + ((this.street != null) && this.street !== '' ? this.street : '') + ((this.city != null) && this.city !== '' ? " " + this.city : '') + ((this.state != null) && this.state !== '' ? ", " + this.state : '') + ((this.zip != null) && this.zip !== '' ? " " + this.zip : '');
+    },
+    isStarred : function() {
+      result = this.getListingList({
+        where: {
+          list_id: 1
+        }
+      });
+      return result[0] == null ? false : true;
     }
   });
   shl.Prospect.hasMany('contacts', {

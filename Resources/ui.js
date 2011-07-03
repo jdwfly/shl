@@ -145,18 +145,20 @@
       return win;
     };
     UI.prototype.createStarredWindow = function() {
-      var prospects, win;
+      var prospects, starList, win;
       win = Ti.UI.createWindow({
         title: 'Starred'
       });
-      prospects = shl.Prospect.find({
-        where: {
-          starred: 1
-        },
-        order: 'id ASC'
-      });
-      Ti.API.info('prospects = ' + prospects.toJSON());
+      starList = shl.List.findByName('Starred');
+      prospects = starList.getProspectList();
+      Ti.API.info('prospects = ' + prospects);
       win.add(this.createProspectTableView(prospects));
+      win.addEventListener('open', function(e) {
+        return win.addEventListener('focus', function(e) {
+          prospects = starList.getProspectList();
+          return tableView.updateProspects(prospects);
+        });
+      });
       return win;
     };
     UI.prototype.createAddWindow = function() {
@@ -1345,17 +1347,27 @@
             top: 5
           });
           starImage = Ti.UI.createImageView({
-            url: 'images/star-off.png',
+            url: prospect.isStarred() ? 'images/star-on.png' : 'images/star-off.png',
             width: 30,
             height: 30,
             left: 0,
-            top: 5
+            top: 5,
+            prospectID: prospect.id
           });
           starImage.addEventListener('click', function(e) {
+            var starList;
             if (this.url === 'images/star-off.png') {
-              return this.url = 'images/star-on.png';
+              this.url = 'images/star-on.png';
+              starList = shl.List.findByName('Starred');
+              return starList.createListing({
+                prospect_id: this.prospectID
+              });
             } else {
-              return this.url = 'images/star-off.png';
+              this.url = 'images/star-off.png';
+              starList = shl.List.findByName('Starred');
+              return starList.destoryListing({
+                prospect_id: this.prospectID
+              });
             }
           });
           row.add(nextstepLabel);
@@ -1663,7 +1675,7 @@
         returnKeyType: Titanium.UI.RETURNKEY_DONE,
         borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
         hintText: L('1/10/2011'),
-        value: prospect != null ? date('n/j/Y', prospect.firstContactDate) : ''
+        value: prospect != null ? date('n/j/Y', prospect.firstContactDate) : date('n/j/Y')
       });
       initialContactRow.add(initContactLabel);
       initialContactRow.add(sep5);
@@ -1721,7 +1733,17 @@
           systemButton: Ti.UI.iPhone.SystemButton.SAVE
         });
         b.addEventListener('click', function() {
-          var closeButton, createdProspect, viewProspectWin;
+          var closeButton, createdProspect, datePattern, emailPattern, viewProspectWin;
+          emailPattern = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+          if (email.value !== '' && !email.value.match(emailPattern)) {
+            alert('Invalid email address.');
+            return false;
+          }
+          datePattern = /^\d{1,2}\/\d{1,2}\/\d{4}$/;
+          if (initialPicker.value !== '' && !initialPicker.value.match(datePattern)) {
+            alert('Invalid date format. Please format date MM/DD/YYYY');
+            return false;
+          }
           if (prospect != null) {
             shl.Prospect.update(prospect.id, {
               last: lname.value,
@@ -1776,7 +1798,7 @@
             homeText.value = '';
             mobileText.value = '';
             email.value = '';
-            initialPicker.value = '';
+            initialPicker.value = date('n/j/Y');
             pocTextfield.value = '';
             prevSavedRow.hasCheck = false;
             prevBaptRow.hasCheck = false;

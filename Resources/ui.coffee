@@ -138,13 +138,16 @@ class UI
     win = Ti.UI.createWindow({
       title: 'Starred'
     })
-    prospects = shl.Prospect.find({
-      where: {starred: 1},
-      order: 'id ASC'
-    })
-    Ti.API.info('prospects = ' + prospects.toJSON())
+    starList = shl.List.findByName('Starred')
+    prospects = starList.getProspectList()
+    Ti.API.info('prospects = ' + prospects)
     win.add(@createProspectTableView(prospects))
-    
+    win.addEventListener('open', (e) ->
+      win.addEventListener('focus', (e) ->
+        prospects = starList.getProspectList()
+        tableView.updateProspects(prospects)
+      )
+    )
     return win
   
   createAddWindow : () ->
@@ -1190,17 +1193,26 @@ class UI
         top: 5
       })
       starImage = Ti.UI.createImageView({
-        url: 'images/star-off.png',
+        url: if prospect.isStarred() then 'images/star-on.png' else 'images/star-off.png',
         width: 30,
         height: 30,
         left: 0,
-        top: 5
+        top: 5,
+        prospectID: prospect.id
       })
       starImage.addEventListener('click', (e) ->
         if @url is 'images/star-off.png'
           @url = 'images/star-on.png'
+          starList = shl.List.findByName('Starred')
+          starList.createListing({
+            prospect_id: @prospectID
+          })
         else
           @url = 'images/star-off.png'
+          starList = shl.List.findByName('Starred')
+          starList.destoryListing({
+            prospect_id: @prospectID
+          })
       )
       row.add(nextstepLabel)
       row.add(starImage)
@@ -1506,7 +1518,7 @@ class UI
       returnKeyType:Titanium.UI.RETURNKEY_DONE,
       borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
       hintText:L('1/10/2011'),
-      value: if prospect? then date('n/j/Y', prospect.firstContactDate) else ''
+      value: if prospect? then date('n/j/Y', prospect.firstContactDate) else date('n/j/Y')
     })
     initialContactRow.add(initContactLabel)
     initialContactRow.add(sep5)
@@ -1562,6 +1574,16 @@ class UI
         systemButton:Ti.UI.iPhone.SystemButton.SAVE
       })
       b.addEventListener('click', () ->
+        # Validation code
+        emailPattern = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+        if email.value isnt '' and not email.value.match(emailPattern)
+          alert('Invalid email address.')
+          return false
+        datePattern = /^\d{1,2}\/\d{1,2}\/\d{4}$/
+        if initialPicker.value isnt '' and not initialPicker.value.match(datePattern)
+          alert('Invalid date format. Please format date MM/DD/YYYY')
+          return false
+        
         if prospect?
           # Update the existing prospect
           shl.Prospect.update(prospect.id,{
@@ -1619,7 +1641,7 @@ class UI
           homeText.value = ''
           mobileText.value = ''
           email.value = ''
-          initialPicker.value = ''
+          initialPicker.value = date('n/j/Y')
           pocTextfield.value = ''
           prevSavedRow.hasCheck = false
           prevBaptRow.hasCheck = false
