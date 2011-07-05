@@ -142,6 +142,12 @@ class UI
     prospects = starList.getProspectList()
     Ti.API.info('prospects = ' + prospects)
     tableView = @createProspectTableView(prospects)
+    win.addEventListener('click', (e) ->
+      dataSourceString = e.source + ''
+      if dataSourceString.indexOf('TiUIImageView') isnt -1
+        win.fireEvent('focus')
+        return true
+    )
     win.add(tableView)
     win.addEventListener('focus', (e) ->
       prospects = starList.getProspectList()
@@ -649,10 +655,19 @@ class UI
       font: {fontSize: 12},
       color: '#4c596e'
     })
+    nextStepLabel = Ti.UI.createLabel({
+      text: 'Next Step: ' + prospect.nextStep,
+      left: 10,
+      top: 35,
+      width: 300,
+      height: 17,
+      font: {fontSize: 12},
+      color: '#4c596e'
+    })
     recordContactButton = Ti.UI.createButton({
       width: 300,
       height: 57,
-      top: 39,
+      top: 54,
       left: 10,
       title: 'Record Contact',
       color: '#fff',
@@ -966,6 +981,7 @@ class UI
     )
     headerView.add(nameLabel)
     headerView.add(contactLabel)
+    headerView.add(nextStepLabel)
     headerView.add(recordContactButton)
     
     if prospect.formatAddress() isnt ''
@@ -1188,7 +1204,7 @@ class UI
     data = for prospect in prospects
       row = Ti.UI.createTableViewRow({
         height: 'auto',
-        hasDetail: true,
+        hasChild: true,
         selectedBackgroundColor: '#ffffff'
       })
       content = Ti.UI.createView({
@@ -1262,12 +1278,12 @@ class UI
         else
           @url = 'images/star-off.png'
           z = shl.Listing.find({
+            first: true,
             where: {
               list_id: 1,
               prospect_id: @prospectID
             }
           })
-          alert(z.destroy)
           z.destroy()
       )
       #row.add(nextstepLabel)
@@ -1441,7 +1457,7 @@ class UI
       hintText:L('City'),
       value: if prospect? then prospect.city else ''
     })
-    sep1 = Ti.UI.createView({
+    sep1 = Ti.UI.createTextField({
       width: 1,
       height: 45,
       left: 0,
@@ -1476,7 +1492,7 @@ class UI
       hintText:L('Zip'),
       value: if prospect? then prospect.zip else ''
     })
-    sep2 = Ti.UI.createView({
+    sep2 = Ti.UI.createTextField({
       width: 1,
       height: 45,
       left: 0,
@@ -1523,7 +1539,7 @@ class UI
       width: 200,
       height:40,
       left: 5,
-      keyboardType:Titanium.UI.KEYBOARD_DEFAULT,
+      keyboardType:Titanium.UI.KEYBOARD_PHONE_PAD,
       returnKeyType:Titanium.UI.RETURNKEY_DONE,
       borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
       value: if prospect? then prospect.phoneHome else ''
@@ -1554,7 +1570,7 @@ class UI
       width: 200,
       height:40,
       left: 5,
-      keyboardType:Titanium.UI.KEYBOARD_DEFAULT,
+      keyboardType:Titanium.UI.KEYBOARD_PHONE_PAD,
       returnKeyType:Titanium.UI.RETURNKEY_DONE,
       borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
       value: if prospect? then prospect.phoneMobile else ''
@@ -1576,7 +1592,7 @@ class UI
       width: 280,
       height: 40,
       left: 10,
-      keyboardType:Titanium.UI.KEYBOARD_DEFAULT,
+      keyboardType:Titanium.UI.KEYBOARD_EMAIL,
       returnKeyType:Titanium.UI.RETURNKEY_DONE,
       borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
       hintText:L('Email'),

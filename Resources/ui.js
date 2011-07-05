@@ -152,6 +152,14 @@
       prospects = starList.getProspectList();
       Ti.API.info('prospects = ' + prospects);
       tableView = this.createProspectTableView(prospects);
+      win.addEventListener('click', function(e) {
+        var dataSourceString;
+        dataSourceString = e.source + '';
+        if (dataSourceString.indexOf('TiUIImageView') !== -1) {
+          win.fireEvent('focus');
+          return true;
+        }
+      });
       win.add(tableView);
       win.addEventListener('focus', function(e) {
         prospects = starList.getProspectList();
@@ -665,7 +673,7 @@
       return tableView;
     };
     UI.prototype.createProspectViewWindow = function(prospect) {
-      var addressLabel, addressRow, addressSection, contact, contactLabel, contactSection, contacts, data, editButton, emailLabel, emailRow, emailSection, firstContactLabel, firstContactRow, firstContactSection, headerView, nameLabel, noneRow, phoneHomeLabel, phoneHomeRow, phoneMobileLabel, phoneMobileRow, phoneSection, recordContactButton, row, rowLabel, self, statusLabel, statusRow, statusSection, statusValueLabel, tableView, win, _i, _len;
+      var addressLabel, addressRow, addressSection, contact, contactLabel, contactSection, contacts, data, editButton, emailLabel, emailRow, emailSection, firstContactLabel, firstContactRow, firstContactSection, headerView, nameLabel, nextStepLabel, noneRow, phoneHomeLabel, phoneHomeRow, phoneMobileLabel, phoneMobileRow, phoneSection, recordContactButton, row, rowLabel, self, statusLabel, statusRow, statusSection, statusValueLabel, tableView, win, _i, _len;
       prospect = shl.Prospect.find(prospect.id);
       win = Ti.UI.createWindow();
       self = this;
@@ -728,10 +736,21 @@
         },
         color: '#4c596e'
       });
+      nextStepLabel = Ti.UI.createLabel({
+        text: 'Next Step: ' + prospect.nextStep,
+        left: 10,
+        top: 35,
+        width: 300,
+        height: 17,
+        font: {
+          fontSize: 12
+        },
+        color: '#4c596e'
+      });
       recordContactButton = Ti.UI.createButton({
         width: 300,
         height: 57,
-        top: 39,
+        top: 54,
         left: 10,
         title: 'Record Contact',
         color: '#fff',
@@ -1064,6 +1083,7 @@
       });
       headerView.add(nameLabel);
       headerView.add(contactLabel);
+      headerView.add(nextStepLabel);
       headerView.add(recordContactButton);
       if (prospect.formatAddress() !== '') {
         addressSection = Ti.UI.createTableViewSection();
@@ -1330,7 +1350,7 @@
           prospect = prospects[_i];
           row = Ti.UI.createTableViewRow({
             height: 'auto',
-            hasDetail: true,
+            hasChild: true,
             selectedBackgroundColor: '#ffffff'
           });
           content = Ti.UI.createView({
@@ -1414,12 +1434,12 @@
             } else {
               this.url = 'images/star-off.png';
               z = shl.Listing.find({
+                first: true,
                 where: {
                   list_id: 1,
                   prospect_id: this.prospectID
                 }
               });
-              alert(z.destroy);
               return z.destroy();
             }
           });
@@ -1597,7 +1617,7 @@
         hintText: L('City'),
         value: prospect != null ? prospect.city : ''
       });
-      sep1 = Ti.UI.createView({
+      sep1 = Ti.UI.createTextField({
         width: 1,
         height: 45,
         left: 0,
@@ -1632,7 +1652,7 @@
         hintText: L('Zip'),
         value: prospect != null ? prospect.zip : ''
       });
-      sep2 = Ti.UI.createView({
+      sep2 = Ti.UI.createTextField({
         width: 1,
         height: 45,
         left: 0,
@@ -1679,7 +1699,7 @@
         width: 200,
         height: 40,
         left: 5,
-        keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
+        keyboardType: Titanium.UI.KEYBOARD_PHONE_PAD,
         returnKeyType: Titanium.UI.RETURNKEY_DONE,
         borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
         value: prospect != null ? prospect.phoneHome : ''
@@ -1713,7 +1733,7 @@
         width: 200,
         height: 40,
         left: 5,
-        keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
+        keyboardType: Titanium.UI.KEYBOARD_PHONE_PAD,
         returnKeyType: Titanium.UI.RETURNKEY_DONE,
         borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
         value: prospect != null ? prospect.phoneMobile : ''
@@ -1733,7 +1753,7 @@
         width: 280,
         height: 40,
         left: 10,
-        keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
+        keyboardType: Titanium.UI.KEYBOARD_EMAIL,
         returnKeyType: Titanium.UI.RETURNKEY_DONE,
         borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
         hintText: L('Email'),
