@@ -1471,7 +1471,7 @@ class UI
       width: 200,
       height:40,
       left: 5,
-      keyboardType:Titanium.UI.KEYBOARD_DEFAULT,
+      keyboardType:Titanium.UI.KEYBOARD_PHONE_PAD,
       returnKeyType:Titanium.UI.RETURNKEY_DONE,
       borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
       value: if prospect? then prospect.phoneHome else ''
@@ -1502,7 +1502,7 @@ class UI
       width: 200,
       height:40,
       left: 5,
-      keyboardType:Titanium.UI.KEYBOARD_DEFAULT,
+      keyboardType:Titanium.UI.KEYBOARD_PHONE_PAD,
       returnKeyType:Titanium.UI.RETURNKEY_DONE,
       borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
       value: if prospect? then prospect.phoneMobile else ''
@@ -1524,7 +1524,7 @@ class UI
       width: 280,
       height: 40,
       left: 10,
-      keyboardType:Titanium.UI.KEYBOARD_DEFAULT,
+      keyboardType:Titanium.UI.KEYBOARD_EMAIL,
       returnKeyType:Titanium.UI.RETURNKEY_DONE,
       borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
       hintText:L('Email'),
