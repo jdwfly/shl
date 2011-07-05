@@ -1387,29 +1387,24 @@ class UI
       })
       # TODO : Create function to add/remove rows on click
       genderRow.addEventListener('click', (e) ->
-        #alert(@index)
         if @index == 0
           nameSep.visible = false
           fnameRow.height = 40
           sname.top = -40
-          #fname.show()
-          #sname.hide()
           sname.animate({visible:false},()->
             fname.animate({visible:true})
           )
-          if sname.value
+          if not fname.value
             fname.value = sname.value
           sname.value = ''
         else if @index == 1
           nameSep.visible = false
           fnameRow.height = 40
-          #sname.show()
-          #fname.hide()
           fname.animate({visible:false},()->
             sname.animate({visible:true})
           )
           sname.top = -40
-          if fname.value
+          if not sname.value
             sname.value = fname.value
           fname.value = ''
         else

@@ -1547,7 +1547,7 @@
                 visible: true
               });
             });
-            if (sname.value) {
+            if (!fname.value) {
               fname.value = sname.value;
             }
             return sname.value = '';
@@ -1562,7 +1562,7 @@
               });
             });
             sname.top = -40;
-            if (fname.value) {
+            if (!sname.value) {
               sname.value = fname.value;
             }
             return fname.value = '';
