@@ -1155,15 +1155,33 @@ class UI
   processListData : (lists) ->
     data = for i in lists
       row = Ti.UI.createTableViewRow({
-        height: 'auto',
+        height: 45,
         hasChild: true,
         title: i.name,
         listID: i.id,
         editable: false,
         moveable: true
       })
+      if shl.aLists[i.name]?
+        listcount = shl.Prospect.count(shl.aLists[i.name].query)
+      else
+        currentList = shl.List.find(i.id)
+        listcount = currentList.getProspectCount()
+      countView = Ti.UI.createLabel({
+        text: listcount,
+        backgroundImage:'/images/count-bg.png',
+        fontSize: 12,
+        height: 21,
+        width: 36,
+        #top: 5,
+        textAlign: 'center',
+        right: 5,
+        color: '#616161'
+      })
+      row.add(countView)
+      row
     addCustom = Ti.UI.createTableViewRow({
-      height: 'auto',
+      height: 45,
       title: 'Create Custom List...',
       listID: 'custom',
       editable: false,
@@ -1171,7 +1189,7 @@ class UI
     })
     data.push(addCustom)
     viewMore = Ti.UI.createTableViewRow({
-      height: 'auto',
+      height: 45,
       title: 'View All Lists',
       listID: 'more',
       editable: false,
@@ -1295,6 +1313,7 @@ class UI
     })
     fname = Ti.UI.createTextField({
       height:40,
+      top:0,
       left: 10,
       keyboardType:Titanium.UI.KEYBOARD_DEFAULT,
       returnKeyType:Titanium.UI.RETURNKEY_DONE,
@@ -1303,15 +1322,23 @@ class UI
       value: if prospect? then prospect.firstMale else ''
     })
     fnameRow.add(fname)
-    s1.add(fnameRow)
-    # Second Name Field
-    snameRow = Ti.UI.createTableViewRow({
-      height: 40,
-      layout: "vertical",
-      selectionStyle: "none"
+    
+    nameSep = Ti.UI.createTextField({
+      height: 1,
+      backgroundColor: '#cccccc',
+      visible: false,
+      zindex: -10
     })
+    fnameRow.add(nameSep)
+    # Second Name Field
+    #snameRow = Ti.UI.createTableViewRow({
+    #  height: 40,
+    #  layout: "vertical",
+    #  selectionStyle: "none"
+    #})
     sname = Ti.UI.createTextField({
       height: 40,
+      top: -40,
       left: 10,
       keyboardType:Titanium.UI.KEYBOARD_DEFAULT,
       returnKeyType:Titanium.UI.RETURNKEY_DONE,
@@ -1319,8 +1346,10 @@ class UI
       hintText:L('First Name Female'),
       value: if prospect? then prospect.firstFemale else ''
     })
-    snameRow.add(sname)
-    s1.add(snameRow)
+    fnameRow.add(sname)
+    sname.hide()
+    #s1.add(snameRow)
+    s1.add(fnameRow)
     # Last Name Field
     lnameRow = Ti.UI.createTableViewRow({
       height: 40,
@@ -1338,9 +1367,7 @@ class UI
     })
     lnameRow.add(lname)
     s1.add(lnameRow)
-    
     data.push(s1)
-    ###
     s2 = Ti.UI.createTableViewSection({
       borderColor: 'transparent',
       borderWidth: 0
@@ -1362,12 +1389,38 @@ class UI
       })
       # TODO : Create function to add/remove rows on click
       genderRow.addEventListener('click', (e) ->
-        alert(@index)
+        if @index == 0
+          nameSep.visible = false
+          fnameRow.height = 40
+          sname.top = -40
+          sname.animate({visible:false},()->
+            fname.animate({visible:true})
+          )
+          if not fname.value
+            fname.value = sname.value
+          sname.value = ''
+        else if @index == 1
+          nameSep.visible = false
+          fnameRow.height = 40
+          fname.animate({visible:false},()->
+            sname.animate({visible:true})
+          )
+          sname.top = -40
+          if not sname.value
+            sname.value = fname.value
+          fname.value = ''
+        else
+          fnameRow.height = 80
+          fname.animate({visible:true},()->
+            sname.animate({top:0})
+            nameSep.visible = true
+          )
+          sname.animate({visible:true})
       )
       genderRow.add(gender)
     s2.add(genderRow)
     data.push(s2)
-    ###
+    
     # TODO add spacing to front of fields
     s3 = Ti.UI.createTableViewSection()
     streetRow = Ti.UI.createTableViewRow({
