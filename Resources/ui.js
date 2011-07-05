@@ -1554,7 +1554,7 @@
         hintText: L('City'),
         value: prospect != null ? prospect.city : ''
       });
-      sep1 = Ti.UI.createView({
+      sep1 = Ti.UI.createTextField({
         width: 1,
         height: 45,
         left: 0,
@@ -1589,7 +1589,7 @@
         hintText: L('Zip'),
         value: prospect != null ? prospect.zip : ''
       });
-      sep2 = Ti.UI.createView({
+      sep2 = Ti.UI.createTextField({
         width: 1,
         height: 45,
         left: 0,

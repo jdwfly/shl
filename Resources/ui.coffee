@@ -1399,7 +1399,7 @@ class UI
       hintText:L('City'),
       value: if prospect? then prospect.city else ''
     })
-    sep1 = Ti.UI.createView({
+    sep1 = Ti.UI.createTextField({
       width: 1,
       height: 45,
       left: 0,
@@ -1434,7 +1434,7 @@ class UI
       hintText:L('Zip'),
       value: if prospect? then prospect.zip else ''
     })
-    sep2 = Ti.UI.createView({
+    sep2 = Ti.UI.createTextField({
       width: 1,
       height: 45,
       left: 0,
