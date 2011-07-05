@@ -614,7 +614,6 @@ class UI
           # Update the current information on the page
           if e.source.exitValue
             prospect = shl.Prospect.find(prospect.id)
-            Ti.API.info(prospect.toJSON())
             nameLabel.text = prospect.formatName()
             contactLabel.text = 'Last Contact: ' + prospect.formatContactPretty()
             if addressSection?
@@ -626,6 +625,9 @@ class UI
             if emailLabel?
               emailLabel.text = prospect.email
             firstContactLabel.text = 'First Contact: ' + date('n/j/Y', prospect.firstContactDate) + "\n" + prospect.firstContactPoint
+            statusValueLabel.text = prospect.status
+          else if @deleteProspect
+            win.close()
         )
         editWin.open({
           modal:true,
@@ -1722,11 +1724,54 @@ class UI
           win.close()
         )
         win.setLeftNavButton(cancel)
+    
     # Finally Make the TableView and add
     tableView = Ti.UI.createTableView({
       data: data,
       style: Titanium.UI.iPhone.TableViewStyle.GROUPED
     })
+    # Add delete button if editing prospect
+    if prospect?
+      deleteProspectView = Ti.UI.createView({
+        width: 300,
+        height: 57,
+        layout: 'vertical'
+      })
+      deleteProspectButton = Ti.UI.createButton({
+        width: 300,
+        height: 57,
+        left: 0,
+        title: 'Delete',
+        color: '#fff',
+        font: {fontWeight:'bold', fontSize: 22},
+        backgroundImage: '/images/button_red.png'
+      })
+      deleteProspectButton.addEventListener('click', (e) ->
+        options = {
+          options: ['Delete Prospect', 'Mark as Dead End', 'Cancel'],
+          destructive: 0,
+          cancel: 2,
+          title: 'Are you really sure?'
+        }
+        deleteProspectDialog = Ti.UI.createOptionDialog(options)
+        deleteProspectDialog.addEventListener('click', (f) ->
+          if f.index is 0
+            # delete prospect
+            prospect.destroy()
+            win.deleteProspect = true
+            win.exitValue = false
+            win.close()
+          else if f.index is 1
+            # change prospect status to dead end
+            prospect.updateAttribute('status', 'Dead End')
+            win.exitValue = true
+            win.close()
+        )
+        deleteProspectDialog.show()
+      )
+      deleteProspectView.add(deleteProspectButton)
+      tableView.footerView = deleteProspectView
+    
     win.add(tableView)
     return win
   

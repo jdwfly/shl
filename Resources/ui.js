@@ -688,7 +688,6 @@
           editWin.addEventListener('close', function(e) {
             if (e.source.exitValue) {
               prospect = shl.Prospect.find(prospect.id);
-              Ti.API.info(prospect.toJSON());
               nameLabel.text = prospect.formatName();
               contactLabel.text = 'Last Contact: ' + prospect.formatContactPretty();
               if (typeof addressSection !== "undefined" && addressSection !== null) {
@@ -703,7 +702,10 @@
               if (typeof emailLabel !== "undefined" && emailLabel !== null) {
                 emailLabel.text = prospect.email;
               }
-              return firstContactLabel.text = 'First Contact: ' + date('n/j/Y', prospect.firstContactDate) + "\n" + prospect.firstContactPoint;
+              firstContactLabel.text = 'First Contact: ' + date('n/j/Y', prospect.firstContactDate) + "\n" + prospect.firstContactPoint;
+              return statusValueLabel.text = prospect.status;
+            } else if (this.deleteProspect) {
+              return win.close();
             }
           });
           return editWin.open({
@@ -1437,7 +1439,7 @@
       })();
     };
     UI.prototype.createProspectFormWin = function(prospect) {
-      var attendedRow, b, cancel, city, citystateRow, country, data, email, emailRow, enrolledRow, fname, fnameRow, homeLabel, homeRow, homeText, initContactLabel, initialContactRow, initialPicker, lname, lnameRow, mobileLabel, mobileRow, mobileText, pocRow, pocTextfield, prevBaptRow, prevSavedRow, s1, s3, s4, s5, s6, s7, self, sep1, sep2, sep3, sep4, sep5, sname, snameRow, state, street, streetRow, tableView, win, zip, zipcountryRow;
+      var attendedRow, b, cancel, city, citystateRow, country, data, deleteProspectButton, deleteProspectView, email, emailRow, enrolledRow, fname, fnameRow, homeLabel, homeRow, homeText, initContactLabel, initialContactRow, initialPicker, lname, lnameRow, mobileLabel, mobileRow, mobileText, pocRow, pocTextfield, prevBaptRow, prevSavedRow, s1, s3, s4, s5, s6, s7, self, sep1, sep2, sep3, sep4, sep5, sname, snameRow, state, street, streetRow, tableView, win, zip, zipcountryRow;
       self = this;
       win = Ti.UI.createWindow({
         title: prospect != null ? 'Edit Prospect' : 'Add Prospect',
@@ -1885,6 +1887,50 @@
         data: data,
         style: Titanium.UI.iPhone.TableViewStyle.GROUPED
       });
+      if (prospect != null) {
+        deleteProspectView = Ti.UI.createView({
+          width: 300,
+          height: 57,
+          layout: 'vertical'
+        });
+        deleteProspectButton = Ti.UI.createButton({
+          width: 300,
+          height: 57,
+          left: 0,
+          title: 'Delete',
+          color: '#fff',
+          font: {
+            fontWeight: 'bold',
+            fontSize: 22
+          },
+          backgroundImage: '/images/button_red.png'
+        });
+        deleteProspectButton.addEventListener('click', function(e) {
+          var deleteProspectDialog, options;
+          options = {
+            options: ['Delete Prospect', 'Mark as Dead End', 'Cancel'],
+            destructive: 0,
+            cancel: 2,
+            title: 'Are you really sure?'
+          };
+          deleteProspectDialog = Ti.UI.createOptionDialog(options);
+          deleteProspectDialog.addEventListener('click', function(f) {
+            if (f.index === 0) {
+              prospect.destroy();
+              win.deleteProspect = true;
+              win.exitValue = false;
+              return win.close();
+            } else if (f.index === 1) {
+              prospect.updateAttribute('status', 'Dead End');
+              win.exitValue = true;
+              return win.close();
+            }
+          });
+          return deleteProspectDialog.show();
+        });
+        deleteProspectView.add(deleteProspectButton);
+        tableView.footerView = deleteProspectView;
+      }
       win.add(tableView);
       return win;
     };
