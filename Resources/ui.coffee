@@ -655,10 +655,19 @@ class UI
       font: {fontSize: 12},
       color: '#4c596e'
     })
+    nextStepLabel = Ti.UI.createLabel({
+      text: 'Next Step: ' + prospect.nextStep,
+      left: 10,
+      top: 35,
+      width: 300,
+      height: 17,
+      font: {fontSize: 12},
+      color: '#4c596e'
+    })
     recordContactButton = Ti.UI.createButton({
       width: 300,
       height: 57,
-      top: 39,
+      top: 54,
       left: 10,
       title: 'Record Contact',
       color: '#fff',
@@ -972,6 +981,7 @@ class UI
     )
     headerView.add(nameLabel)
     headerView.add(contactLabel)
+    headerView.add(nextStepLabel)
     headerView.add(recordContactButton)
     
     if prospect.formatAddress() isnt ''
