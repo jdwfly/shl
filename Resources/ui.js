@@ -1263,25 +1263,43 @@
       return win;
     };
     UI.prototype.processListData = function(lists) {
-      var addCustom, data, i, row, viewMore;
+      var addCustom, countView, currentList, data, i, listcount, row, viewMore;
       data = (function() {
         var _i, _len, _results;
         _results = [];
         for (_i = 0, _len = lists.length; _i < _len; _i++) {
           i = lists[_i];
-          _results.push(row = Ti.UI.createTableViewRow({
-            height: 'auto',
+          row = Ti.UI.createTableViewRow({
+            height: 45,
             hasChild: true,
             title: i.name,
             listID: i.id,
             editable: false,
             moveable: true
-          }));
+          });
+          if (shl.aLists[i.name] != null) {
+            listcount = shl.Prospect.count(shl.aLists[i.name].query);
+          } else {
+            currentList = shl.List.find(i.id);
+            listcount = currentList.getProspectCount();
+          }
+          countView = Ti.UI.createLabel({
+            text: listcount,
+            backgroundImage: '/images/count-bg.png',
+            fontSize: 12,
+            height: 21,
+            width: 36,
+            textAlign: 'center',
+            right: 5,
+            color: '#616161'
+          });
+          row.add(countView);
+          _results.push(row);
         }
         return _results;
       })();
       addCustom = Ti.UI.createTableViewRow({
-        height: 'auto',
+        height: 45,
         title: 'Create Custom List...',
         listID: 'custom',
         editable: false,
@@ -1289,7 +1307,7 @@
       });
       data.push(addCustom);
       viewMore = Ti.UI.createTableViewRow({
-        height: 'auto',
+        height: 45,
         title: 'View All Lists',
         listID: 'more',
         editable: false,
@@ -1417,7 +1435,7 @@
       })();
     };
     UI.prototype.createProspectFormWin = function(prospect) {
-      var attendedRow, b, cancel, city, citystateRow, country, data, email, emailRow, enrolledRow, fname, fnameRow, homeLabel, homeRow, homeText, initContactLabel, initialContactRow, initialPicker, lname, lnameRow, mobileLabel, mobileRow, mobileText, pocRow, pocTextfield, prevBaptRow, prevSavedRow, s1, s3, s4, s5, s6, s7, self, sep1, sep2, sep3, sep4, sep5, sname, snameRow, state, street, streetRow, tableView, win, zip, zipcountryRow;
+      var attendedRow, b, cancel, city, citystateRow, country, data, email, emailRow, enrolledRow, fname, fnameRow, gender, genderRow, homeLabel, homeRow, homeText, initContactLabel, initialContactRow, initialPicker, lname, lnameRow, mobileLabel, mobileRow, mobileText, nameSep, pocRow, pocTextfield, prevBaptRow, prevSavedRow, s1, s2, s3, s4, s5, s6, s7, self, sep1, sep2, sep3, sep4, sep5, sname, state, street, streetRow, tableView, win, zip, zipcountryRow;
       self = this;
       win = Ti.UI.createWindow({
         title: prospect != null ? 'Edit Prospect' : 'Add Prospect',
@@ -1432,6 +1450,7 @@
       });
       fname = Ti.UI.createTextField({
         height: 40,
+        top: 0,
         left: 10,
         keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
         returnKeyType: Titanium.UI.RETURNKEY_DONE,
@@ -1440,14 +1459,16 @@
         value: prospect != null ? prospect.firstMale : ''
       });
       fnameRow.add(fname);
-      s1.add(fnameRow);
-      snameRow = Ti.UI.createTableViewRow({
-        height: 40,
-        layout: "vertical",
-        selectionStyle: "none"
+      nameSep = Ti.UI.createTextField({
+        height: 1,
+        backgroundColor: '#cccccc',
+        visible: false,
+        zindex: -10
       });
+      fnameRow.add(nameSep);
       sname = Ti.UI.createTextField({
         height: 40,
+        top: -40,
         left: 10,
         keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
         returnKeyType: Titanium.UI.RETURNKEY_DONE,
@@ -1455,8 +1476,9 @@
         hintText: L('First Name Female'),
         value: prospect != null ? prospect.firstFemale : ''
       });
-      snameRow.add(sname);
-      s1.add(snameRow);
+      fnameRow.add(sname);
+      sname.hide();
+      s1.add(fnameRow);
       lnameRow = Ti.UI.createTableViewRow({
         height: 40,
         layout: "vertical",
@@ -1474,34 +1496,75 @@
       lnameRow.add(lname);
       s1.add(lnameRow);
       data.push(s1);
-      /*
-          s2 = Ti.UI.createTableViewSection({
-            borderColor: 'transparent',
-            borderWidth: 0
-          })
-          genderRow = Ti.UI.createTableViewRow({
-            backgroundColor: 'transparent',
-            borderWidth: 0,
-            borderColor: 'transparent',
-            height: 40,
-            selectionStyle: "none"
-          })
-          if @platform is 'iPhone OS'
-            gender = Titanium.UI.createTabbedBar({
-              labels: ['Male', 'Female', 'Couple'],
-              backgroundColor: '#336699',
-              style: Titanium.UI.iPhone.SystemButtonStyle.BAR,
-              height: 45,
-              width: 302
-            })
-            # TODO : Create function to add/remove rows on click
-            genderRow.addEventListener('click', (e) ->
-              alert(@index)
-            )
-            genderRow.add(gender)
-          s2.add(genderRow)
-          data.push(s2)
-          */
+      s2 = Ti.UI.createTableViewSection({
+        borderColor: 'transparent',
+        borderWidth: 0
+      });
+      genderRow = Ti.UI.createTableViewRow({
+        backgroundColor: 'transparent',
+        borderWidth: 0,
+        borderColor: 'transparent',
+        height: 40,
+        selectionStyle: "none"
+      });
+      if (this.platform === 'iPhone OS') {
+        gender = Titanium.UI.createTabbedBar({
+          labels: ['Male', 'Female', 'Couple'],
+          backgroundColor: '#336699',
+          style: Titanium.UI.iPhone.SystemButtonStyle.BAR,
+          height: 45,
+          width: 302
+        });
+        genderRow.addEventListener('click', function(e) {
+          if (this.index === 0) {
+            nameSep.visible = false;
+            fnameRow.height = 40;
+            sname.top = -40;
+            sname.animate({
+              visible: false
+            }, function() {
+              return fname.animate({
+                visible: true
+              });
+            });
+            if (sname.value) {
+              fname.value = sname.value;
+            }
+            return sname.value = '';
+          } else if (this.index === 1) {
+            nameSep.visible = false;
+            fnameRow.height = 40;
+            fname.animate({
+              visible: false
+            }, function() {
+              return sname.animate({
+                visible: true
+              });
+            });
+            sname.top = -40;
+            if (fname.value) {
+              sname.value = fname.value;
+            }
+            return fname.value = '';
+          } else {
+            fnameRow.height = 80;
+            fname.animate({
+              visible: true
+            }, function() {
+              sname.animate({
+                top: 0
+              });
+              return nameSep.visible = true;
+            });
+            return sname.animate({
+              visible: true
+            });
+          }
+        });
+        genderRow.add(gender);
+      }
+      s2.add(genderRow);
+      data.push(s2);
       s3 = Ti.UI.createTableViewSection();
       streetRow = Ti.UI.createTableViewRow({
         height: 45,

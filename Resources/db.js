@@ -11,7 +11,7 @@
         order : 'last DESC'
       }
     },
-    'Active Prospects' : {
+    'All Active Prospects' : {
       weight : '1',
       active : 1,
       query : {
