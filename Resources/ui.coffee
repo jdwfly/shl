@@ -1920,7 +1920,7 @@ class UI
         
         if prospect?
           # Update the existing prospect
-          alert(prevSavedRow.hasCheck)
+          #alert(prevSavedRow.hasCheck)
           shl.Prospect.update(prospect.id,{
             last: lname.value,
             firstMale: fname.value,
@@ -1966,18 +1966,32 @@ class UI
           Ti.API.info(createdProspect.toJSON())
           # Clear all values
           fname.value = ''
+          fname.blur()
           sname.value = ''
+          sname.blur()
           lname.value = ''
+          lname.blur()
           street.value = ''
+          street.blur()
           city.value = ''
+          city.blur()
           state.value = ''
+          state.blur()
           zip.value = ''
+          zip.blur()
           country.value = ''
+          country.blur()
           homeText.value = ''
+          homeText.blur()
           mobileText.value = ''
+          mobileText.blur()
           email.value = ''
+          email.blur()
           initialPicker.value = date('n/j/Y')
+          initialPicker.blur()
           pocTextfield.value = ''
+          pocTextfield.blur()
+          tableView.scrollToTop()
           prevSavedRow.hasCheck = false
           prevBaptRow.hasCheck = false
           attendedRow.hasCheck = false
