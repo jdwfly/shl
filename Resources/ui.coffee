@@ -13,10 +13,10 @@ class UI
     starred = @createStarredWindow()
     add = @createAddWindow()
     search = @createSearchWindow()
-    nearby = @createNearbyWindow()
+    #nearby = @createNearbyWindow()
     stats = @createStatsWindow()
-    settings = @createSettingsWindow()
-    help = @createHelpWindow()
+    #settings = @createSettingsWindow()
+    #help = @createHelpWindow()
     
     # Create main tabs
     listsTab = Ti.UI.createTab({
@@ -833,21 +833,21 @@ class UI
     prospect = shl.Prospect.find(prospect.id)
     
     headerView = Ti.UI.createView({
-      height: '110'
+      height: '116'
     })
     nameLabel = Ti.UI.createLabel({
       text: prospect.formatName(),
       left: 10,
       top: 7,
       width: 300,
-      height: 17,
+      height: 24,
       color: '#4c596e',
       font: {fontSize: 20}
     })
     contactLabel = Ti.UI.createLabel({
       text: 'Last Contact: ' + prospect.formatContactPretty(),
       left: 10,
-      top: 23,
+      top: 25,
       width: 300,
       height: 17,
       font: {fontSize: 12},
@@ -856,7 +856,7 @@ class UI
     nextStepLabel = Ti.UI.createLabel({
       text: 'Next Step: ' + prospect.nextStep,
       left: 10,
-      top: 37,
+      top: 39,
       width: 300,
       height: 17,
       font: {fontSize: 12},

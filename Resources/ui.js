@@ -13,16 +13,13 @@
       this.tabs = this.createApplicationTabGroup();
     }
     UI.prototype.createApplicationTabGroup = function() {
-      var add, addTab, help, lists, listsTab, nearby, search, searchTab, settings, starred, starredTab, stats, statsTab, tabs;
+      var add, addTab, lists, listsTab, search, searchTab, starred, starredTab, stats, statsTab, tabs;
       tabs = Ti.UI.createTabGroup();
       lists = this.createListsWindow();
       starred = this.createStarredWindow();
       add = this.createAddWindow();
       search = this.createSearchWindow();
-      nearby = this.createNearbyWindow();
       stats = this.createStatsWindow();
-      settings = this.createSettingsWindow();
-      help = this.createHelpWindow();
       listsTab = Ti.UI.createTab({
         title: 'Lists',
         window: lists,
@@ -902,14 +899,14 @@
       data = {};
       prospect = shl.Prospect.find(prospect.id);
       headerView = Ti.UI.createView({
-        height: '110'
+        height: '116'
       });
       nameLabel = Ti.UI.createLabel({
         text: prospect.formatName(),
         left: 10,
         top: 7,
         width: 300,
-        height: 17,
+        height: 24,
         color: '#4c596e',
         font: {
           fontSize: 20
@@ -918,7 +915,7 @@
       contactLabel = Ti.UI.createLabel({
         text: 'Last Contact: ' + prospect.formatContactPretty(),
         left: 10,
-        top: 23,
+        top: 25,
         width: 300,
         height: 17,
         font: {
@@ -929,7 +926,7 @@
       nextStepLabel = Ti.UI.createLabel({
         text: 'Next Step: ' + prospect.nextStep,
         left: 10,
-        top: 37,
+        top: 39,
         width: 300,
         height: 17,
         font: {
