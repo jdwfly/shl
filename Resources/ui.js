@@ -1701,7 +1701,7 @@
       })();
     };
     UI.prototype.createProspectFormWin = function(prospect) {
-      var attendedRow, b, cancel, city, citystateRow, country, data, deleteProspectButton, deleteProspectView, email, emailRow, enrolledRow, fname, fnameRow, gender, genderRow, homeLabel, homeRow, homeText, initContactLabel, initialContactRow, initialPicker, lname, lnameRow, mobileLabel, mobileRow, mobileText, nameSep, pocRow, pocTextfield, prevBaptRow, prevSavedRow, s1, s2, s3, s4, s5, s6, s7, self, sep1, sep2, sep3, sep4, sep5, sname, state, street, streetRow, tableView, win, zip, zipcountryRow;
+      var attendedRow, b, cancel, city, citystateRow, country, data, deleteProspectButton, deleteProspectView, email, emailRow, enrolledRow, fname, fnameRow, gender, genderView, homeLabel, homeRow, homeText, initContactLabel, initialContactRow, initialPicker, lname, lnameRow, mobileLabel, mobileRow, mobileText, nameSep, pocRow, pocTextfield, prevBaptRow, prevSavedRow, s1, s3, s4, s5, s6, s7, self, sep1, sep2, sep3, sep4, sep5, sname, state, street, streetRow, tableView, win, zip, zipcountryRow;
       self = this;
       win = Ti.UI.createWindow({
         title: prospect != null ? 'Edit Prospect' : 'Add Prospect',
@@ -1761,16 +1761,11 @@
       });
       lnameRow.add(lname);
       s1.add(lnameRow);
-      data.push(s1);
-      s2 = Ti.UI.createTableViewSection({
-        borderColor: 'transparent',
-        borderWidth: 0
-      });
-      genderRow = Ti.UI.createTableViewRow({
+      genderView = Ti.UI.createView({
         backgroundColor: 'transparent',
         borderWidth: 0,
         borderColor: 'transparent',
-        height: 40,
+        height: 50,
         selectionStyle: "none"
       });
       if (this.platform === 'iPhone OS') {
@@ -1779,9 +1774,11 @@
           backgroundColor: '#336699',
           style: Titanium.UI.iPhone.SystemButtonStyle.BAR,
           height: 45,
-          width: 302
+          top: 5,
+          width: 302,
+          index: 0
         });
-        genderRow.addEventListener('click', function(e) {
+        genderView.addEventListener('click', function(e) {
           if (this.index === 0) {
             nameSep.visible = false;
             fnameRow.height = 40;
@@ -1827,10 +1824,39 @@
             });
           }
         });
-        genderRow.add(gender);
+        genderView.add(gender);
       }
-      s2.add(genderRow);
-      data.push(s2);
+      if (fname.value !== '' && sname.value !== '') {
+        fnameRow.height = 80;
+        fname.animate({
+          visible: true
+        }, function() {
+          sname.animate({
+            top: 0
+          });
+          return nameSep.visible = true;
+        });
+        sname.animate({
+          visible: true
+        });
+      } else if (sname.value !== '') {
+        nameSep.visible = false;
+        fnameRow.height = 40;
+        fname.animate({
+          visible: false
+        }, function() {
+          return sname.animate({
+            visible: true
+          });
+        });
+        sname.top = -40;
+        if (!sname.value) {
+          sname.value = fname.value;
+        }
+        fname.value = '';
+      }
+      s1.footerView = genderView;
+      data.push(s1);
       s3 = Ti.UI.createTableViewSection();
       streetRow = Ti.UI.createTableViewRow({
         height: 45,

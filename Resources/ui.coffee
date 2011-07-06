@@ -1600,16 +1600,12 @@ class UI
     })
     lnameRow.add(lname)
     s1.add(lnameRow)
-    data.push(s1)
-    s2 = Ti.UI.createTableViewSection({
-      borderColor: 'transparent',
-      borderWidth: 0
-    })
-    genderRow = Ti.UI.createTableViewRow({
+    
+    genderView = Ti.UI.createView({
       backgroundColor: 'transparent',
       borderWidth: 0,
       borderColor: 'transparent',
-      height: 40,
+      height: 50,
       selectionStyle: "none"
     })
     if @platform is 'iPhone OS'
@@ -1618,10 +1614,12 @@ class UI
         backgroundColor: '#336699',
         style: Titanium.UI.iPhone.SystemButtonStyle.BAR,
         height: 45,
-        width: 302
+        top: 5,
+        width: 302,
+        index: 0
       })
       # TODO : Create function to add/remove rows on click
-      genderRow.addEventListener('click', (e) ->
+      genderView.addEventListener('click', (e) ->
         if @index == 0
           nameSep.visible = false
           fnameRow.height = 40
@@ -1650,9 +1648,27 @@ class UI
           )
           sname.animate({visible:true})
       )
-      genderRow.add(gender)
-    s2.add(genderRow)
-    data.push(s2)
+      genderView.add(gender)
+    if fname.value != '' and sname.value != ''
+      fnameRow.height = 80
+      fname.animate({visible:true},()->
+        sname.animate({top:0})
+        nameSep.visible = true
+      )
+      sname.animate({visible:true})
+    else if sname.value != ''
+      nameSep.visible = false
+      fnameRow.height = 40
+      fname.animate({visible:false},()->
+        sname.animate({visible:true})
+      )
+      sname.top = -40
+      if not sname.value
+        sname.value = fname.value
+      fname.value = ''
+    s1.footerView = genderView
+    data.push(s1)
+    
     
     # TODO add spacing to front of fields
     s3 = Ti.UI.createTableViewSection()
@@ -2025,7 +2041,6 @@ class UI
           win.close()
         )
         win.setLeftNavButton(cancel)
-    
     # Finally Make the TableView and add
     tableView = Ti.UI.createTableView({
       data: data,
