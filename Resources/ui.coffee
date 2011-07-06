@@ -224,13 +224,12 @@ class UI
     tableView = @createProspectTableView(shl.Prospect.find())
     tableView.search = search
     tableView.searchHidden = false
-    tableView.filterAttribute = 'searchTerm'
-    win.addEventListener('open', (f) ->
-      win.addEventListener('focus', (g) ->
-        data = self.processProspectData(shl.Prospect.find())
-        tableView.setData(data)
-      )
+    tableView.filterAttribute = 'searchTerm'    
+    win.addEventListener('focus', (g) ->
+      data = self.processProspectData(shl.Prospect.find())
+      tableView.setData(data)
     )
+    
     win.add(tableView)
     return win
   

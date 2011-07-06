@@ -236,12 +236,10 @@
       tableView.search = search;
       tableView.searchHidden = false;
       tableView.filterAttribute = 'searchTerm';
-      win.addEventListener('open', function(f) {
-        return win.addEventListener('focus', function(g) {
-          var data;
-          data = self.processProspectData(shl.Prospect.find());
-          return tableView.setData(data);
-        });
+      win.addEventListener('focus', function(g) {
+        var data;
+        data = self.processProspectData(shl.Prospect.find());
+        return tableView.setData(data);
       });
       win.add(tableView);
       return win;
