@@ -580,12 +580,16 @@
           });
           b.addEventListener('click', function() {
             var createdList;
-            createdList = shl.List.create({
-              name: lname.value,
-              weight: 0,
-              active: 1
-            });
-            return addW.close();
+            if (lname.value !== '') {
+              createdList = shl.List.create({
+                name: lname.value,
+                weight: 0,
+                active: 1
+              });
+              return addW.close();
+            } else {
+              return alert('You must specify a name for the list.');
+            }
           });
           addW.add(b);
           c = Ti.UI.createButton({
@@ -864,8 +868,9 @@
           systemButton: Ti.UI.iPhone.SystemButton.EDIT
         });
         editButton.addEventListener('click', function(e) {
-          var editWin;
-          editWin = self.createProspectFormWin(prospect);
+          var editProspect, editWin;
+          editProspect = shl.Prospect.find(prospect.id);
+          editWin = self.createProspectFormWin(editProspect);
           editWin.addEventListener('close', function(e) {
             if (e.source.exitValue) {
               return tableView.updateProspect(prospect);
@@ -905,12 +910,15 @@
         top: 7,
         width: 300,
         height: 17,
-        color: '#4c596e'
+        color: '#4c596e',
+        font: {
+          fontSize: 20
+        }
       });
       contactLabel = Ti.UI.createLabel({
         text: 'Last Contact: ' + prospect.formatContactPretty(),
         left: 10,
-        top: 21,
+        top: 23,
         width: 300,
         height: 17,
         font: {
@@ -921,7 +929,7 @@
       nextStepLabel = Ti.UI.createLabel({
         text: 'Next Step: ' + prospect.nextStep,
         left: 10,
-        top: 35,
+        top: 37,
         width: 300,
         height: 17,
         font: {
@@ -932,7 +940,7 @@
       recordContactButton = Ti.UI.createButton({
         width: 300,
         height: 57,
-        top: 54,
+        top: 56,
         left: 10,
         title: 'Record Contact',
         color: '#fff',
@@ -1460,21 +1468,11 @@
           for (i = 0, _len2 = _ref.length; i < _len2; i++) {
             row = _ref[i];
             Ti.API.info(JSON.stringify(row));
-            _results.push(i === e.index ? statusTableView.data[0].rows[i].hasCheck = true : statusTableView.data[0].rows[i].hasCheck = false);
+            _results.push(i === e.index ? (statusTableView.data[0].rows[i].hasCheck = true, prospect.updateAttribute('status', statusTableView.data[0].rows[i].title)) : statusTableView.data[0].rows[i].hasCheck = false);
           }
           return _results;
         });
         statusWin.add(statusTableView);
-        statusWin.addEventListener('close', function(e) {
-          var i, row, _len2, _ref, _results;
-          _ref = statusTableView.data[0].rows;
-          _results = [];
-          for (i = 0, _len2 = _ref.length; i < _len2; i++) {
-            row = _ref[i];
-            _results.push(row.hasCheck ? (prospect.updateAttribute('status', row.title), statusValueLabel.text = row.title) : void 0);
-          }
-          return _results;
-        });
         return self.tabs.activeTab.open(statusWin);
       });
       statusRow.add(statusLabel);

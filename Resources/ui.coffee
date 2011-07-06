@@ -528,14 +528,17 @@ class UI
           backgroundImage: '/images/button_blue.png'
         })
         b.addEventListener('click', () ->
-          # Create an object to save to the database
-          createdList = shl.List.create({
-            name: lname.value,
-            weight: 0,
-            active: 1
-          })
-          # TODO : show a list of prospects to add to the list
-          addW.close()
+          if lname.value isnt ''
+            # Create an object to save to the database
+            createdList = shl.List.create({
+              name: lname.value,
+              weight: 0,
+              active: 1
+            })
+            # TODO : show a list of prospects to add to the list
+            addW.close()
+          else
+            alert('You must specify a name for the list.')
         )
         #addW.setRightNavButton(b)
         addW.add(b)
@@ -797,7 +800,8 @@ class UI
       })
       editButton.addEventListener('click', (e) ->
         # Open modal window to edit prospect
-        editWin = self.createProspectFormWin(prospect)
+        editProspect = shl.Prospect.find(prospect.id)
+        editWin = self.createProspectFormWin(editProspect)
         editWin.addEventListener('close', (e) ->
           # Update the current information on the page
           if e.source.exitValue
@@ -837,12 +841,13 @@ class UI
       top: 7,
       width: 300,
       height: 17,
-      color: '#4c596e'
+      color: '#4c596e',
+      font: {fontSize: 20}
     })
     contactLabel = Ti.UI.createLabel({
       text: 'Last Contact: ' + prospect.formatContactPretty(),
       left: 10,
-      top: 21,
+      top: 23,
       width: 300,
       height: 17,
       font: {fontSize: 12},
@@ -851,7 +856,7 @@ class UI
     nextStepLabel = Ti.UI.createLabel({
       text: 'Next Step: ' + prospect.nextStep,
       left: 10,
-      top: 35,
+      top: 37,
       width: 300,
       height: 17,
       font: {fontSize: 12},
@@ -860,7 +865,7 @@ class UI
     recordContactButton = Ti.UI.createButton({
       width: 300,
       height: 57,
-      top: 54,
+      top: 56,
       left: 10,
       title: 'Record Contact',
       color: '#fff',
@@ -1326,16 +1331,11 @@ class UI
           Ti.API.info(JSON.stringify(row))
           if i is e.index
             statusTableView.data[0].rows[i].hasCheck = true
+            prospect.updateAttribute('status', statusTableView.data[0].rows[i].title)
           else
             statusTableView.data[0].rows[i].hasCheck = false
       )
       statusWin.add(statusTableView)
-      statusWin.addEventListener('close', (e) ->
-        for row, i in statusTableView.data[0].rows
-          if row.hasCheck
-            prospect.updateAttribute('status', row.title)
-            statusValueLabel.text = row.title
-      )
       self.tabs.activeTab.open(statusWin)
     )
     statusRow.add(statusLabel)
