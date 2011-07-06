@@ -13,13 +13,14 @@
       this.tabs = this.createApplicationTabGroup();
     }
     UI.prototype.createApplicationTabGroup = function() {
-      var add, addTab, help, lists, listsTab, nearby, search, searchTab, settings, starred, starredTab, tabs;
+      var add, addTab, help, lists, listsTab, nearby, search, searchTab, settings, starred, starredTab, stats, statsTab, tabs;
       tabs = Ti.UI.createTabGroup();
       lists = this.createListsWindow();
       starred = this.createStarredWindow();
       add = this.createAddWindow();
       search = this.createSearchWindow();
       nearby = this.createNearbyWindow();
+      stats = this.createStatsWindow();
       settings = this.createSettingsWindow();
       help = this.createHelpWindow();
       listsTab = Ti.UI.createTab({
@@ -42,6 +43,11 @@
         window: search,
         icon: 'images/06-magnify.png'
       });
+      statsTab = Ti.UI.createTab({
+        title: 'Stats',
+        window: stats,
+        icon: 'images/16-line-chart.png'
+      });
       /*
           nearbyTab = Ti.UI.createTab({
             title: 'Nearby',
@@ -63,6 +69,7 @@
       tabs.addTab(starredTab);
       tabs.addTab(addTab);
       tabs.addTab(searchTab);
+      tabs.addTab(statsTab);
       tabs.open({
         transition: Ti.UI.iPhone.AnimationStyle.FLIP_FROM_LEFT
       });
@@ -214,6 +221,172 @@
         return result.updateProspects(prospects);
       });
       return win;
+    };
+    UI.prototype.createStatsWindow = function() {
+      var aBap, aBapTxt, aCalls, aCallsTxt, aSal, aSalTxt, aVisitTxt, aVisits, allTime, mBap, mBapTxt, mCalls, mCallsTxt, mSal, mSalTxt, mVisitTxt, mVisits, self, statsWin, thisMonth, view;
+      self = this;
+      statsWin = Ti.UI.createWindow({
+        title: 'My Outreach Stats'
+      });
+      view = Ti.UI.createView();
+      allTime = Ti.UI.createLabel({
+        text: 'Total',
+        top: 10,
+        left: 10,
+        height: 'auto',
+        width: 200
+      });
+      view.add(allTime);
+      aVisits = shl.Contact.count({
+        where: {
+          type: 'Visit'
+        }
+      });
+      aVisitTxt = Ti.UI.createLabel({
+        text: 'Visits: ' + aVisits,
+        top: 30,
+        left: 20,
+        height: 'auto',
+        width: 200
+      });
+      view.add(aVisitTxt);
+      aCalls = shl.Contact.count({
+        where: {
+          type: 'Phone Call'
+        }
+      });
+      aCallsTxt = Ti.UI.createLabel({
+        text: 'Phone Calls: ' + aCalls,
+        top: 50,
+        left: 20,
+        height: 'auto',
+        width: 200
+      });
+      view.add(aCallsTxt);
+      aSal = shl.Contact.count({
+        where: {
+          type: 'Saved'
+        }
+      });
+      aSalTxt = Ti.UI.createLabel({
+        text: 'Saved: ' + aSal,
+        top: 70,
+        left: 20,
+        height: 'auto',
+        width: 200
+      });
+      view.add(aSalTxt);
+      aBap = shl.Contact.count({
+        where: {
+          type: 'Baptized'
+        }
+      });
+      aBapTxt = Ti.UI.createLabel({
+        text: 'Baptized: ' + aBap,
+        top: 90,
+        left: 20,
+        height: 'auto',
+        width: 200
+      });
+      view.add(aBapTxt);
+      thisMonth = Ti.UI.createLabel({
+        text: 'Last 30 Days',
+        top: 110,
+        left: 10,
+        height: 'auto',
+        width: 200
+      });
+      view.add(thisMonth);
+      mVisits = shl.Contact.count({
+        where: "type = 'Visit' AND date > (strftime('%s', 'now') - 2592000)"
+      });
+      mVisitTxt = Ti.UI.createLabel({
+        text: 'Visits: ' + mVisits,
+        top: 130,
+        left: 20,
+        height: 'auto',
+        width: 200
+      });
+      view.add(mVisitTxt);
+      mCalls = shl.Contact.count({
+        where: "type = 'Phone Call' AND date > (strftime('%s', 'now') - 2592000)"
+      });
+      mCallsTxt = Ti.UI.createLabel({
+        text: 'Phone Calls: ' + mCalls,
+        top: 150,
+        left: 20,
+        height: 'auto',
+        width: 200
+      });
+      view.add(mCallsTxt);
+      mSal = shl.Contact.count({
+        where: "type = 'Saved' AND date > (strftime('%s', 'now') - 2592000)"
+      });
+      mSalTxt = Ti.UI.createLabel({
+        text: 'Saved: ' + mSal,
+        top: 170,
+        left: 20,
+        height: 'auto',
+        width: 200
+      });
+      view.add(mSalTxt);
+      mBap = shl.Contact.count({
+        where: "type = 'Baptized' AND date > (strftime('%s', 'now') - 2592000)"
+      });
+      mBapTxt = Ti.UI.createLabel({
+        text: 'Baptized: ' + mBap,
+        top: 190,
+        left: 20,
+        height: 'auto',
+        width: 200
+      });
+      view.add(mBapTxt);
+      statsWin.add(view);
+      statsWin.addEventListener('open', function(f) {
+        return statsWin.addEventListener('focus', function(g) {
+          aVisits = shl.Contact.count({
+            where: {
+              type: 'Visit'
+            }
+          });
+          aVisitTxt.text = 'Visits: ' + aVisits;
+          aCalls = shl.Contact.count({
+            where: {
+              type: 'Phone Call'
+            }
+          });
+          aCallsTxt.text = 'Phone Calls: ' + aCalls;
+          aSal = shl.Contact.count({
+            where: {
+              type: 'Saved'
+            }
+          });
+          aSalTxt.text = 'Saved: ' + aSal;
+          aBap = shl.Contact.count({
+            where: {
+              type: 'Baptized'
+            }
+          });
+          aBapTxt.text = 'Baptized: ' + aBap;
+          mVisits = shl.Contact.count({
+            where: "type = 'Visit' AND date > (strftime('%s', 'now') - 2592000)"
+          });
+          mVisitTxt.text = 'Visits: ' + mVisits;
+          mCalls = shl.Contact.count({
+            where: "type = 'Phone Call' AND date > (strftime('%s', 'now') - 2592000)"
+          });
+          mCallsTxt.text = 'Phone Calls: ' + mCalls;
+          mSal = shl.Contact.count({
+            where: "type = 'Saved' AND date > (strftime('%s', 'now') - 2592000)"
+          });
+          mSalTxt.text = 'Saved: ' + mSal;
+          mBap = shl.Contact.count({
+            where: "type = 'Baptized' AND date > (strftime('%s', 'now') - 2592000)"
+          });
+          return mBapTxt.text = 'Baptized: ' + mBap;
+        });
+      });
+      return statsWin;
     };
     UI.prototype.createNearbyWindow = function() {
       return this.createListsWindow();
@@ -1309,7 +1482,6 @@
           }
           countView = Ti.UI.createLabel({
             text: listcount,
-            backgroundImage: '/images/count-bg.png',
             fontSize: 12,
             height: 21,
             width: 36,

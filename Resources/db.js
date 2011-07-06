@@ -117,13 +117,11 @@
         order : 'last DESC'
       }
     },
-    'No Contact: This Week' : {
+    'No Contact: 7 Days' : {
       weight : '4',
       active : 1,
       query : {
-        where : {
-          status : 'Active Prospect'
-        },
+        where : "status = 'Active Prospect' AND lastContact < (strftime('%s', 'now') - 604800)",
         order : 'last DESC'
       }
     },
@@ -131,9 +129,7 @@
       weight : '1',
       active : 0,
       query : {
-        where : {
-          status : 'Active Prospect'
-        },
+        where : "status = 'Active Prospect' AND lastContact < (strftime('%s', 'now') - 1209600)",
         order : 'last DESC'
       }
     },
@@ -141,9 +137,7 @@
       weight : '1',
       active : 0,
       query : {
-        where : {
-          status : 'Active Prospect'
-        },
+        where : "status = 'Active Prospect' AND lastContact < (strftime('%s', 'now') - 2592000)",
         order : 'last DESC'
       }
     }
@@ -410,53 +404,54 @@
   }
   
   //************************* Tests ******************************************
-  var testProspect = shl.Prospect.create({
-    last: "Jones",
-    firstMale: "John",
-    email : "test@example.com"
-  });
-  var testProspect2 = shl.Prospect.create({
-    last: 'Smith',
-    firstMale: 'Jack',
-    firstFemale: 'Shirley',
-    street: '4321 Main St.',
-    city: 'Lancaster',
-    state: 'CA',
-    zip: '93535',
-    country: 'United States',
-    phoneHome: '661-946-4663',
-    phoneMobile: '661-946-4668',
-    email: 'fake@email.com',
-    firstContactPoint: 'soulwinning'
-  });
-  var testProspect3 = shl.Prospect.create({
-    last: 'Brown',
-    firstFemale: 'Jackie',
-    street: '3456 Easy St.',
-    city: 'Palmdale',
-    state: 'CA'
-  });
-  var testList = shl.List.create({
-    name: 'TEST',
-    active: 1
-  });
-  testList.createListing({
-    prospect_id : 1
-  });
-  testList.createListing({
-    prospect_id : 2
-  });
-  Ti.API.info("***************" + testProspect.toJSON());
-  testProspect.save();
-  var testContact = testProspect.createContact({
-    type : "visit",
-    comments : 'Not home'
-  });
-  Ti.API.info(testContact.toJSON());
-  Ti.API.info("***cont*****" + testProspect.getContactCount());
-  var foundProspect = shl.Prospect.find(testProspect.id);
-  Ti.API.info(foundProspect.toJSON());
-  var list = foundProspect.getContactList();
-  Ti.API.info(list[0].toJSON());
- 
+  /*
+    var testProspect = shl.Prospect.create({
+      last: "Jones",
+      firstMale: "John",
+      email : "test@example.com"
+    });
+    var testProspect2 = shl.Prospect.create({
+      last: 'Smith',
+      firstMale: 'Jack',
+      firstFemale: 'Shirley',
+      street: '4321 Main St.',
+      city: 'Lancaster',
+      state: 'CA',
+      zip: '93535',
+      country: 'United States',
+      phoneHome: '661-946-4663',
+      phoneMobile: '661-946-4668',
+      email: 'fake@email.com',
+      firstContactPoint: 'soulwinning'
+    });
+    var testProspect3 = shl.Prospect.create({
+      last: 'Brown',
+      firstFemale: 'Jackie',
+      street: '3456 Easy St.',
+      city: 'Palmdale',
+      state: 'CA'
+    });
+    var testList = shl.List.create({
+      name: 'TEST',
+      active: 1
+    });
+    testList.createListing({
+      prospect_id : 1
+    });
+    testList.createListing({
+      prospect_id : 2
+    });
+    Ti.API.info("***************" + testProspect.toJSON());
+    testProspect.save();
+    var testContact = testProspect.createContact({
+      type : "visit",
+      comments : 'Not home'
+    });
+    Ti.API.info(testContact.toJSON());
+    Ti.API.info("***cont*****" + testProspect.getContactCount());
+    var foundProspect = shl.Prospect.find(testProspect.id);
+    Ti.API.info(foundProspect.toJSON());
+    var list = foundProspect.getContactList();
+    Ti.API.info(list[0].toJSON());
+  */
 })();
