@@ -580,12 +580,16 @@
           });
           b.addEventListener('click', function() {
             var createdList;
-            createdList = shl.List.create({
-              name: lname.value,
-              weight: 0,
-              active: 1
-            });
-            return addW.close();
+            if (lname.value !== '') {
+              createdList = shl.List.create({
+                name: lname.value,
+                weight: 0,
+                active: 1
+              });
+              return addW.close();
+            } else {
+              return alert('You must specify a name for the list.');
+            }
           });
           addW.add(b);
           c = Ti.UI.createButton({

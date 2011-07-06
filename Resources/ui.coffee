@@ -528,14 +528,17 @@ class UI
           backgroundImage: '/images/button_blue.png'
         })
         b.addEventListener('click', () ->
-          # Create an object to save to the database
-          createdList = shl.List.create({
-            name: lname.value,
-            weight: 0,
-            active: 1
-          })
-          # TODO : show a list of prospects to add to the list
-          addW.close()
+          if lname.value isnt ''
+            # Create an object to save to the database
+            createdList = shl.List.create({
+              name: lname.value,
+              weight: 0,
+              active: 1
+            })
+            # TODO : show a list of prospects to add to the list
+            addW.close()
+          else
+            alert('You must specify a name for the list.')
         )
         #addW.setRightNavButton(b)
         addW.add(b)
