@@ -626,6 +626,7 @@ class UI
               emailLabel.text = prospect.email
             firstContactLabel.text = 'First Contact: ' + date('n/j/Y', prospect.firstContactDate) + "\n" + prospect.firstContactPoint
             statusValueLabel.text = prospect.status
+            bogusSection.updateRows()
           else if @deleteProspect
             win.close()
         )
@@ -732,6 +733,7 @@ class UI
                 }))
           Ti.API.info(prospect.getContactList().toJSON())
           contactSection.addContactRows(createdContacts)
+          bogusSection.updateRows()
           recordContactWin.close()
         )
         recordContactRoot.setRightNavButton(saveButton)
@@ -1042,6 +1044,53 @@ class UI
         emailDialog.open()
       )
       data.push(emailSection)
+    
+    bogusSection = Ti.UI.createTableViewSection({headerTitle: 'Decisions'})
+    if prospect.previouslySaved
+      prevSavedRow = Ti.UI.createTableViewRow({title: 'Previously Saved'})
+      bogusSection.add(prevSavedRow)
+    if prospect.previouslyBaptized
+      prevBaptRow = Ti.UI.createTableViewRow({title: 'Previously Baptized'})
+      bogusSection.add(prevBaptRow)
+    if prospect.attended
+      attendedRow = Ti.UI.createTableViewRow({title: 'Attended Church'})
+      bogusSection.add(attendedRow)
+    if prospect.sundaySchool
+      essRow = Ti.UI.createTableViewRow({title: 'Enrolled in Sunday School'})
+      bogusSection.add(essRow)
+    decisionList = prospect.getContactList({
+      where: 'prospect_id = '+prospect.id+' AND (type = "Saved" OR type="Baptized" OR type="Joined the Church")'
+    })
+    if decisionList.length >= 1
+      for decision in decisionList
+        decisionRow = Ti.UI.createTableViewRow({
+          title: decision.individual + " - " + decision.type + " " + date('n/j/Y', decision.date)
+        })
+        bogusSection.add(decisionRow)
+    Ti.API.info(decisionList)
+    if !bogusSection.rows?
+      bogusNoneRow = Ti.UI.createTableViewRow({title: 'None', name: 'bogusNone'})
+      bogusSection.add(bogusNoneRow)
+    bogusSection.updateRows = () ->
+      bogusSection.rows = []
+      if prevSavedRow? then bogusSection.add(prevSavedRow)
+      if prevBaptRow? then bogusSection.add(prevBaptRow)
+      if attendedRow? then bogusSection.add(attendedRow)
+      if essRow? then bogusSection.add(essRow)
+      decisionList = prospect.getContactList({
+        where: 'prospect_id = '+prospect.id+' AND (type = "Saved" OR type="Baptized" OR type="Joined the Church")'
+      })
+      Ti.API.info(decisionList)
+      if decisionList.length >= 1
+        for decision in decisionList
+          decisionRow = Ti.UI.createTableViewRow({
+            title: decision.individual + " - " + decision.type + " " + date('n/j/Y', decision.date)
+          })
+          bogusSection.add(decisionRow)
+      if bogusSection.rows.length is 0
+        bogusNoneRow = Ti.UI.createTableViewRow({title: 'None', name: 'bogusNone'})
+        bogusSection.add(bogusNoneRow)
+    data.push(bogusSection)
     
     firstContactSection = Ti.UI.createTableViewSection()
     firstContactRow = Ti.UI.createTableViewRow({height: 55})
@@ -1693,6 +1742,7 @@ class UI
         
         if prospect?
           # Update the existing prospect
+          alert(prevSavedRow.hasCheck)
           shl.Prospect.update(prospect.id,{
             last: lname.value,
             firstMale: fname.value,
@@ -1707,10 +1757,10 @@ class UI
             email: email.value,
             firstContactDate: strtotime(initialPicker.value),
             firstContactPoint: pocTextfield.value,
-            previouslySaved: prevSavedRow.hasCheck,
-            previouslyBaptized: prevBaptRow.hasCheck,
-            attended: attendedRow.hasCheck,
-            sundaySchool: enrolledRow.hasCheck
+            previouslySaved: if prevSavedRow.hasCheck then "1" else "0",
+            previouslyBaptized: if prevBaptRow.hasCheck then "1" else "0",
+            attended: if attendedRow.hasCheck then "1" else "0",
+            sundaySchool: if enrolledRow.hasCheck then "1" else "0"
           })
           win.exitValue = true
           win.close()
@@ -1730,10 +1780,10 @@ class UI
             email: email.value,
             firstContactDate: strtotime(initialPicker.value),
             firstContactPoint: pocTextfield.value,
-            previouslySaved: prevSavedRow.hasCheck,
-            previouslyBaptized: prevBaptRow.hasCheck,
-            attended: attendedRow.hasCheck,
-            sundaySchool: enrolledRow.hasCheck
+            previouslySaved: if prevSavedRow.hasCheck then "1" else "0",
+            previouslyBaptized: if prevBaptRow.hasCheck then "1" else "0",
+            attended: if attendedRow.hasCheck then "1" else "0",
+            sundaySchool: if enrolledRow.hasCheck then "1" else "0"
           })
           Ti.API.info(createdProspect.toJSON())
           # Clear all values
