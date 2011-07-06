@@ -1056,7 +1056,7 @@
           width: 300,
           left: 7,
           value: (today.getMonth() + 1) + '/' + today.getDate() + '/' + today.getFullYear(),
-          keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
+          keyboardType: Titanium.UI.KEYBOARD_NUMBERS_PUNCTUATION,
           returnKeyType: Titanium.UI.RETURNKEY_DONE,
           borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE
         });
@@ -2090,7 +2090,7 @@
         height: 45,
         width: 120,
         left: 7,
-        keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
+        keyboardType: Titanium.UI.KEYBOARD_NUMBERS_PUNCTUATION,
         returnKeyType: Titanium.UI.RETURNKEY_DONE,
         borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
         hintText: L('1/10/2011'),
