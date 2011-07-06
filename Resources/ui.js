@@ -113,6 +113,7 @@
           var allLists;
           win.setRightNavButton(cancel);
           allLists = shl.List.find({
+            where: "name <> 'Starred'",
             order: 'weight ASC'
           });
           tableView.updateLists(allLists);
@@ -635,6 +636,7 @@
         }
         if (e.row.listID === 'more') {
           allLists = shl.List.find({
+            where: "name <> 'Starred'",
             order: 'weight ASC'
           });
           tableView.updateLists(allLists);

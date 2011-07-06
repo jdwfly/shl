@@ -110,6 +110,7 @@ class UI
       edit.addEventListener('click', (e) ->
         win.setRightNavButton(cancel)
         allLists = shl.List.find({
+          where: "name <> 'Starred'",
           order: 'weight ASC'
         })
         tableView.updateLists(allLists)
@@ -589,6 +590,7 @@ class UI
         return true
       if e.row.listID == 'more'
         allLists = shl.List.find({
+          where: "name <> 'Starred'",
           order: 'weight ASC'
         })
         tableView.updateLists(allLists)
