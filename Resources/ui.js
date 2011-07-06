@@ -868,8 +868,9 @@
           systemButton: Ti.UI.iPhone.SystemButton.EDIT
         });
         editButton.addEventListener('click', function(e) {
-          var editWin;
-          editWin = self.createProspectFormWin(prospect);
+          var editProspect, editWin;
+          editProspect = shl.Prospect.find(prospect.id);
+          editWin = self.createProspectFormWin(editProspect);
           editWin.addEventListener('close', function(e) {
             if (e.source.exitValue) {
               return tableView.updateProspect(prospect);

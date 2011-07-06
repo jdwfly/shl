@@ -800,7 +800,8 @@ class UI
       })
       editButton.addEventListener('click', (e) ->
         # Open modal window to edit prospect
-        editWin = self.createProspectFormWin(prospect)
+        editProspect = shl.Prospect.find(prospect.id)
+        editWin = self.createProspectFormWin(editProspect)
         editWin.addEventListener('close', (e) ->
           # Update the current information on the page
           if e.source.exitValue
