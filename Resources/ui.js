@@ -1273,7 +1273,9 @@
           row.add(rowLabel);
           tableView.appendRow(row);
         }
-        return tableView.deleteRow(tableView.getIndexByName('None'));
+        if (tableView.getIndexByName('None') !== -1) {
+          return tableView.deleteRow(tableView.getIndexByName('None'));
+        }
       };
       data.push(contactSection);
       tableView = Ti.UI.createTableView({
@@ -1342,7 +1344,9 @@
     UI.prototype.processProspectData = function(prospects) {
       var addressLabel, content, contentTitle, data, lastContactLabel, prospect, row, starImage;
       if (prospects.length < 1) {
-        row = Ti.UI.createTableViewRow();
+        row = Ti.UI.createTableViewRow({
+          editable: false
+        });
         return [row];
       }
       return data = (function() {

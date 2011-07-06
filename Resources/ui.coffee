@@ -716,14 +716,12 @@ class UI
             return false
           # Get the comments
           commentsValue = commentsTextArea.value
-          
           createdContacts = []
           createdContacts.push(prospect.createContact({
             type: typeValue,
             date: dateValue,
             comments: commentsValue
           }))
-          
           if decisionSection.rows.length > 1
             for row, i in decisionSection.rows
               if not decisionSection.rows[i].hasChild
@@ -732,7 +730,6 @@ class UI
                   date: dateValue,
                   individual: decisionSection.rows[i].decisionPerson
                 }))
-          
           Ti.API.info(prospect.getContactList().toJSON())
           contactSection.addContactRows(createdContacts)
           recordContactWin.close()
@@ -1140,7 +1137,8 @@ class UI
         })
         row.add(rowLabel)
         tableView.appendRow(row)
-      tableView.deleteRow(tableView.getIndexByName('None'))
+      if tableView.getIndexByName('None') isnt -1
+        tableView.deleteRow(tableView.getIndexByName('None'))
     data.push(contactSection)
     
     tableView = Ti.UI.createTableView({
@@ -1201,7 +1199,7 @@ class UI
   
   processProspectData : (prospects) ->
     if prospects.length < 1
-      row = Ti.UI.createTableViewRow()
+      row = Ti.UI.createTableViewRow({editable: false})
       return [row]
     data = for prospect in prospects
       row = Ti.UI.createTableViewRow({
