@@ -91,7 +91,7 @@
       active : 0,
       query : {
         where : {
-          status : 'Dead end'
+          status : 'Dead End'
         },
         order : 'last DESC'
       }
