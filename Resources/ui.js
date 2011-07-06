@@ -967,7 +967,7 @@
             systemButton: Ti.UI.iPhone.SystemButton.SAVE
           });
           saveButton.addEventListener('click', function(e) {
-            var commentsValue, createdContacts, dateValue, groupHasCheck, i, re, row, typeValue, _len, _len2, _ref, _ref2;
+            var commentsValue, createdContacts, dateValue, groupHasCheck, i, re, row, thisTime, typeValue, _len, _len2, _ref, _ref2;
             re = /^\d{1,2}\/\d{1,2}\/\d{4}$/;
             if (dateField.value !== '' && !dateField.value.match(re)) {
               alert('Invalid date format. Please format date MM/DD/YYYY');
@@ -977,6 +977,9 @@
               dateValue = 0;
             } else {
               dateValue = strtotime(dateField.value);
+              thisTime = new Date();
+              dateValue = dateValue + (thisTime.getHours() * 3600) + (thisTime.getMinutes() * 60) + thisTime.getSeconds();
+              Ti.API.info(dateValue);
             }
             groupHasCheck = false;
             _ref = visitSection.rows;
@@ -1479,7 +1482,9 @@
       statusRow.add(statusValueLabel);
       statusSection.add(statusRow);
       data.data.push(statusSection);
-      contacts = prospect.getContactList();
+      contacts = prospect.getContactList({
+        order: 'date DESC'
+      });
       contactSection = Ti.UI.createTableViewSection({
         headerTitle: 'Activity Log'
       });

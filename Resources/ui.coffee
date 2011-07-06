@@ -901,6 +901,9 @@ class UI
             dateValue = 0
           else
             dateValue = strtotime(dateField.value)
+            thisTime = new Date()
+            dateValue = dateValue + (thisTime.getHours() * 3600) + (thisTime.getMinutes() * 60) + thisTime.getSeconds()
+            Ti.API.info(dateValue)
           # Get the type of contact
           groupHasCheck = false
           for row, i in visitSection.rows
@@ -1343,7 +1346,9 @@ class UI
     statusSection.add(statusRow)
     data.data.push(statusSection)
     
-    contacts = prospect.getContactList()
+    contacts = prospect.getContactList({
+      order: 'date DESC'
+    })
     contactSection = Ti.UI.createTableViewSection({headerTitle: 'Activity Log'})
     if contacts.length < 1
       noneRow = Ti.UI.createTableViewRow({
