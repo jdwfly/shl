@@ -193,33 +193,60 @@
       return win;
     };
     UI.prototype.createSearchWindow = function() {
-      var result, search, self, win;
+      var search, self, tableView, win;
       self = this;
       win = Ti.UI.createWindow({
         title: 'Search'
       });
       search = Titanium.UI.createSearchBar({
-        barColor: '#000',
-        backgroundColor: '#000',
-        showCancel: true,
-        height: 43,
-        top: 0
+        barColor: '#385292',
+        showCancel: false,
+        hintText: 'search'
       });
-      win.add(search);
+      search.addEventListener('change', function(e) {
+        return e.value;
+      });
+      search.addEventListener('return', function(e) {
+        return search.blur();
+      });
       search.addEventListener('cancel', function(e) {
         return search.blur();
       });
-      search.addEventListener('return', function(e) {
-        return search.blur();
+      /*
+          search = Titanium.UI.createSearchBar({
+            barColor:'#000',
+            backgroundColor: '#000',
+            showCancel:true,
+            height:43,
+            top:0
+          })
+          win.add(search)
+          search.addEventListener('cancel', (e) ->
+            search.blur()
+          )
+          search.addEventListener('return', (e) ->
+            search.blur()
+          )       
+          result = @createProspectTableView([])
+          result.height = 280
+          win.add(result)
+          search.addEventListener('return', (e) ->
+            prospects = shl.Prospect.search(e.value)
+            result.updateProspects(prospects)
+          )
+          */
+      tableView = this.createProspectTableView(shl.Prospect.find());
+      tableView.search = search;
+      tableView.searchHidden = false;
+      tableView.filterAttribute = 'searchTerm';
+      win.addEventListener('open', function(f) {
+        return win.addEventListener('focus', function(g) {
+          var data;
+          data = self.processProspectData(shl.Prospect.find());
+          return tableView.setData(data);
+        });
       });
-      result = this.createProspectTableView([]);
-      result.height = 280;
-      win.add(result);
-      search.addEventListener('return', function(e) {
-        var prospects;
-        prospects = shl.Prospect.search(e.value);
-        return result.updateProspects(prospects);
-      });
+      win.add(tableView);
       return win;
     };
     UI.prototype.createStatsWindow = function() {
@@ -1600,7 +1627,8 @@
           row = Ti.UI.createTableViewRow({
             height: 'auto',
             hasChild: true,
-            selectedBackgroundColor: '#ffffff'
+            selectedBackgroundColor: '#ffffff',
+            searchTerm: prospect.formatName() + ' ' + prospect.formatAddress()
           });
           content = Ti.UI.createView({
             height: 'auto',

@@ -184,6 +184,21 @@ class UI
       title: 'Search'
     })
     search = Titanium.UI.createSearchBar({
+      barColor:'#385292',
+      showCancel:false,
+      hintText:'search'
+    })
+    search.addEventListener('change', (e) ->
+      e.value
+    )
+    search.addEventListener('return', (e) ->
+      search.blur();
+    )
+    search.addEventListener('cancel', (e) ->
+      search.blur()
+    )
+    ###
+    search = Titanium.UI.createSearchBar({
       barColor:'#000',
       backgroundColor: '#000',
       showCancel:true,
@@ -204,6 +219,19 @@ class UI
       prospects = shl.Prospect.search(e.value)
       result.updateProspects(prospects)
     )
+    ###
+    
+    tableView = @createProspectTableView(shl.Prospect.find())
+    tableView.search = search
+    tableView.searchHidden = false
+    tableView.filterAttribute = 'searchTerm'
+    win.addEventListener('open', (f) ->
+      win.addEventListener('focus', (g) ->
+        data = self.processProspectData(shl.Prospect.find())
+        tableView.setData(data)
+      )
+    )
+    win.add(tableView)
     return win
   
   createStatsWindow : () ->
@@ -1445,7 +1473,8 @@ class UI
       row = Ti.UI.createTableViewRow({
         height: 'auto',
         hasChild: true,
-        selectedBackgroundColor: '#ffffff'
+        selectedBackgroundColor: '#ffffff',
+        searchTerm: prospect.formatName() + ' ' + prospect.formatAddress()
       })
       content = Ti.UI.createView({
         height: 'auto',
