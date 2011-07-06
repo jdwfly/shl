@@ -811,9 +811,7 @@
         list.set('weight', e.index);
         return Ti.API.info(list.toJSON());
       });
-      tableView.addEventListener('delete', function(e) {
-        return alert(JSON.stringify(e.row));
-      });
+      tableView.addEventListener('delete', function(e) {});
       tableView.updateLists = function(lists) {
         data = self.processListData(lists);
         return this.setData(data);
@@ -846,11 +844,21 @@
       return tableView;
     };
     UI.prototype.createProspectViewWindow = function(prospect) {
-      var addressLabel, addressRow, addressSection, attendedRow, bogusNoneRow, bogusSection, contact, contactLabel, contactSection, contacts, data, decision, decisionList, decisionRow, editButton, emailLabel, emailRow, emailSection, essRow, firstContactLabel, firstContactRow, firstContactSection, headerView, nameLabel, nextStepLabel, noneRow, phoneHomeLabel, phoneHomeRow, phoneMobileLabel, phoneMobileRow, phoneSection, prevBaptRow, prevSavedRow, recordContactButton, row, rowLabel, self, statusLabel, statusRow, statusSection, statusValueLabel, tableView, win, _i, _j, _len, _len2;
+      var data, editButton, self, tableView, win;
       prospect = shl.Prospect.find(prospect.id);
       win = Ti.UI.createWindow();
       self = this;
-      data = [];
+      data = this.processProspectViewData(prospect);
+      tableView = Ti.UI.createTableView({
+        data: data.data,
+        headerView: data.headerView,
+        style: Titanium.UI.iPhone.TableViewStyle.GROUPED
+      });
+      tableView.updateProspect = function(prospect) {
+        data = self.processProspectViewData(prospect);
+        this.setData(data.data);
+        return this.headerView = data.headerView;
+      };
       if (this.platform === 'iPhone OS') {
         editButton = Ti.UI.createButton({
           systemButton: Ti.UI.iPhone.SystemButton.EDIT
@@ -860,24 +868,7 @@
           editWin = self.createProspectFormWin(prospect);
           editWin.addEventListener('close', function(e) {
             if (e.source.exitValue) {
-              prospect = shl.Prospect.find(prospect.id);
-              nameLabel.text = prospect.formatName();
-              contactLabel.text = 'Last Contact: ' + prospect.formatContactPretty();
-              if (typeof addressSection !== "undefined" && addressSection !== null) {
-                addressLabel.text = prospect.formatAddress();
-              }
-              if (typeof phoneHomeLabel !== "undefined" && phoneHomeLabel !== null) {
-                phoneHomeLabel.text = 'home: ' + prospect.phoneHome;
-              }
-              if (typeof phoneMobileLabel !== "undefined" && phoneMobileLabel !== null) {
-                phoneMobileLabel.text = 'mobile: ' + prospect.phoneMobile;
-              }
-              if (typeof emailLabel !== "undefined" && emailLabel !== null) {
-                emailLabel.text = prospect.email;
-              }
-              firstContactLabel.text = 'First Contact: ' + date('n/j/Y', prospect.firstContactDate) + "\n" + prospect.firstContactPoint;
-              statusValueLabel.text = prospect.status;
-              return bogusSection.updateRows();
+              return tableView.updateProspect(prospect);
             } else if (this.deleteProspect) {
               return win.close();
             }
@@ -890,8 +881,23 @@
         });
         win.setRightNavButton(editButton);
       }
+      win.addEventListener('open', function(e) {
+        return win.addEventListener('focus', function(f) {
+          var updateProspect;
+          updateProspect = shl.Prospect.find(prospect.id);
+          return tableView.updateProspect(updateProspect);
+        });
+      });
+      win.add(tableView);
+      return win;
+    };
+    UI.prototype.processProspectViewData = function(prospect) {
+      var addressLabel, addressRow, addressSection, attendedRow, bogusNoneRow, bogusSection, contact, contactLabel, contactSection, contacts, data, decision, decisionList, decisionRow, emailLabel, emailRow, emailSection, essRow, firstContactLabel, firstContactRow, firstContactSection, headerView, nameLabel, nextStepLabel, noneRow, phoneHomeLabel, phoneHomeRow, phoneMobileLabel, phoneMobileRow, phoneSection, prevBaptRow, prevSavedRow, recordContactButton, row, rowLabel, self, statusLabel, statusRow, statusSection, statusValueLabel, _i, _j, _len, _len2;
+      self = this;
+      data = {};
+      prospect = shl.Prospect.find(prospect.id);
       headerView = Ti.UI.createView({
-        height: '100'
+        height: '110'
       });
       nameLabel = Ti.UI.createLabel({
         text: prospect.formatName(),
@@ -997,9 +1003,6 @@
                 }
               }
             }
-            Ti.API.info(prospect.getContactList().toJSON());
-            contactSection.addContactRows(createdContacts);
-            bogusSection.updateRows();
             return recordContactWin.close();
           });
           recordContactRoot.setRightNavButton(saveButton);
@@ -1262,6 +1265,8 @@
       headerView.add(contactLabel);
       headerView.add(nextStepLabel);
       headerView.add(recordContactButton);
+      data.headerView = headerView;
+      data.data = [];
       if (prospect.formatAddress() !== '') {
         addressSection = Ti.UI.createTableViewSection();
         addressRow = Ti.UI.createTableViewRow({
@@ -1280,7 +1285,7 @@
           Ti.API.info(query);
           return Ti.Platform.openURL("http://maps.google.com/maps?q=" + query);
         });
-        data.push(addressSection);
+        data.data.push(addressSection);
       }
       if (prospect.phoneHome !== '' && prospect.phoneMobile !== '') {
         phoneSection = Ti.UI.createTableViewSection();
@@ -1307,7 +1312,7 @@
         phoneSection.addEventListener('click', function(e) {
           return Ti.Platform.openURL('tel:' + e.source.phone);
         });
-        data.push(phoneSection);
+        data.data.push(phoneSection);
       }
       if (prospect.email !== '') {
         emailSection = Ti.UI.createTableViewSection();
@@ -1324,7 +1329,7 @@
           emailDialog.toRecipients = [e.source.text];
           return emailDialog.open();
         });
-        data.push(emailSection);
+        data.data.push(emailSection);
       }
       bogusSection = Ti.UI.createTableViewSection({
         headerTitle: 'Decisions'
@@ -1373,43 +1378,28 @@
         });
         bogusSection.add(bogusNoneRow);
       }
-      bogusSection.updateRows = function() {
-        var decision, _j, _len2;
-        bogusSection.rows = [];
-        if (prevSavedRow != null) {
-          bogusSection.add(prevSavedRow);
-        }
-        if (prevBaptRow != null) {
-          bogusSection.add(prevBaptRow);
-        }
-        if (attendedRow != null) {
-          bogusSection.add(attendedRow);
-        }
-        if (essRow != null) {
-          bogusSection.add(essRow);
-        }
-        decisionList = prospect.getContactList({
-          where: 'prospect_id = ' + prospect.id + ' AND (type = "Saved" OR type="Baptized" OR type="Joined the Church")'
-        });
-        Ti.API.info(decisionList);
-        if (decisionList.length >= 1) {
-          for (_j = 0, _len2 = decisionList.length; _j < _len2; _j++) {
-            decision = decisionList[_j];
-            decisionRow = Ti.UI.createTableViewRow({
-              title: decision.individual + " - " + decision.type + " " + date('n/j/Y', decision.date)
-            });
-            bogusSection.add(decisionRow);
-          }
-        }
-        if (bogusSection.rows.length === 0) {
-          bogusNoneRow = Ti.UI.createTableViewRow({
-            title: 'None',
-            name: 'bogusNone'
-          });
-          return bogusSection.add(bogusNoneRow);
-        }
-      };
-      data.push(bogusSection);
+      /*
+          bogusSection.updateRows = () ->
+            bogusSection.rows = []
+            if prevSavedRow? then bogusSection.add(prevSavedRow)
+            if prevBaptRow? then bogusSection.add(prevBaptRow)
+            if attendedRow? then bogusSection.add(attendedRow)
+            if essRow? then bogusSection.add(essRow)
+            decisionList = prospect.getContactList({
+              where: 'prospect_id = '+prospect.id+' AND (type = "Saved" OR type="Baptized" OR type="Joined the Church")'
+            })
+            Ti.API.info(decisionList)
+            if decisionList.length >= 1
+              for decision in decisionList
+                decisionRow = Ti.UI.createTableViewRow({
+                  title: decision.individual + " - " + decision.type + " " + date('n/j/Y', decision.date)
+                })
+                bogusSection.add(decisionRow)
+            if bogusSection.rows.length is 0
+              bogusNoneRow = Ti.UI.createTableViewRow({title: 'None', name: 'bogusNone'})
+              bogusSection.add(bogusNoneRow)
+          */
+      data.data.push(bogusSection);
       firstContactSection = Ti.UI.createTableViewSection();
       firstContactRow = Ti.UI.createTableViewRow({
         height: 55
@@ -1420,7 +1410,7 @@
       });
       firstContactRow.add(firstContactLabel);
       firstContactSection.add(firstContactRow);
-      data.push(firstContactSection);
+      data.data.push(firstContactSection);
       statusSection = Ti.UI.createTableViewSection();
       statusRow = Ti.UI.createTableViewRow({
         hasChild: true
@@ -1490,7 +1480,7 @@
       statusRow.add(statusLabel);
       statusRow.add(statusValueLabel);
       statusSection.add(statusRow);
-      data.push(statusSection);
+      data.data.push(statusSection);
       contacts = prospect.getContactList();
       contactSection = Ti.UI.createTableViewSection({
         headerTitle: 'Activity Log'
@@ -1516,34 +1506,26 @@
           contactSection.add(row);
         }
       }
-      contactSection.addContactRows = function(contacts) {
-        var contact, _k, _len3;
-        Ti.API.info("Contacts = " + JSON.stringify(contacts));
-        for (_k = 0, _len3 = contacts.length; _k < _len3; _k++) {
-          contact = contacts[_k];
-          row = Ti.UI.createTableViewRow({
-            height: 'auto'
-          });
-          rowLabel = Ti.UI.createLabel({
-            text: date('n/j/Y', contact.date) + " " + contact.type + ": " + contact.comments,
-            width: 280,
-            left: 10
-          });
-          row.add(rowLabel);
-          tableView.appendRow(row);
-        }
-        if (tableView.getIndexByName('None') !== -1) {
-          return tableView.deleteRow(tableView.getIndexByName('None'));
-        }
-      };
-      data.push(contactSection);
-      tableView = Ti.UI.createTableView({
-        data: data,
-        headerView: headerView,
-        style: Titanium.UI.iPhone.TableViewStyle.GROUPED
-      });
-      win.add(tableView);
-      return win;
+      /*
+          contactSection.addContactRows = (contacts) ->
+            Ti.API.info("Contacts = " + JSON.stringify(contacts))
+            # Loop through contacts and append rows
+            for contact in contacts
+              row = Ti.UI.createTableViewRow({
+                height: 'auto'
+              })
+              rowLabel = Ti.UI.createLabel({
+                text: date('n/j/Y', contact.date) + " " + contact.type + ": " + contact.comments,
+                width: 280,
+                left: 10
+              })
+              row.add(rowLabel)
+              tableView.appendRow(row)
+            if tableView.getIndexByName('None') isnt -1
+              tableView.deleteRow(tableView.getIndexByName('None'))
+          */
+      data.data.push(contactSection);
+      return data;
     };
     UI.prototype.processListData = function(lists) {
       var addCustom, countView, currentList, data, i, listcount, row, viewMore;
@@ -1910,7 +1892,7 @@
         width: 139,
         height: 40,
         left: 10,
-        keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
+        keyboardType: Titanium.UI.KEYBOARD_NUMBERS_PUNCTUATION,
         returnKeyType: Titanium.UI.RETURNKEY_DONE,
         borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
         hintText: L('Zip'),

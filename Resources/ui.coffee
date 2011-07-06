@@ -744,7 +744,7 @@ class UI
       Ti.API.info(list.toJSON())
     )
     tableView.addEventListener('delete', (e) ->
-      alert(JSON.stringify(e.row))
+      #alert(JSON.stringify(e.row))
     )
     tableView.updateLists = (lists) ->
       data = self.processListData(lists)
@@ -779,7 +779,17 @@ class UI
     prospect = shl.Prospect.find(prospect.id)
     win = Ti.UI.createWindow()
     self = this
-    data = []
+    data = @processProspectViewData(prospect)
+    
+    tableView = Ti.UI.createTableView({
+      data: data.data,
+      headerView: data.headerView,
+      style: Titanium.UI.iPhone.TableViewStyle.GROUPED
+    })
+    tableView.updateProspect = (prospect) ->
+      data = self.processProspectViewData(prospect)
+      @setData(data.data)
+      @headerView = data.headerView
     
     if @platform is 'iPhone OS'
       editButton = Ti.UI.createButton({
@@ -791,20 +801,7 @@ class UI
         editWin.addEventListener('close', (e) ->
           # Update the current information on the page
           if e.source.exitValue
-            prospect = shl.Prospect.find(prospect.id)
-            nameLabel.text = prospect.formatName()
-            contactLabel.text = 'Last Contact: ' + prospect.formatContactPretty()
-            if addressSection?
-              addressLabel.text = prospect.formatAddress()
-            if phoneHomeLabel?
-              phoneHomeLabel.text = 'home: ' + prospect.phoneHome
-            if phoneMobileLabel?
-              phoneMobileLabel.text = 'mobile: ' + prospect.phoneMobile
-            if emailLabel?
-              emailLabel.text = prospect.email
-            firstContactLabel.text = 'First Contact: ' + date('n/j/Y', prospect.firstContactDate) + "\n" + prospect.firstContactPoint
-            statusValueLabel.text = prospect.status
-            bogusSection.updateRows()
+            tableView.updateProspect(prospect)
           else if @deleteProspect
             win.close()
         )
@@ -816,8 +813,23 @@ class UI
       )
       win.setRightNavButton(editButton)
     
+    win.addEventListener('open', (e) ->
+      win.addEventListener('focus', (f) ->
+        updateProspect = shl.Prospect.find(prospect.id)
+        tableView.updateProspect(updateProspect)
+      )
+    )
+    
+    win.add(tableView)
+    return win
+    
+  processProspectViewData : (prospect) ->
+    self = this
+    data = {}
+    prospect = shl.Prospect.find(prospect.id)
+    
     headerView = Ti.UI.createView({
-      height: '100'
+      height: '110'
     })
     nameLabel = Ti.UI.createLabel({
       text: prospect.formatName(),
@@ -909,9 +921,6 @@ class UI
                   date: dateValue,
                   individual: decisionSection.rows[i].decisionPerson
                 }))
-          Ti.API.info(prospect.getContactList().toJSON())
-          contactSection.addContactRows(createdContacts)
-          bogusSection.updateRows()
           recordContactWin.close()
         )
         recordContactRoot.setRightNavButton(saveButton)
@@ -1162,6 +1171,8 @@ class UI
     headerView.add(contactLabel)
     headerView.add(nextStepLabel)
     headerView.add(recordContactButton)
+    data.headerView = headerView
+    data.data = []
     
     if prospect.formatAddress() isnt ''
       addressSection = Ti.UI.createTableViewSection()
@@ -1178,7 +1189,7 @@ class UI
         Ti.API.info(query)
         Ti.Platform.openURL("http://maps.google.com/maps?q="+query)
       )
-      data.push(addressSection)
+      data.data.push(addressSection)
     
     if prospect.phoneHome isnt '' and prospect.phoneMobile isnt ''
       phoneSection = Ti.UI.createTableViewSection()
@@ -1204,7 +1215,7 @@ class UI
       phoneSection.addEventListener('click', (e) ->
         Ti.Platform.openURL('tel:' + e.source.phone)
       )
-      data.push(phoneSection)
+      data.data.push(phoneSection)
       
     if prospect.email isnt ''
       emailSection = Ti.UI.createTableViewSection()
@@ -1221,7 +1232,7 @@ class UI
         emailDialog.toRecipients = [e.source.text]
         emailDialog.open()
       )
-      data.push(emailSection)
+      data.data.push(emailSection)
     
     bogusSection = Ti.UI.createTableViewSection({headerTitle: 'Decisions'})
     if prospect.previouslySaved
@@ -1249,6 +1260,7 @@ class UI
     if !bogusSection.rows?
       bogusNoneRow = Ti.UI.createTableViewRow({title: 'None', name: 'bogusNone'})
       bogusSection.add(bogusNoneRow)
+    ###
     bogusSection.updateRows = () ->
       bogusSection.rows = []
       if prevSavedRow? then bogusSection.add(prevSavedRow)
@@ -1268,7 +1280,8 @@ class UI
       if bogusSection.rows.length is 0
         bogusNoneRow = Ti.UI.createTableViewRow({title: 'None', name: 'bogusNone'})
         bogusSection.add(bogusNoneRow)
-    data.push(bogusSection)
+    ###
+    data.data.push(bogusSection)
     
     firstContactSection = Ti.UI.createTableViewSection()
     firstContactRow = Ti.UI.createTableViewRow({height: 55})
@@ -1278,7 +1291,7 @@ class UI
     })
     firstContactRow.add(firstContactLabel)
     firstContactSection.add(firstContactRow)
-    data.push(firstContactSection)
+    data.data.push(firstContactSection)
     
     statusSection = Ti.UI.createTableViewSection()
     statusRow = Ti.UI.createTableViewRow({hasChild: true})
@@ -1328,7 +1341,7 @@ class UI
     statusRow.add(statusLabel)
     statusRow.add(statusValueLabel)
     statusSection.add(statusRow)
-    data.push(statusSection)
+    data.data.push(statusSection)
     
     contacts = prospect.getContactList()
     contactSection = Ti.UI.createTableViewSection({headerTitle: 'Activity Log'})
@@ -1350,6 +1363,7 @@ class UI
         })
         row.add(rowLabel)
         contactSection.add(row)
+    ###
     contactSection.addContactRows = (contacts) ->
       Ti.API.info("Contacts = " + JSON.stringify(contacts))
       # Loop through contacts and append rows
@@ -1366,16 +1380,10 @@ class UI
         tableView.appendRow(row)
       if tableView.getIndexByName('None') isnt -1
         tableView.deleteRow(tableView.getIndexByName('None'))
-    data.push(contactSection)
+    ###
+    data.data.push(contactSection)
     
-    tableView = Ti.UI.createTableView({
-      data: data,
-      headerView: headerView,
-      style: Titanium.UI.iPhone.TableViewStyle.GROUPED
-    })
-    win.add(tableView)
-    
-    return win
+    return data
   
   processListData : (lists) ->
     data = for i in lists
@@ -1708,7 +1716,7 @@ class UI
       width: 139,
       height:40,
       left: 10,
-      keyboardType:Titanium.UI.KEYBOARD_DEFAULT,
+      keyboardType:Titanium.UI.KEYBOARD_NUMBERS_PUNCTUATION,
       returnKeyType:Titanium.UI.RETURNKEY_DONE,
       borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
       hintText:L('Zip'),
