@@ -1875,6 +1875,8 @@ class UI
       keyboardType:Titanium.UI.KEYBOARD_EMAIL,
       returnKeyType:Titanium.UI.RETURNKEY_DONE,
       borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
+      autocapitalization: Titanium.UI.TEXT_AUTOCAPITALIZATION_NONE,
+      autocorrect: false,
       hintText:L('Email'),
       value: if prospect? then prospect.email else ''
     })
