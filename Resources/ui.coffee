@@ -837,12 +837,13 @@ class UI
       top: 7,
       width: 300,
       height: 17,
-      color: '#4c596e'
+      color: '#4c596e',
+      font: {fontSize: 20}
     })
     contactLabel = Ti.UI.createLabel({
       text: 'Last Contact: ' + prospect.formatContactPretty(),
       left: 10,
-      top: 21,
+      top: 23,
       width: 300,
       height: 17,
       font: {fontSize: 12},
@@ -851,7 +852,7 @@ class UI
     nextStepLabel = Ti.UI.createLabel({
       text: 'Next Step: ' + prospect.nextStep,
       left: 10,
-      top: 35,
+      top: 37,
       width: 300,
       height: 17,
       font: {fontSize: 12},
@@ -860,7 +861,7 @@ class UI
     recordContactButton = Ti.UI.createButton({
       width: 300,
       height: 57,
-      top: 54,
+      top: 56,
       left: 10,
       title: 'Record Contact',
       color: '#fff',
@@ -1326,16 +1327,11 @@ class UI
           Ti.API.info(JSON.stringify(row))
           if i is e.index
             statusTableView.data[0].rows[i].hasCheck = true
+            prospect.updateAttribute('status', statusTableView.data[0].rows[i].title)
           else
             statusTableView.data[0].rows[i].hasCheck = false
       )
       statusWin.add(statusTableView)
-      statusWin.addEventListener('close', (e) ->
-        for row, i in statusTableView.data[0].rows
-          if row.hasCheck
-            prospect.updateAttribute('status', row.title)
-            statusValueLabel.text = row.title
-      )
       self.tabs.activeTab.open(statusWin)
     )
     statusRow.add(statusLabel)
