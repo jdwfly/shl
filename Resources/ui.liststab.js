@@ -1,5 +1,11 @@
 (function() {
   var ListsTab;
+  var __indexOf = Array.prototype.indexOf || function(item) {
+    for (var i = 0, l = this.length; i < l; i++) {
+      if (this[i] === item) return i;
+    }
+    return -1;
+  };
   ListsTab = (function() {
     function ListsTab() {
       this.win = this.createListsWindow();
@@ -226,7 +232,7 @@
             });
             addBtn.addEventListener('click', function() {
               var addProspectsWin;
-              addProspectsWin = shl.ui.createAddProspectsWindow(e.row.listID);
+              addProspectsWin = this.createAddProspectsWindow(e.row.listID);
               return addProspectsWin.open({
                 modal: true,
                 modalTransitionStyle: Ti.UI.iPhone.MODAL_TRANSITION_STYLE_COVER_VERTICAL,
@@ -326,6 +332,152 @@
         return this.setData(data);
       };
       return tableView;
+    };
+    ListsTab.prototype.createAddProspectsWindow = function(listId) {
+      var createRow, data, doneBtn, prospect, prospects, self, tableView, win;
+      self = this;
+      win = Ti.UI.createWindow({
+        title: 'Add Prospects'
+      });
+      doneBtn = Ti.UI.createButton({
+        title: 'Done',
+        width: 100,
+        height: 30
+      });
+      doneBtn.addEventListener('click', function() {
+        return win.close();
+      });
+      win.setRightNavButton(doneBtn);
+      prospects = shl.Prospect.find();
+      if (prospects.length < 1) {
+        return win;
+      }
+      createRow = function(prospect) {
+        var addBtn, addressLabel, contentTitle, currentList, deleteBtn, listMembers, prosp, prospectsList, row, _ref;
+        row = Ti.UI.createTableViewRow({
+          height: 70
+        });
+        contentTitle = Ti.UI.createLabel({
+          text: prospect.formatName(),
+          font: {
+            fontWeight: 'bold',
+            fontSize: 18
+          },
+          height: 30,
+          top: 5,
+          width: 'auto',
+          left: 5
+        });
+        addressLabel = Ti.UI.createLabel({
+          text: prospect.formatAddress(),
+          font: {
+            fontWeight: 'normal',
+            fontSize: 12
+          },
+          height: 35,
+          width: 'auto',
+          height: 'auto',
+          top: 33,
+          left: 5,
+          bottom: 5
+        });
+        row.add(contentTitle);
+        row.add(addressLabel);
+        row.prospect = prospect;
+        addBtn = Ti.UI.createButton({
+          backgroundImage: '/images/addDefault.png',
+          height: 27,
+          width: 27,
+          right: 10,
+          top: 20
+        });
+        addBtn.addEventListener('click', function() {
+          Ti.API.info(prospect);
+          shl.Listing.create({
+            list_id: listId,
+            prospect_id: prospect.id
+          });
+          row.backgroundColor = '#AAAAAA';
+          setTimeout(function() {
+            return deleteBtn.show();
+          }, 100);
+          addBtn.hide();
+          contentTitle.animate({
+            left: 50,
+            duration: 100
+          });
+          return addressLabel.animate({
+            left: 50,
+            duration: 100
+          });
+        });
+        row.add(addBtn);
+        deleteBtn = Ti.UI.createButton({
+          backgroundImage: '/images/minusDefault.png',
+          height: 27,
+          width: 27,
+          left: 10,
+          top: 20,
+          visible: false
+        });
+        deleteBtn.addEventListener('click', function() {
+          var listing, todelete, _i, _len;
+          todelete = shl.Listing.find({
+            where: {
+              prospect_id: prospect.id,
+              list_id: listId
+            }
+          });
+          for (_i = 0, _len = todelete.length; _i < _len; _i++) {
+            listing = todelete[_i];
+            listing.destroy();
+          }
+          row.backgroundColor = '#ffffff';
+          deleteBtn.hide();
+          addBtn.show();
+          contentTitle.animate({
+            left: 10,
+            duration: 100
+          });
+          return addressLabel.animate({
+            left: 10,
+            duration: 100
+          });
+        });
+        row.add(deleteBtn);
+        currentList = shl.List.find(listId);
+        prospectsList = currentList.getProspectList();
+        listMembers = (function() {
+          var _i, _len, _results;
+          _results = [];
+          for (_i = 0, _len = prospectsList.length; _i < _len; _i++) {
+            prosp = prospectsList[_i];
+            _results.push(prosp.id);
+          }
+          return _results;
+        })();
+        if (_ref = prospect.id, __indexOf.call(listMembers, _ref) >= 0) {
+          deleteBtn.visible = true;
+          addBtn.visible = false;
+          contentTitle.left = 55;
+          addressLabel.left = 55;
+        }
+        return row;
+      };
+      data = (function() {
+        var _i, _len, _results;
+        _results = [];
+        for (_i = 0, _len = prospects.length; _i < _len; _i++) {
+          prospect = prospects[_i];
+          _results.push(createRow(prospect));
+        }
+        return _results;
+      })();
+      tableView = Ti.UI.createTableView({
+        data: data
+      });
+      win.add(tableView);
+      return win;
     };
     return ListsTab;
   })();
