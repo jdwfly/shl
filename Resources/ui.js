@@ -12,18 +12,13 @@
       this.platform = Ti.Platform.name;
     }
     UI.prototype.createApplicationTabGroup = function() {
-      var addTab, listsTab, search, searchTab, starredTab, stats, statsTab, tabs;
+      var addTab, listsTab, searchTab, starredTab, stats, statsTab, tabs;
       tabs = Ti.UI.createTabGroup();
-      search = this.createSearchWindow();
       stats = this.createStatsWindow();
       listsTab = shl.listsTab.tab;
       starredTab = shl.starredTab.tab;
       addTab = shl.addTab.tab;
-      searchTab = Ti.UI.createTab({
-        title: 'Search',
-        window: search,
-        icon: 'images/06-magnify.png'
-      });
+      searchTab = shl.searchTab.tab;
       statsTab = Ti.UI.createTab({
         title: 'Stats',
         window: stats,
@@ -56,61 +51,6 @@
       });
       this.tabs = tabs;
       return tabs;
-    };
-    UI.prototype.createSearchWindow = function() {
-      var search, self, tableView, win;
-      self = this;
-      win = Ti.UI.createWindow({
-        title: 'Search'
-      });
-      search = Titanium.UI.createSearchBar({
-        barColor: '#385292',
-        showCancel: false,
-        hintText: 'search'
-      });
-      search.addEventListener('change', function(e) {
-        return e.value;
-      });
-      search.addEventListener('return', function(e) {
-        return search.blur();
-      });
-      search.addEventListener('cancel', function(e) {
-        return search.blur();
-      });
-      /*
-          search = Titanium.UI.createSearchBar({
-            barColor:'#000',
-            backgroundColor: '#000',
-            showCancel:true,
-            height:43,
-            top:0
-          })
-          win.add(search)
-          search.addEventListener('cancel', (e) ->
-            search.blur()
-          )
-          search.addEventListener('return', (e) ->
-            search.blur()
-          )       
-          result = @createProspectTableView([])
-          result.height = 280
-          win.add(result)
-          search.addEventListener('return', (e) ->
-            prospects = shl.Prospect.search(e.value)
-            result.updateProspects(prospects)
-          )
-          */
-      tableView = this.createProspectTableView(shl.Prospect.find());
-      tableView.search = search;
-      tableView.searchHidden = false;
-      tableView.filterAttribute = 'searchTerm';
-      win.addEventListener('focus', function(g) {
-        var data;
-        data = self.processProspectData(shl.Prospect.find());
-        return tableView.setData(data);
-      });
-      win.add(tableView);
-      return win;
     };
     UI.prototype.createStatsWindow = function() {
       var aBap, aBapTxt, aCalls, aCallsTxt, aSal, aSalTxt, aVisitTxt, aVisits, allTime, mBap, mBapTxt, mCalls, mCallsTxt, mSal, mSalTxt, mVisitTxt, mVisits, self, statsWin, thisMonth, view;

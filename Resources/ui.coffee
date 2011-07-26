@@ -9,21 +9,13 @@ class UI
     tabs = Ti.UI.createTabGroup()
     
     # Create main windows
-    search = @createSearchWindow()
-    #nearby = @createNearbyWindow()
     stats = @createStatsWindow()
-    #settings = @createSettingsWindow()
-    #help = @createHelpWindow()
     
     # Create main tabs
     listsTab = shl.listsTab.tab
     starredTab = shl.starredTab.tab
     addTab = shl.addTab.tab
-    searchTab = Ti.UI.createTab({
-      title: 'Search',
-      window: search,
-      icon: 'images/06-magnify.png'
-    })
+    searchTab = shl.searchTab.tab
     statsTab = Ti.UI.createTab({
       title: 'Stats',
       window: stats,
@@ -60,61 +52,6 @@ class UI
     @tabs = tabs
     
     return tabs
-  
-  createSearchWindow : () ->
-    self = this
-    win = Ti.UI.createWindow({
-      title: 'Search'
-    })
-    search = Titanium.UI.createSearchBar({
-      barColor:'#385292',
-      showCancel:false,
-      hintText:'search'
-    })
-    search.addEventListener('change', (e) ->
-      e.value
-    )
-    search.addEventListener('return', (e) ->
-      search.blur();
-    )
-    search.addEventListener('cancel', (e) ->
-      search.blur()
-    )
-    ###
-    search = Titanium.UI.createSearchBar({
-      barColor:'#000',
-      backgroundColor: '#000',
-      showCancel:true,
-      height:43,
-      top:0
-    })
-    win.add(search)
-    search.addEventListener('cancel', (e) ->
-      search.blur()
-    )
-    search.addEventListener('return', (e) ->
-      search.blur()
-    )       
-    result = @createProspectTableView([])
-    result.height = 280
-    win.add(result)
-    search.addEventListener('return', (e) ->
-      prospects = shl.Prospect.search(e.value)
-      result.updateProspects(prospects)
-    )
-    ###
-    
-    tableView = @createProspectTableView(shl.Prospect.find())
-    tableView.search = search
-    tableView.searchHidden = false
-    tableView.filterAttribute = 'searchTerm'    
-    win.addEventListener('focus', (g) ->
-      data = self.processProspectData(shl.Prospect.find())
-      tableView.setData(data)
-    )
-    
-    win.add(tableView)
-    return win
   
   createStatsWindow : () ->
    self = this
