@@ -12,18 +12,13 @@
       this.platform = Ti.Platform.name;
     }
     UI.prototype.createApplicationTabGroup = function() {
-      var add, addTab, listsTab, search, searchTab, starredTab, stats, statsTab, tabs;
+      var addTab, listsTab, search, searchTab, starredTab, stats, statsTab, tabs;
       tabs = Ti.UI.createTabGroup();
-      add = this.createAddWindow();
       search = this.createSearchWindow();
       stats = this.createStatsWindow();
       listsTab = shl.listsTab.tab;
       starredTab = shl.starredTab.tab;
-      addTab = Ti.UI.createTab({
-        title: 'Add',
-        window: add,
-        icon: 'images/13-plus.png'
-      });
+      addTab = shl.addTab.tab;
       searchTab = Ti.UI.createTab({
         title: 'Search',
         window: search,
@@ -61,24 +56,6 @@
       });
       this.tabs = tabs;
       return tabs;
-    };
-    UI.prototype.createAddWindow = function() {
-      var webView, win;
-      if (this.isAndroid) {
-        win = Ti.UI.createWindow({
-          title: 'Add Prospect'
-        });
-        webView = Ti.UI.createWebView({
-          url: 'addProspect.html'
-        });
-        Ti.App.addEventListener('webToTi', function(e) {
-          return Ti.API.info('webToTi Sent: ' + JSON.stringify(e));
-        });
-        win.add(webView);
-        return win;
-      }
-      win = this.createProspectFormWin();
-      return win;
     };
     UI.prototype.createSearchWindow = function() {
       var search, self, tableView, win;

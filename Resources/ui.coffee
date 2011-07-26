@@ -9,7 +9,6 @@ class UI
     tabs = Ti.UI.createTabGroup()
     
     # Create main windows
-    add = @createAddWindow()
     search = @createSearchWindow()
     #nearby = @createNearbyWindow()
     stats = @createStatsWindow()
@@ -19,11 +18,7 @@ class UI
     # Create main tabs
     listsTab = shl.listsTab.tab
     starredTab = shl.starredTab.tab
-    addTab = Ti.UI.createTab({
-      title: 'Add',
-      window: add,
-      icon: 'images/13-plus.png'
-    })
+    addTab = shl.addTab.tab
     searchTab = Ti.UI.createTab({
       title: 'Search',
       window: search,
@@ -65,22 +60,6 @@ class UI
     @tabs = tabs
     
     return tabs
-  
-  createAddWindow : () ->
-    if @isAndroid
-      win = Ti.UI.createWindow({
-        title: 'Add Prospect'
-      })
-      webView = Ti.UI.createWebView({
-        url: 'addProspect.html'
-      })
-      Ti.App.addEventListener('webToTi', (e) ->
-        Ti.API.info('webToTi Sent: ' + JSON.stringify(e))
-      )
-      win.add(webView)
-      return win
-    win = @createProspectFormWin()
-    return win
   
   createSearchWindow : () ->
     self = this
