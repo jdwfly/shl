@@ -9,8 +9,6 @@ class UI
     tabs = Ti.UI.createTabGroup()
     
     # Create main windows
-    #lists = @createListsWindow()
-    starred = @createStarredWindow()
     add = @createAddWindow()
     search = @createSearchWindow()
     #nearby = @createNearbyWindow()
@@ -20,11 +18,7 @@ class UI
     
     # Create main tabs
     listsTab = shl.listsTab.tab
-    starredTab = Ti.UI.createTab({
-      title: 'Starred',
-      window: starred,
-      icon: 'images/28-star.png'
-    })
+    starredTab = shl.starredTab.tab
     addTab = Ti.UI.createTab({
       title: 'Add',
       window: add,
@@ -71,27 +65,6 @@ class UI
     @tabs = tabs
     
     return tabs
-  
-  createStarredWindow : () ->
-    win = Ti.UI.createWindow({
-      title: 'Starred'
-    })
-    starList = shl.List.find(1)
-    prospects = starList.getProspectList()
-    Ti.API.info('prospects = ' + prospects)
-    tableView = @createProspectTableView(prospects)
-    win.addEventListener('click', (e) ->
-      dataSourceString = e.source + ''
-      if dataSourceString.indexOf('TiUIImageView') isnt -1
-        win.fireEvent('focus')
-        return true
-    )
-    win.add(tableView)
-    win.addEventListener('focus', (e) ->
-      prospects = starList.getProspectList()
-      tableView.updateProspects(prospects)
-    )
-    return win
   
   createAddWindow : () ->
     if @isAndroid

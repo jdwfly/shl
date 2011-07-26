@@ -12,18 +12,13 @@
       this.platform = Ti.Platform.name;
     }
     UI.prototype.createApplicationTabGroup = function() {
-      var add, addTab, listsTab, search, searchTab, starred, starredTab, stats, statsTab, tabs;
+      var add, addTab, listsTab, search, searchTab, starredTab, stats, statsTab, tabs;
       tabs = Ti.UI.createTabGroup();
-      starred = this.createStarredWindow();
       add = this.createAddWindow();
       search = this.createSearchWindow();
       stats = this.createStatsWindow();
       listsTab = shl.listsTab.tab;
-      starredTab = Ti.UI.createTab({
-        title: 'Starred',
-        window: starred,
-        icon: 'images/28-star.png'
-      });
+      starredTab = shl.starredTab.tab;
       addTab = Ti.UI.createTab({
         title: 'Add',
         window: add,
@@ -66,30 +61,6 @@
       });
       this.tabs = tabs;
       return tabs;
-    };
-    UI.prototype.createStarredWindow = function() {
-      var prospects, starList, tableView, win;
-      win = Ti.UI.createWindow({
-        title: 'Starred'
-      });
-      starList = shl.List.find(1);
-      prospects = starList.getProspectList();
-      Ti.API.info('prospects = ' + prospects);
-      tableView = this.createProspectTableView(prospects);
-      win.addEventListener('click', function(e) {
-        var dataSourceString;
-        dataSourceString = e.source + '';
-        if (dataSourceString.indexOf('TiUIImageView') !== -1) {
-          win.fireEvent('focus');
-          return true;
-        }
-      });
-      win.add(tableView);
-      win.addEventListener('focus', function(e) {
-        prospects = starList.getProspectList();
-        return tableView.updateProspects(prospects);
-      });
-      return win;
     };
     UI.prototype.createAddWindow = function() {
       var webView, win;

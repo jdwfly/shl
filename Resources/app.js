@@ -7,6 +7,7 @@ Ti.include('helpers.js');
 Ti.include('db.js');
 Ti.include('ui.js');
 Ti.include('ui.liststab.js');
+Ti.include('ui.starredtab.js');
 
 shl.ui.createApplicationTabGroup();
 
