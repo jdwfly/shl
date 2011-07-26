@@ -10,6 +10,7 @@ Ti.include('ui.liststab.js');
 Ti.include('ui.starredtab.js');
 Ti.include('ui.addtab.js');
 Ti.include('ui.searchtab.js');
+Ti.include('ui.statstab.js');
 
 shl.ui.createApplicationTabGroup();
 
