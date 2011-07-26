@@ -50,7 +50,7 @@ class ListsTab
     
   createListTableView : (lists) ->
     self = this
-    data = @processListData(lists)
+    data = shl.ui.processListData(lists)
     tableView = Ti.UI.createTableView({
       data:data,
       moveable: true
@@ -149,7 +149,7 @@ class ListsTab
             prospects = currentList.getProspectList()
             listWin.setRightNavButton(listedit)
             listview.editing = false
-          data = self.processProspectData(prospects)
+          data = shl.ui.processProspectData(prospects)
           listview.setData(data)
         )
       )
@@ -158,9 +158,9 @@ class ListsTab
         query = shl.aLists[e.row.title].query
         prospects = shl.Prospect.find(shl.aLists[e.row.title].query)
         Ti.API.info('prospects = ' + prospects.toJSON())
-        listview = self.createProspectTableView(prospects)
+        listview = shl.ui.createProspectTableView(prospects)
         listWin.add(listview)
-        self.tabs.activeTab.open(listWin)
+        shl.ui.tabs.activeTab.open(listWin)
       else
         listWin.title = e.row.title
         currentList = shl.List.find(e.row.listID)
@@ -169,7 +169,7 @@ class ListsTab
         Ti.API.info('currentList = ' + JSON.stringify(ActiveRecord))
         prospects = currentList.getProspectList()
         Ti.API.info('prospects = ' + JSON.stringify(prospects))
-        listview = self.createProspectTableView(prospects)
+        listview = shl.ui.createProspectTableView(prospects)
         listview.deleteButtonTitle = 'Remove'
         listview.editable = true
         listview.allowsSelectionDuringEditing = true
@@ -210,7 +210,7 @@ class ListsTab
             top : 6
           })
           addBtn.addEventListener('click', () ->
-            addProspectsWin = self.createAddProspectsWindow(e.row.listID)
+            addProspectsWin = shl.ui.createAddProspectsWindow(e.row.listID)
             addProspectsWin.open({
               modal:true,
               modalTransitionStyle: Ti.UI.iPhone.MODAL_TRANSITION_STYLE_COVER_VERTICAL,
@@ -240,7 +240,7 @@ class ListsTab
                 prospects = currentList.getProspectList()
                 listWin.setRightNavButton(listedit)
                 listview.editing = false
-                data = self.processProspectData(prospects)
+                data = shl.ui.processProspectData(prospects)
                 listview.setData(data)
             )
             a.show()
@@ -291,59 +291,12 @@ class ListsTab
         )
         listWin.setRightNavButton(listedit)
         
-        self.tabs.activeTab.open(listWin)
+        shl.ui.tabs.activeTab.open(listWin)
     )
     tableView.updateLists = (lists) ->
-      data = self.processListData(lists)
+      data = shl.ui.processListData(lists)
       @setData(data)
     
     return tableView
-    
-  processListData : (lists) ->
-    data = for i in lists
-      row = Ti.UI.createTableViewRow({
-        height: 45,
-        hasChild: true,
-        title: i.name,
-        listID: i.id,
-        editable: false,
-        moveable: true
-      })
-      if shl.aLists[i.name]?
-        listcount = shl.Prospect.count(shl.aLists[i.name].query)
-      else
-        currentList = shl.List.find(i.id)
-        listcount = currentList.getProspectCount()
-      countView = Ti.UI.createLabel({
-        text: listcount,
-        #backgroundImage:'/images/count-bg.png',
-        fontSize: 12,
-        height: 21,
-        width: 36,
-        #top: 5,
-        textAlign: 'center',
-        right: 5,
-        color: '#616161'
-      })
-      row.add(countView)
-      row
-    addCustom = Ti.UI.createTableViewRow({
-      height: 45,
-      title: 'Create Custom List...',
-      listID: 'custom',
-      editable: false,
-      moveable: false
-    })
-    data.push(addCustom)
-    viewMore = Ti.UI.createTableViewRow({
-      height: 45,
-      title: 'View All Lists',
-      listID: 'more',
-      editable: false,
-      moveable: false,
-      name: 'more'
-    })
-    data.push(viewMore)
-    return data
     
 shl.listsTab = new ListsTab

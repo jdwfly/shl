@@ -58,7 +58,7 @@
     ListsTab.prototype.createListTableView = function(lists) {
       var data, self, tableView;
       self = this;
-      data = this.processListData(lists);
+      data = shl.ui.processListData(lists);
       tableView = Ti.UI.createTableView({
         data: data,
         moveable: true
@@ -164,7 +164,7 @@
               listWin.setRightNavButton(listedit);
               listview.editing = false;
             }
-            data = self.processProspectData(prospects);
+            data = shl.ui.processProspectData(prospects);
             return listview.setData(data);
           });
         });
@@ -173,9 +173,9 @@
           query = shl.aLists[e.row.title].query;
           prospects = shl.Prospect.find(shl.aLists[e.row.title].query);
           Ti.API.info('prospects = ' + prospects.toJSON());
-          listview = self.createProspectTableView(prospects);
+          listview = shl.ui.createProspectTableView(prospects);
           listWin.add(listview);
-          return self.tabs.activeTab.open(listWin);
+          return shl.ui.tabs.activeTab.open(listWin);
         } else {
           listWin.title = e.row.title;
           currentList = shl.List.find(e.row.listID);
@@ -183,7 +183,7 @@
           Ti.API.info('currentList = ' + JSON.stringify(ActiveRecord));
           prospects = currentList.getProspectList();
           Ti.API.info('prospects = ' + JSON.stringify(prospects));
-          listview = self.createProspectTableView(prospects);
+          listview = shl.ui.createProspectTableView(prospects);
           listview.deleteButtonTitle = 'Remove';
           listview.editable = true;
           listview.allowsSelectionDuringEditing = true;
@@ -226,7 +226,7 @@
             });
             addBtn.addEventListener('click', function() {
               var addProspectsWin;
-              addProspectsWin = self.createAddProspectsWindow(e.row.listID);
+              addProspectsWin = shl.ui.createAddProspectsWindow(e.row.listID);
               return addProspectsWin.open({
                 modal: true,
                 modalTransitionStyle: Ti.UI.iPhone.MODAL_TRANSITION_STYLE_COVER_VERTICAL,
@@ -260,7 +260,7 @@
                   prospects = currentList.getProspectList();
                   listWin.setRightNavButton(listedit);
                   listview.editing = false;
-                  data = self.processProspectData(prospects);
+                  data = shl.ui.processProspectData(prospects);
                   return listview.setData(data);
                 }
               });
@@ -318,68 +318,14 @@
             });
           });
           listWin.setRightNavButton(listedit);
-          return self.tabs.activeTab.open(listWin);
+          return shl.ui.tabs.activeTab.open(listWin);
         }
       });
       tableView.updateLists = function(lists) {
-        data = self.processListData(lists);
+        data = shl.ui.processListData(lists);
         return this.setData(data);
       };
       return tableView;
-    };
-    ListsTab.prototype.processListData = function(lists) {
-      var addCustom, countView, currentList, data, i, listcount, row, viewMore;
-      data = (function() {
-        var _i, _len, _results;
-        _results = [];
-        for (_i = 0, _len = lists.length; _i < _len; _i++) {
-          i = lists[_i];
-          row = Ti.UI.createTableViewRow({
-            height: 45,
-            hasChild: true,
-            title: i.name,
-            listID: i.id,
-            editable: false,
-            moveable: true
-          });
-          if (shl.aLists[i.name] != null) {
-            listcount = shl.Prospect.count(shl.aLists[i.name].query);
-          } else {
-            currentList = shl.List.find(i.id);
-            listcount = currentList.getProspectCount();
-          }
-          countView = Ti.UI.createLabel({
-            text: listcount,
-            fontSize: 12,
-            height: 21,
-            width: 36,
-            textAlign: 'center',
-            right: 5,
-            color: '#616161'
-          });
-          row.add(countView);
-          _results.push(row);
-        }
-        return _results;
-      })();
-      addCustom = Ti.UI.createTableViewRow({
-        height: 45,
-        title: 'Create Custom List...',
-        listID: 'custom',
-        editable: false,
-        moveable: false
-      });
-      data.push(addCustom);
-      viewMore = Ti.UI.createTableViewRow({
-        height: 45,
-        title: 'View All Lists',
-        listID: 'more',
-        editable: false,
-        moveable: false,
-        name: 'more'
-      });
-      data.push(viewMore);
-      return data;
     };
     return ListsTab;
   })();
