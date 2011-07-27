@@ -1220,8 +1220,24 @@ class UI
     s7.add(attendedRow)
     s7.add(enrolledRow)
     s7.addEventListener('click', (e) ->
-      if e.row.hasCheck then e.row.hasCheck = false else e.row.hasCheck = true
+      # Stop the event bubbling for Android
+      if !self.isAndroid
+        if e.row.hasCheck then e.row.hasCheck = false else e.row.hasCheck = true
     )
+    # Android will only fire the click event if it is on the rows not the section
+    if @isAndroid
+      prevSavedRow.addEventListener('click', (e) ->
+        if e.row.hasCheck then e.row.hasCheck = false else e.row.hasCheck = true
+      )
+      prevBaptRow.addEventListener('click', (e) ->
+        if e.row.hasCheck then e.row.hasCheck = false else e.row.hasCheck = true
+      )
+      attendedRow.addEventListener('click', (e) ->
+        if e.row.hasCheck then e.row.hasCheck = false else e.row.hasCheck = true
+      )
+      enrolledRow.addEventListener('click', (e) ->
+        if e.row.hasCheck then e.row.hasCheck = false else e.row.hasCheck = true
+      )
     data.push(s7)
     
     b = Ti.UI.createButton({

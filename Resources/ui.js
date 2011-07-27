@@ -1342,12 +1342,44 @@
       s7.add(attendedRow);
       s7.add(enrolledRow);
       s7.addEventListener('click', function(e) {
-        if (e.row.hasCheck) {
-          return e.row.hasCheck = false;
-        } else {
-          return e.row.hasCheck = true;
+        if (!self.isAndroid) {
+          if (e.row.hasCheck) {
+            return e.row.hasCheck = false;
+          } else {
+            return e.row.hasCheck = true;
+          }
         }
       });
+      if (this.isAndroid) {
+        prevSavedRow.addEventListener('click', function(e) {
+          if (e.row.hasCheck) {
+            return e.row.hasCheck = false;
+          } else {
+            return e.row.hasCheck = true;
+          }
+        });
+        prevBaptRow.addEventListener('click', function(e) {
+          if (e.row.hasCheck) {
+            return e.row.hasCheck = false;
+          } else {
+            return e.row.hasCheck = true;
+          }
+        });
+        attendedRow.addEventListener('click', function(e) {
+          if (e.row.hasCheck) {
+            return e.row.hasCheck = false;
+          } else {
+            return e.row.hasCheck = true;
+          }
+        });
+        enrolledRow.addEventListener('click', function(e) {
+          if (e.row.hasCheck) {
+            return e.row.hasCheck = false;
+          } else {
+            return e.row.hasCheck = true;
+          }
+        });
+      }
       data.push(s7);
       b = Ti.UI.createButton({
         systemButton: Ti.UI.iPhone.SystemButton.SAVE
