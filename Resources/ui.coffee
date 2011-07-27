@@ -45,114 +45,6 @@ class UI
     @tabs = tabs
     return tabs
   
-  createAddProspectsWindow : (listId) ->
-    self = this
-    win = Ti.UI.createWindow({
-      title : 'Add Prospects'
-    })
-    doneBtn = Ti.UI.createButton({
-      title:'Done',
-      width:100,
-      height:30
-    })
-    doneBtn.addEventListener('click', () ->
-      win.close()
-    )
-    win.setRightNavButton(doneBtn)
-    prospects = shl.Prospect.find()
-    if prospects.length < 1
-      return win
-    createRow = (prospect)->
-      row = Ti.UI.createTableViewRow({
-        height: 70
-      })
-      contentTitle = Ti.UI.createLabel({
-        text: prospect.formatName(),
-        font: {fontWeight: 'bold', fontSize:18},
-        height: 30,
-        top : 5,
-        width: 'auto',
-        left: 5
-      })
-      addressLabel = Ti.UI.createLabel({
-        text: prospect.formatAddress(),
-        font: {fontWeight: 'normal', fontSize: 12},
-        height: 35,
-        width: 'auto',
-        height: 'auto',
-        top: 33,
-        left: 5,
-        bottom: 5
-      })
-      row.add(contentTitle)
-      row.add(addressLabel)
-      row.prospect = prospect
-      addBtn = Ti.UI.createButton({
-        backgroundImage:'/images/addDefault.png',
-        height:27,
-        width:27,
-        right:10,
-        top: 20
-      })
-      addBtn.addEventListener('click', () ->
-        Ti.API.info(prospect)
-        shl.Listing.create {
-          list_id : listId,
-          prospect_id : prospect.id
-        }
-        row.backgroundColor = '#AAAAAA'
-        setTimeout( () ->
-          deleteBtn.show()
-        ,100)
-        addBtn.hide()
-        contentTitle.animate({left:50, duration:100})
-        addressLabel.animate({left:50, duration:100})
-      )
-      row.add(addBtn)
-      deleteBtn = Ti.UI.createButton({
-        backgroundImage:'/images/minusDefault.png',
-        height:27,
-        width:27,
-        left:10,
-        top: 20,
-        visible:false
-      })
-      deleteBtn.addEventListener('click', () ->
-        todelete = shl.Listing.find({
-          where : {
-            prospect_id : prospect.id,
-            list_id : listId
-          }
-        })
-        for listing in todelete
-          listing.destroy()
-        row.backgroundColor = '#ffffff'
-        deleteBtn.hide()
-        addBtn.show()
-        contentTitle.animate({left:10, duration:100})
-        addressLabel.animate({left:10, duration:100})
-      )
-      row.add(deleteBtn)
-      currentList = shl.List.find(listId)
-      prospectsList = currentList.getProspectList()
-      listMembers = for prosp in prospectsList
-        prosp.id
-      if prospect.id in listMembers
-        deleteBtn.visible = true
-        addBtn.visible = false
-        contentTitle.left = 55
-        addressLabel.left = 55
-      row
-    
-    data = for prospect in prospects
-      createRow(prospect)
-    
-    tableView = Ti.UI.createTableView({data:data})
-    
-    win.add(tableView)
-    #TODO set this diferently for Android
-    return win
-  
   createProspectTableView : (prospects) ->
     self = this
     data = @processProspectData(prospects)
@@ -950,12 +842,13 @@ class UI
     })
     fname = Ti.UI.createTextField({
       height:40,
+      width: 280,
       top:0,
       left: 10,
       keyboardType:Titanium.UI.KEYBOARD_DEFAULT,
       returnKeyType:Titanium.UI.RETURNKEY_DONE,
       borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
-      hintText:L('First Name Male'),
+      hintText:'First Name Male',
       value: if prospect? then prospect.firstMale else ''
     })
     fnameRow.add(fname)
@@ -967,20 +860,15 @@ class UI
       zindex: -10
     })
     fnameRow.add(nameSep)
-    # Second Name Field
-    #snameRow = Ti.UI.createTableViewRow({
-    #  height: 40,
-    #  layout: "vertical",
-    #  selectionStyle: "none"
-    #})
     sname = Ti.UI.createTextField({
       height: 40,
+      width: 280,
       top: -40,
       left: 10,
       keyboardType:Titanium.UI.KEYBOARD_DEFAULT,
       returnKeyType:Titanium.UI.RETURNKEY_DONE,
       borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
-      hintText:L('First Name Female'),
+      hintText: 'First Name Female',
       value: if prospect? then prospect.firstFemale else ''
     })
     fnameRow.add(sname)
@@ -995,11 +883,12 @@ class UI
     })
     lname = Ti.UI.createTextField({
       height:40,
+      width: 280,
       left: 10,
       keyboardType:Titanium.UI.KEYBOARD_DEFAULT,
       returnKeyType:Titanium.UI.RETURNKEY_DONE,
       borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
-      hintText:L('Last Name'),
+      hintText: 'Last Name',
       value: if prospect? then prospect.last else ''
     })
     lnameRow.add(lname)
@@ -1022,7 +911,6 @@ class UI
         width: 302,
         index: 0
       })
-      # TODO : Create function to add/remove rows on click
       genderView.addEventListener('click', (e) ->
         if @index == 0
           nameSep.visible = false
@@ -1053,6 +941,9 @@ class UI
           sname.animate({visible:true})
       )
       genderView.add(gender)
+    else if @isAndroid
+      fnameRow.height = 80
+      sname.top = 0
     if fname.value != '' and sname.value != ''
       fnameRow.height = 80
       fname.animate({visible:true},()->
@@ -1073,7 +964,6 @@ class UI
     s1.footerView = genderView
     data.push(s1)
     
-    
     # TODO add spacing to front of fields
     s3 = Ti.UI.createTableViewSection()
     streetRow = Ti.UI.createTableViewRow({
@@ -1083,11 +973,12 @@ class UI
     })
     street = Ti.UI.createTextField({
       height:40,
+      width: 280,
       left: 10,
       keyboardType:Titanium.UI.KEYBOARD_DEFAULT,
       returnKeyType:Titanium.UI.RETURNKEY_DONE,
       borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
-      hintText:L('Street'),
+      hintText: 'Street',
       value: if prospect? then prospect.street else ''
     })
     streetRow.add(street)
@@ -1104,7 +995,7 @@ class UI
       keyboardType:Titanium.UI.KEYBOARD_DEFAULT,
       returnKeyType:Titanium.UI.RETURNKEY_DONE,
       borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
-      hintText:L('City'),
+      hintText: 'City',
       value: if prospect? then prospect.city else ''
     })
     sep1 = Ti.UI.createTextField({
@@ -1120,7 +1011,7 @@ class UI
       keyboardType:Titanium.UI.KEYBOARD_DEFAULT,
       returnKeyType:Titanium.UI.RETURNKEY_DONE,
       borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
-      hintText:L('State'),
+      hintText: 'State',
       value: if prospect? then prospect.state else ''
     })
     citystateRow.add(city)
@@ -1139,7 +1030,7 @@ class UI
       keyboardType:Titanium.UI.KEYBOARD_NUMBERS_PUNCTUATION,
       returnKeyType:Titanium.UI.RETURNKEY_DONE,
       borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
-      hintText:L('Zip'),
+      hintText: 'Zip',
       value: if prospect? then prospect.zip else ''
     })
     sep2 = Ti.UI.createTextField({
@@ -1156,7 +1047,7 @@ class UI
       keyboardType:Titanium.UI.KEYBOARD_DEFAULT,
       returnKeyType:Titanium.UI.RETURNKEY_DONE,
       borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
-      hintText:L('Country'),
+      hintText: 'Country',
       value: if prospect? then prospect.country else ''
     })
     zipcountryRow.add(zip)
@@ -1247,7 +1138,7 @@ class UI
       borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
       autocapitalization: Titanium.UI.TEXT_AUTOCAPITALIZATION_NONE,
       autocorrect: false,
-      hintText:L('Email'),
+      hintText: 'Email',
       value: if prospect? then prospect.email else ''
     })
     emailRow.add(email)
@@ -1275,13 +1166,13 @@ class UI
     })
     # TODO : Change to a picker
     initialPicker = Ti.UI.createTextField({
-      height: 45,
+      height: 40,
       width: 120,
       left: 7,
       keyboardType:Titanium.UI.KEYBOARD_NUMBERS_PUNCTUATION,
       returnKeyType:Titanium.UI.RETURNKEY_DONE,
       borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
-      hintText:L('1/10/2011'),
+      hintText: '1/10/2011',
       value: if prospect? then date('n/j/Y', prospect.firstContactDate) else date('n/j/Y')
     })
     initialContactRow.add(initContactLabel)
@@ -1300,7 +1191,7 @@ class UI
       keyboardType:Titanium.UI.KEYBOARD_DEFAULT,
       returnKeyType:Titanium.UI.RETURNKEY_DONE,
       borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
-      hintText:L('Point of Contact'),
+      hintText: 'Point of Contact',
       value: if prospect? then prospect.firstContactPoint else ''
     })
     pocRow.add(pocTextfield)
@@ -1333,125 +1224,135 @@ class UI
     )
     data.push(s7)
     
-    if @platform is 'iPhone OS'
-      b = Ti.UI.createButton({
-        systemButton:Ti.UI.iPhone.SystemButton.SAVE
-      })
-      b.addEventListener('click', () ->
-        # Validation code
-        emailPattern = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-        if email.value isnt '' and not email.value.match(emailPattern)
-          alert('Invalid email address.')
-          return false
-        datePattern = /^\d{1,2}\/\d{1,2}\/\d{4}$/
-        if initialPicker.value isnt '' and not initialPicker.value.match(datePattern)
-          alert('Invalid date format. Please format date MM/DD/YYYY')
-          return false
-        
-        if prospect?
-          # Update the existing prospect
-          #alert(prevSavedRow.hasCheck)
-          shl.Prospect.update(prospect.id,{
-            last: lname.value,
-            firstMale: fname.value,
-            firstFemale: sname.value,
-            street: street.value,
-            city: city.value,
-            state: state.value,
-            zip: zip.value,
-            country: country.value,
-            phoneHome: homeText.value,
-            phoneMobile: mobileText.value,
-            email: email.value,
-            firstContactDate: strtotime(initialPicker.value),
-            firstContactPoint: pocTextfield.value,
-            previouslySaved: if prevSavedRow.hasCheck then "1" else "0",
-            previouslyBaptized: if prevBaptRow.hasCheck then "1" else "0",
-            attended: if attendedRow.hasCheck then "1" else "0",
-            sundaySchool: if enrolledRow.hasCheck then "1" else "0"
-          })
-          win.exitValue = true
-          win.close()
-        else
-          # Create an object to save to the database
-          createdProspect = shl.Prospect.create({
-            last: lname.value,
-            firstMale: fname.value,
-            firstFemale: sname.value,
-            street: street.value,
-            city: city.value,
-            state: state.value,
-            zip: zip.value,
-            country: country.value,
-            phoneHome: homeText.value,
-            phoneMobile: mobileText.value,
-            email: email.value,
-            firstContactDate: strtotime(initialPicker.value),
-            firstContactPoint: pocTextfield.value,
-            previouslySaved: if prevSavedRow.hasCheck then "1" else "0",
-            previouslyBaptized: if prevBaptRow.hasCheck then "1" else "0",
-            attended: if attendedRow.hasCheck then "1" else "0",
-            sundaySchool: if enrolledRow.hasCheck then "1" else "0"
-          })
-          Ti.API.info(createdProspect.toJSON())
-          # Clear all values
-          fname.value = ''
-          fname.blur()
-          sname.value = ''
-          sname.blur()
-          lname.value = ''
-          lname.blur()
-          street.value = ''
-          street.blur()
-          city.value = ''
-          city.blur()
-          state.value = ''
-          state.blur()
-          zip.value = ''
-          zip.blur()
-          country.value = ''
-          country.blur()
-          homeText.value = ''
-          homeText.blur()
-          mobileText.value = ''
-          mobileText.blur()
-          email.value = ''
-          email.blur()
-          initialPicker.value = date('n/j/Y')
-          initialPicker.blur()
-          pocTextfield.value = ''
-          pocTextfield.blur()
-          tableView.scrollToTop()
-          prevSavedRow.hasCheck = false
-          prevBaptRow.hasCheck = false
-          attendedRow.hasCheck = false
-          enrolledRow.hasCheck = false
-          # TODO : open modal window that shows the prospect
-          viewProspectWin = self.createProspectViewWindow(createdProspect)
-          closeButton = Ti.UI.createButton({
-            systemButton:Ti.UI.iPhone.SystemButton.DONE
-          })
-          closeButton.addEventListener('click', (e) ->
-            viewProspectWin.close()
-          )
-          viewProspectWin.setRightNavButton(closeButton)
-          self.tabs.activeTab.open(viewProspectWin)
-      )
-      win.setRightNavButton(b)
+    b = Ti.UI.createButton({
+      systemButton:Ti.UI.iPhone.SystemButton.SAVE
+    })
+    b.addEventListener('click', () ->
+      # Validation code
+      emailPattern = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+      if email.value isnt '' and not email.value.match(emailPattern)
+        alert('Invalid email address.')
+        return false
+      datePattern = /^\d{1,2}\/\d{1,2}\/\d{4}$/
+      if initialPicker.value isnt '' and not initialPicker.value.match(datePattern)
+        alert('Invalid date format. Please format date MM/DD/YYYY')
+        return false
+      
       if prospect?
-        cancel = Ti.UI.createButton({
-          systemButton:Ti.UI.iPhone.SystemButton.CANCEL
+        # Update the existing prospect
+        #alert(prevSavedRow.hasCheck)
+        shl.Prospect.update(prospect.id,{
+          last: lname.value,
+          firstMale: fname.value,
+          firstFemale: sname.value,
+          street: street.value,
+          city: city.value,
+          state: state.value,
+          zip: zip.value,
+          country: country.value,
+          phoneHome: homeText.value,
+          phoneMobile: mobileText.value,
+          email: email.value,
+          firstContactDate: strtotime(initialPicker.value),
+          firstContactPoint: pocTextfield.value,
+          previouslySaved: if prevSavedRow.hasCheck then "1" else "0",
+          previouslyBaptized: if prevBaptRow.hasCheck then "1" else "0",
+          attended: if attendedRow.hasCheck then "1" else "0",
+          sundaySchool: if enrolledRow.hasCheck then "1" else "0"
         })
-        cancel.addEventListener('click', (e) ->
-          win.exitValue = false
-          win.close()
+        win.exitValue = true
+        win.close()
+      else
+        # Create an object to save to the database
+        createdProspect = shl.Prospect.create({
+          last: lname.value,
+          firstMale: fname.value,
+          firstFemale: sname.value,
+          street: street.value,
+          city: city.value,
+          state: state.value,
+          zip: zip.value,
+          country: country.value,
+          phoneHome: homeText.value,
+          phoneMobile: mobileText.value,
+          email: email.value,
+          firstContactDate: strtotime(initialPicker.value),
+          firstContactPoint: pocTextfield.value,
+          previouslySaved: if prevSavedRow.hasCheck then "1" else "0",
+          previouslyBaptized: if prevBaptRow.hasCheck then "1" else "0",
+          attended: if attendedRow.hasCheck then "1" else "0",
+          sundaySchool: if enrolledRow.hasCheck then "1" else "0"
+        })
+        Ti.API.info(createdProspect.toJSON())
+        # Clear all values
+        fname.value = ''
+        fname.blur()
+        sname.value = ''
+        sname.blur()
+        lname.value = ''
+        lname.blur()
+        street.value = ''
+        street.blur()
+        city.value = ''
+        city.blur()
+        state.value = ''
+        state.blur()
+        zip.value = ''
+        zip.blur()
+        country.value = ''
+        country.blur()
+        homeText.value = ''
+        homeText.blur()
+        mobileText.value = ''
+        mobileText.blur()
+        email.value = ''
+        email.blur()
+        initialPicker.value = date('n/j/Y')
+        initialPicker.blur()
+        pocTextfield.value = ''
+        pocTextfield.blur()
+        tableView.scrollToTop(0)
+        prevSavedRow.hasCheck = false
+        prevBaptRow.hasCheck = false
+        attendedRow.hasCheck = false
+        enrolledRow.hasCheck = false
+        # TODO : open modal window that shows the prospect
+        viewProspectWin = self.createProspectViewWindow(createdProspect)
+        closeButton = Ti.UI.createButton({
+          systemButton:Ti.UI.iPhone.SystemButton.DONE
+        })
+        closeButton.addEventListener('click', (e) ->
+          viewProspectWin.close()
         )
-        win.setLeftNavButton(cancel)
+        if self.isAndroid
+          # TODO needs a different button
+          Ti.API.info('todo')
+        else
+          viewProspectWin.setRightNavButton(closeButton)
+        self.tabs.activeTab.open(viewProspectWin)
+    )
+    if prospect?
+      cancel = Ti.UI.createButton({
+        systemButton:Ti.UI.iPhone.SystemButton.CANCEL
+      })
+      cancel.addEventListener('click', (e) ->
+        win.exitValue = false
+        win.close()
+      )
+      win.setLeftNavButton(cancel)
     # Finally Make the TableView and add
     tableView = Ti.UI.createTableView({
       data: data,
       style: Titanium.UI.iPhone.TableViewStyle.GROUPED
     })
+    if @isAndroid
+      tableView.backgroundColor = '#181818'
+      b.height = 40
+      b.width = 300
+      b.title = 'Save Prospect'
+      tableView.footerView = b
+    else
+      win.setRightNavButton(b)
     # Add delete button if editing prospect
     if prospect?
       deleteProspectView = Ti.UI.createView({

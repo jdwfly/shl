@@ -1,11 +1,5 @@
 (function() {
   var UI;
-  var __indexOf = Array.prototype.indexOf || function(item) {
-    for (var i = 0, l = this.length; i < l; i++) {
-      if (this[i] === item) return i;
-    }
-    return -1;
-  };
   UI = (function() {
     function UI() {
       this.isAndroid = Ti.Platform.name === 'android' ? true : false;
@@ -46,152 +40,6 @@
       });
       this.tabs = tabs;
       return tabs;
-    };
-    UI.prototype.createAddProspectsWindow = function(listId) {
-      var createRow, data, doneBtn, prospect, prospects, self, tableView, win;
-      self = this;
-      win = Ti.UI.createWindow({
-        title: 'Add Prospects'
-      });
-      doneBtn = Ti.UI.createButton({
-        title: 'Done',
-        width: 100,
-        height: 30
-      });
-      doneBtn.addEventListener('click', function() {
-        return win.close();
-      });
-      win.setRightNavButton(doneBtn);
-      prospects = shl.Prospect.find();
-      if (prospects.length < 1) {
-        return win;
-      }
-      createRow = function(prospect) {
-        var addBtn, addressLabel, contentTitle, currentList, deleteBtn, listMembers, prosp, prospectsList, row, _ref;
-        row = Ti.UI.createTableViewRow({
-          height: 70
-        });
-        contentTitle = Ti.UI.createLabel({
-          text: prospect.formatName(),
-          font: {
-            fontWeight: 'bold',
-            fontSize: 18
-          },
-          height: 30,
-          top: 5,
-          width: 'auto',
-          left: 5
-        });
-        addressLabel = Ti.UI.createLabel({
-          text: prospect.formatAddress(),
-          font: {
-            fontWeight: 'normal',
-            fontSize: 12
-          },
-          height: 35,
-          width: 'auto',
-          height: 'auto',
-          top: 33,
-          left: 5,
-          bottom: 5
-        });
-        row.add(contentTitle);
-        row.add(addressLabel);
-        row.prospect = prospect;
-        addBtn = Ti.UI.createButton({
-          backgroundImage: '/images/addDefault.png',
-          height: 27,
-          width: 27,
-          right: 10,
-          top: 20
-        });
-        addBtn.addEventListener('click', function() {
-          Ti.API.info(prospect);
-          shl.Listing.create({
-            list_id: listId,
-            prospect_id: prospect.id
-          });
-          row.backgroundColor = '#AAAAAA';
-          setTimeout(function() {
-            return deleteBtn.show();
-          }, 100);
-          addBtn.hide();
-          contentTitle.animate({
-            left: 50,
-            duration: 100
-          });
-          return addressLabel.animate({
-            left: 50,
-            duration: 100
-          });
-        });
-        row.add(addBtn);
-        deleteBtn = Ti.UI.createButton({
-          backgroundImage: '/images/minusDefault.png',
-          height: 27,
-          width: 27,
-          left: 10,
-          top: 20,
-          visible: false
-        });
-        deleteBtn.addEventListener('click', function() {
-          var listing, todelete, _i, _len;
-          todelete = shl.Listing.find({
-            where: {
-              prospect_id: prospect.id,
-              list_id: listId
-            }
-          });
-          for (_i = 0, _len = todelete.length; _i < _len; _i++) {
-            listing = todelete[_i];
-            listing.destroy();
-          }
-          row.backgroundColor = '#ffffff';
-          deleteBtn.hide();
-          addBtn.show();
-          contentTitle.animate({
-            left: 10,
-            duration: 100
-          });
-          return addressLabel.animate({
-            left: 10,
-            duration: 100
-          });
-        });
-        row.add(deleteBtn);
-        currentList = shl.List.find(listId);
-        prospectsList = currentList.getProspectList();
-        listMembers = (function() {
-          var _i, _len, _results;
-          _results = [];
-          for (_i = 0, _len = prospectsList.length; _i < _len; _i++) {
-            prosp = prospectsList[_i];
-            _results.push(prosp.id);
-          }
-          return _results;
-        })();
-        if (_ref = prospect.id, __indexOf.call(listMembers, _ref) >= 0) {
-          deleteBtn.visible = true;
-          addBtn.visible = false;
-          contentTitle.left = 55;
-          addressLabel.left = 55;
-        }
-        return row;
-      };
-      data = (function() {
-        var _i, _len, _results;
-        _results = [];
-        for (_i = 0, _len = prospects.length; _i < _len; _i++) {
-          prospect = prospects[_i];
-          _results.push(createRow(prospect));
-        }
-        return _results;
-      })();
-      tableView = Ti.UI.createTableView({
-        data: data
-      });
-      win.add(tableView);
-      return win;
     };
     UI.prototype.createProspectTableView = function(prospects) {
       var data, self, tableView;
@@ -1091,12 +939,13 @@
       });
       fname = Ti.UI.createTextField({
         height: 40,
+        width: 280,
         top: 0,
         left: 10,
         keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
         returnKeyType: Titanium.UI.RETURNKEY_DONE,
         borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
-        hintText: L('First Name Male'),
+        hintText: 'First Name Male',
         value: prospect != null ? prospect.firstMale : ''
       });
       fnameRow.add(fname);
@@ -1109,12 +958,13 @@
       fnameRow.add(nameSep);
       sname = Ti.UI.createTextField({
         height: 40,
+        width: 280,
         top: -40,
         left: 10,
         keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
         returnKeyType: Titanium.UI.RETURNKEY_DONE,
         borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
-        hintText: L('First Name Female'),
+        hintText: 'First Name Female',
         value: prospect != null ? prospect.firstFemale : ''
       });
       fnameRow.add(sname);
@@ -1127,11 +977,12 @@
       });
       lname = Ti.UI.createTextField({
         height: 40,
+        width: 280,
         left: 10,
         keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
         returnKeyType: Titanium.UI.RETURNKEY_DONE,
         borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
-        hintText: L('Last Name'),
+        hintText: 'Last Name',
         value: prospect != null ? prospect.last : ''
       });
       lnameRow.add(lname);
@@ -1200,6 +1051,9 @@
           }
         });
         genderView.add(gender);
+      } else if (this.isAndroid) {
+        fnameRow.height = 80;
+        sname.top = 0;
       }
       if (fname.value !== '' && sname.value !== '') {
         fnameRow.height = 80;
@@ -1240,11 +1094,12 @@
       });
       street = Ti.UI.createTextField({
         height: 40,
+        width: 280,
         left: 10,
         keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
         returnKeyType: Titanium.UI.RETURNKEY_DONE,
         borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
-        hintText: L('Street'),
+        hintText: 'Street',
         value: prospect != null ? prospect.street : ''
       });
       streetRow.add(street);
@@ -1261,7 +1116,7 @@
         keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
         returnKeyType: Titanium.UI.RETURNKEY_DONE,
         borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
-        hintText: L('City'),
+        hintText: 'City',
         value: prospect != null ? prospect.city : ''
       });
       sep1 = Ti.UI.createTextField({
@@ -1277,7 +1132,7 @@
         keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
         returnKeyType: Titanium.UI.RETURNKEY_DONE,
         borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
-        hintText: L('State'),
+        hintText: 'State',
         value: prospect != null ? prospect.state : ''
       });
       citystateRow.add(city);
@@ -1296,7 +1151,7 @@
         keyboardType: Titanium.UI.KEYBOARD_NUMBERS_PUNCTUATION,
         returnKeyType: Titanium.UI.RETURNKEY_DONE,
         borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
-        hintText: L('Zip'),
+        hintText: 'Zip',
         value: prospect != null ? prospect.zip : ''
       });
       sep2 = Ti.UI.createTextField({
@@ -1312,7 +1167,7 @@
         keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
         returnKeyType: Titanium.UI.RETURNKEY_DONE,
         borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
-        hintText: L('Country'),
+        hintText: 'Country',
         value: prospect != null ? prospect.country : ''
       });
       zipcountryRow.add(zip);
@@ -1405,7 +1260,7 @@
         borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
         autocapitalization: Titanium.UI.TEXT_AUTOCAPITALIZATION_NONE,
         autocorrect: false,
-        hintText: L('Email'),
+        hintText: 'Email',
         value: prospect != null ? prospect.email : ''
       });
       emailRow.add(email);
@@ -1434,13 +1289,13 @@
         backgroundColor: '#cccccc'
       });
       initialPicker = Ti.UI.createTextField({
-        height: 45,
+        height: 40,
         width: 120,
         left: 7,
         keyboardType: Titanium.UI.KEYBOARD_NUMBERS_PUNCTUATION,
         returnKeyType: Titanium.UI.RETURNKEY_DONE,
         borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
-        hintText: L('1/10/2011'),
+        hintText: '1/10/2011',
         value: prospect != null ? date('n/j/Y', prospect.firstContactDate) : date('n/j/Y')
       });
       initialContactRow.add(initContactLabel);
@@ -1459,7 +1314,7 @@
         keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
         returnKeyType: Titanium.UI.RETURNKEY_DONE,
         borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
-        hintText: L('Point of Contact'),
+        hintText: 'Point of Contact',
         value: prospect != null ? prospect.firstContactPoint : ''
       });
       pocRow.add(pocTextfield);
@@ -1494,123 +1349,133 @@
         }
       });
       data.push(s7);
-      if (this.platform === 'iPhone OS') {
-        b = Ti.UI.createButton({
-          systemButton: Ti.UI.iPhone.SystemButton.SAVE
-        });
-        b.addEventListener('click', function() {
-          var closeButton, createdProspect, datePattern, emailPattern, viewProspectWin;
-          emailPattern = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-          if (email.value !== '' && !email.value.match(emailPattern)) {
-            alert('Invalid email address.');
-            return false;
-          }
-          datePattern = /^\d{1,2}\/\d{1,2}\/\d{4}$/;
-          if (initialPicker.value !== '' && !initialPicker.value.match(datePattern)) {
-            alert('Invalid date format. Please format date MM/DD/YYYY');
-            return false;
-          }
-          if (prospect != null) {
-            shl.Prospect.update(prospect.id, {
-              last: lname.value,
-              firstMale: fname.value,
-              firstFemale: sname.value,
-              street: street.value,
-              city: city.value,
-              state: state.value,
-              zip: zip.value,
-              country: country.value,
-              phoneHome: homeText.value,
-              phoneMobile: mobileText.value,
-              email: email.value,
-              firstContactDate: strtotime(initialPicker.value),
-              firstContactPoint: pocTextfield.value,
-              previouslySaved: prevSavedRow.hasCheck ? "1" : "0",
-              previouslyBaptized: prevBaptRow.hasCheck ? "1" : "0",
-              attended: attendedRow.hasCheck ? "1" : "0",
-              sundaySchool: enrolledRow.hasCheck ? "1" : "0"
-            });
-            win.exitValue = true;
-            return win.close();
-          } else {
-            createdProspect = shl.Prospect.create({
-              last: lname.value,
-              firstMale: fname.value,
-              firstFemale: sname.value,
-              street: street.value,
-              city: city.value,
-              state: state.value,
-              zip: zip.value,
-              country: country.value,
-              phoneHome: homeText.value,
-              phoneMobile: mobileText.value,
-              email: email.value,
-              firstContactDate: strtotime(initialPicker.value),
-              firstContactPoint: pocTextfield.value,
-              previouslySaved: prevSavedRow.hasCheck ? "1" : "0",
-              previouslyBaptized: prevBaptRow.hasCheck ? "1" : "0",
-              attended: attendedRow.hasCheck ? "1" : "0",
-              sundaySchool: enrolledRow.hasCheck ? "1" : "0"
-            });
-            Ti.API.info(createdProspect.toJSON());
-            fname.value = '';
-            fname.blur();
-            sname.value = '';
-            sname.blur();
-            lname.value = '';
-            lname.blur();
-            street.value = '';
-            street.blur();
-            city.value = '';
-            city.blur();
-            state.value = '';
-            state.blur();
-            zip.value = '';
-            zip.blur();
-            country.value = '';
-            country.blur();
-            homeText.value = '';
-            homeText.blur();
-            mobileText.value = '';
-            mobileText.blur();
-            email.value = '';
-            email.blur();
-            initialPicker.value = date('n/j/Y');
-            initialPicker.blur();
-            pocTextfield.value = '';
-            pocTextfield.blur();
-            tableView.scrollToTop();
-            prevSavedRow.hasCheck = false;
-            prevBaptRow.hasCheck = false;
-            attendedRow.hasCheck = false;
-            enrolledRow.hasCheck = false;
-            viewProspectWin = self.createProspectViewWindow(createdProspect);
-            closeButton = Ti.UI.createButton({
-              systemButton: Ti.UI.iPhone.SystemButton.DONE
-            });
-            closeButton.addEventListener('click', function(e) {
-              return viewProspectWin.close();
-            });
-            viewProspectWin.setRightNavButton(closeButton);
-            return self.tabs.activeTab.open(viewProspectWin);
-          }
-        });
-        win.setRightNavButton(b);
-        if (prospect != null) {
-          cancel = Ti.UI.createButton({
-            systemButton: Ti.UI.iPhone.SystemButton.CANCEL
-          });
-          cancel.addEventListener('click', function(e) {
-            win.exitValue = false;
-            return win.close();
-          });
-          win.setLeftNavButton(cancel);
+      b = Ti.UI.createButton({
+        systemButton: Ti.UI.iPhone.SystemButton.SAVE
+      });
+      b.addEventListener('click', function() {
+        var closeButton, createdProspect, datePattern, emailPattern, viewProspectWin;
+        emailPattern = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        if (email.value !== '' && !email.value.match(emailPattern)) {
+          alert('Invalid email address.');
+          return false;
         }
+        datePattern = /^\d{1,2}\/\d{1,2}\/\d{4}$/;
+        if (initialPicker.value !== '' && !initialPicker.value.match(datePattern)) {
+          alert('Invalid date format. Please format date MM/DD/YYYY');
+          return false;
+        }
+        if (prospect != null) {
+          shl.Prospect.update(prospect.id, {
+            last: lname.value,
+            firstMale: fname.value,
+            firstFemale: sname.value,
+            street: street.value,
+            city: city.value,
+            state: state.value,
+            zip: zip.value,
+            country: country.value,
+            phoneHome: homeText.value,
+            phoneMobile: mobileText.value,
+            email: email.value,
+            firstContactDate: strtotime(initialPicker.value),
+            firstContactPoint: pocTextfield.value,
+            previouslySaved: prevSavedRow.hasCheck ? "1" : "0",
+            previouslyBaptized: prevBaptRow.hasCheck ? "1" : "0",
+            attended: attendedRow.hasCheck ? "1" : "0",
+            sundaySchool: enrolledRow.hasCheck ? "1" : "0"
+          });
+          win.exitValue = true;
+          return win.close();
+        } else {
+          createdProspect = shl.Prospect.create({
+            last: lname.value,
+            firstMale: fname.value,
+            firstFemale: sname.value,
+            street: street.value,
+            city: city.value,
+            state: state.value,
+            zip: zip.value,
+            country: country.value,
+            phoneHome: homeText.value,
+            phoneMobile: mobileText.value,
+            email: email.value,
+            firstContactDate: strtotime(initialPicker.value),
+            firstContactPoint: pocTextfield.value,
+            previouslySaved: prevSavedRow.hasCheck ? "1" : "0",
+            previouslyBaptized: prevBaptRow.hasCheck ? "1" : "0",
+            attended: attendedRow.hasCheck ? "1" : "0",
+            sundaySchool: enrolledRow.hasCheck ? "1" : "0"
+          });
+          Ti.API.info(createdProspect.toJSON());
+          fname.value = '';
+          fname.blur();
+          sname.value = '';
+          sname.blur();
+          lname.value = '';
+          lname.blur();
+          street.value = '';
+          street.blur();
+          city.value = '';
+          city.blur();
+          state.value = '';
+          state.blur();
+          zip.value = '';
+          zip.blur();
+          country.value = '';
+          country.blur();
+          homeText.value = '';
+          homeText.blur();
+          mobileText.value = '';
+          mobileText.blur();
+          email.value = '';
+          email.blur();
+          initialPicker.value = date('n/j/Y');
+          initialPicker.blur();
+          pocTextfield.value = '';
+          pocTextfield.blur();
+          tableView.scrollToTop(0);
+          prevSavedRow.hasCheck = false;
+          prevBaptRow.hasCheck = false;
+          attendedRow.hasCheck = false;
+          enrolledRow.hasCheck = false;
+          viewProspectWin = self.createProspectViewWindow(createdProspect);
+          closeButton = Ti.UI.createButton({
+            systemButton: Ti.UI.iPhone.SystemButton.DONE
+          });
+          closeButton.addEventListener('click', function(e) {
+            return viewProspectWin.close();
+          });
+          if (self.isAndroid) {
+            Ti.API.info('todo');
+          } else {
+            viewProspectWin.setRightNavButton(closeButton);
+          }
+          return self.tabs.activeTab.open(viewProspectWin);
+        }
+      });
+      if (prospect != null) {
+        cancel = Ti.UI.createButton({
+          systemButton: Ti.UI.iPhone.SystemButton.CANCEL
+        });
+        cancel.addEventListener('click', function(e) {
+          win.exitValue = false;
+          return win.close();
+        });
+        win.setLeftNavButton(cancel);
       }
       tableView = Ti.UI.createTableView({
         data: data,
         style: Titanium.UI.iPhone.TableViewStyle.GROUPED
       });
+      if (this.isAndroid) {
+        tableView.backgroundColor = '#181818';
+        b.height = 40;
+        b.width = 300;
+        b.title = 'Save Prospect';
+        tableView.footerView = b;
+      } else {
+        win.setRightNavButton(b);
+      }
       if (prospect != null) {
         deleteProspectView = Ti.UI.createView({
           width: 300,
