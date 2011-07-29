@@ -16,13 +16,8 @@ class ListsTab
         onCreateOptionsMenu : (e) ->
           menu = e.menu
           m1 = menu.add({title: 'Add Prospect'})
-          m2 = menu.add({title: 'Add List'})
           m1.addEventListener('click', (e) ->
             # TODO: call add prospect window
-            alert('clicked')
-          )
-          m2.addEventListener('click', (e) ->
-            # TODO: call add list window
             alert('clicked')
           )
       }
@@ -50,7 +45,7 @@ class ListsTab
     
   createListTableView : (lists) ->
     self = this
-    data = shl.ui.processListData(lists)
+    data = @processListData(lists)
     tableView = Ti.UI.createTableView({
       data:data,
       moveable: true
@@ -210,7 +205,7 @@ class ListsTab
             top : 6
           })
           addBtn.addEventListener('click', () ->
-            addProspectsWin = @createAddProspectsWindow(e.row.listID)
+            addProspectsWin = self.createAddProspectsWindow(e.row.listID)
             addProspectsWin.open({
               modal:true,
               modalTransitionStyle: Ti.UI.iPhone.MODAL_TRANSITION_STYLE_COVER_VERTICAL,
@@ -294,7 +289,7 @@ class ListsTab
         shl.ui.tabs.activeTab.open(listWin)
     )
     tableView.updateLists = (lists) ->
-      data = shl.ui.processListData(lists)
+      data = self.processListData(lists)
       @setData(data)
     
     return tableView
@@ -405,5 +400,58 @@ class ListsTab
     win.add(tableView)
     #TODO set this diferently for Android
     return win
+    
+  processListData : (lists) ->
+    data = for i in lists
+      Ti.API.info('i.name = '+ i.name)
+      row = Ti.UI.createTableViewRow({
+        height: 45,
+        hasChild: true,
+        title: i.name,
+        listID: i.id,
+        editable: false,
+        moveable: true
+      })
+      # Android won't show list name unless its separate label
+      if @isAndroid
+        listnameLabel = Ti.UI.createLabel({
+          text: i.name,
+          left: 0
+        })
+        row.add(listnameLabel)
+      if shl.aLists[i.name]?
+        listcount = shl.Prospect.count(shl.aLists[i.name].query)
+      else
+        currentList = shl.List.find(i.id)
+        listcount = currentList.getProspectCount()
+      countView = Ti.UI.createLabel({
+        text: listcount,
+        fontSize: 12,
+        height: 21,
+        width: 36,
+        textAlign: 'center',
+        right: 5,
+        color: '#616161'
+      })
+      row.add(countView)
+      row
+    addCustom = Ti.UI.createTableViewRow({
+      height: 45,
+      title: 'Create Custom List...',
+      listID: 'custom',
+      editable: false,
+      moveable: false
+    })
+    data.push(addCustom)
+    viewMore = Ti.UI.createTableViewRow({
+      height: 45,
+      title: 'View All Lists',
+      listID: 'more',
+      editable: false,
+      moveable: false,
+      name: 'more'
+    })
+    data.push(viewMore)
+    return data
     
 shl.listsTab = new ListsTab

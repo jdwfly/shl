@@ -680,53 +680,6 @@ class UI
     
     return data
   
-  processListData : (lists) ->
-    data = for i in lists
-      row = Ti.UI.createTableViewRow({
-        height: 45,
-        hasChild: true,
-        title: i.name,
-        listID: i.id,
-        editable: false,
-        moveable: true
-      })
-      if shl.aLists[i.name]?
-        listcount = shl.Prospect.count(shl.aLists[i.name].query)
-      else
-        currentList = shl.List.find(i.id)
-        listcount = currentList.getProspectCount()
-      countView = Ti.UI.createLabel({
-        text: listcount,
-        #backgroundImage:'/images/count-bg.png',
-        fontSize: 12,
-        height: 21,
-        width: 36,
-        #top: 5,
-        textAlign: 'center',
-        right: 5,
-        color: '#616161'
-      })
-      row.add(countView)
-      row
-    addCustom = Ti.UI.createTableViewRow({
-      height: 45,
-      title: 'Create Custom List...',
-      listID: 'custom',
-      editable: false,
-      moveable: false
-    })
-    data.push(addCustom)
-    viewMore = Ti.UI.createTableViewRow({
-      height: 45,
-      title: 'View All Lists',
-      listID: 'more',
-      editable: false,
-      moveable: false,
-      name: 'more'
-    })
-    data.push(viewMore)
-    return data
-  
   processProspectData : (prospects) ->
     if prospects.length < 1
       row = Ti.UI.createTableViewRow({editable: false})

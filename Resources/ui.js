@@ -749,60 +749,6 @@
       data.data.push(contactSection);
       return data;
     };
-    UI.prototype.processListData = function(lists) {
-      var addCustom, countView, currentList, data, i, listcount, row, viewMore;
-      data = (function() {
-        var _i, _len, _results;
-        _results = [];
-        for (_i = 0, _len = lists.length; _i < _len; _i++) {
-          i = lists[_i];
-          row = Ti.UI.createTableViewRow({
-            height: 45,
-            hasChild: true,
-            title: i.name,
-            listID: i.id,
-            editable: false,
-            moveable: true
-          });
-          if (shl.aLists[i.name] != null) {
-            listcount = shl.Prospect.count(shl.aLists[i.name].query);
-          } else {
-            currentList = shl.List.find(i.id);
-            listcount = currentList.getProspectCount();
-          }
-          countView = Ti.UI.createLabel({
-            text: listcount,
-            fontSize: 12,
-            height: 21,
-            width: 36,
-            textAlign: 'center',
-            right: 5,
-            color: '#616161'
-          });
-          row.add(countView);
-          _results.push(row);
-        }
-        return _results;
-      })();
-      addCustom = Ti.UI.createTableViewRow({
-        height: 45,
-        title: 'Create Custom List...',
-        listID: 'custom',
-        editable: false,
-        moveable: false
-      });
-      data.push(addCustom);
-      viewMore = Ti.UI.createTableViewRow({
-        height: 45,
-        title: 'View All Lists',
-        listID: 'more',
-        editable: false,
-        moveable: false,
-        name: 'more'
-      });
-      data.push(viewMore);
-      return data;
-    };
     UI.prototype.processProspectData = function(prospects) {
       var addressLabel, content, contentTitle, data, lastContactLabel, prospect, row, starImage;
       if (prospects.length < 1) {

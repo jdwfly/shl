@@ -22,18 +22,12 @@
         title: 'Lists',
         activity: {
           onCreateOptionsMenu: function(e) {
-            var m1, m2, menu;
+            var m1, menu;
             menu = e.menu;
             m1 = menu.add({
               title: 'Add Prospect'
             });
-            m2 = menu.add({
-              title: 'Add List'
-            });
-            m1.addEventListener('click', function(e) {
-              return alert('clicked');
-            });
-            return m2.addEventListener('click', function(e) {
+            return m1.addEventListener('click', function(e) {
               return alert('clicked');
             });
           }
@@ -64,7 +58,7 @@
     ListsTab.prototype.createListTableView = function(lists) {
       var data, self, tableView;
       self = this;
-      data = shl.ui.processListData(lists);
+      data = this.processListData(lists);
       tableView = Ti.UI.createTableView({
         data: data,
         moveable: true
@@ -232,7 +226,7 @@
             });
             addBtn.addEventListener('click', function() {
               var addProspectsWin;
-              addProspectsWin = this.createAddProspectsWindow(e.row.listID);
+              addProspectsWin = self.createAddProspectsWindow(e.row.listID);
               return addProspectsWin.open({
                 modal: true,
                 modalTransitionStyle: Ti.UI.iPhone.MODAL_TRANSITION_STYLE_COVER_VERTICAL,
@@ -328,7 +322,7 @@
         }
       });
       tableView.updateLists = function(lists) {
-        data = shl.ui.processListData(lists);
+        data = self.processListData(lists);
         return this.setData(data);
       };
       return tableView;
@@ -478,6 +472,68 @@
       });
       win.add(tableView);
       return win;
+    };
+    ListsTab.prototype.processListData = function(lists) {
+      var addCustom, countView, currentList, data, i, listcount, listnameLabel, row, viewMore;
+      data = (function() {
+        var _i, _len, _results;
+        _results = [];
+        for (_i = 0, _len = lists.length; _i < _len; _i++) {
+          i = lists[_i];
+          Ti.API.info('i.name = ' + i.name);
+          row = Ti.UI.createTableViewRow({
+            height: 45,
+            hasChild: true,
+            title: i.name,
+            listID: i.id,
+            editable: false,
+            moveable: true
+          });
+          if (this.isAndroid) {
+            listnameLabel = Ti.UI.createLabel({
+              text: i.name,
+              left: 0
+            });
+            row.add(listnameLabel);
+          }
+          if (shl.aLists[i.name] != null) {
+            listcount = shl.Prospect.count(shl.aLists[i.name].query);
+          } else {
+            currentList = shl.List.find(i.id);
+            listcount = currentList.getProspectCount();
+          }
+          countView = Ti.UI.createLabel({
+            text: listcount,
+            fontSize: 12,
+            height: 21,
+            width: 36,
+            textAlign: 'center',
+            right: 5,
+            color: '#616161'
+          });
+          row.add(countView);
+          _results.push(row);
+        }
+        return _results;
+      }).call(this);
+      addCustom = Ti.UI.createTableViewRow({
+        height: 45,
+        title: 'Create Custom List...',
+        listID: 'custom',
+        editable: false,
+        moveable: false
+      });
+      data.push(addCustom);
+      viewMore = Ti.UI.createTableViewRow({
+        height: 45,
+        title: 'View All Lists',
+        listID: 'more',
+        editable: false,
+        moveable: false,
+        name: 'more'
+      });
+      data.push(viewMore);
+      return data;
     };
     return ListsTab;
   })();
