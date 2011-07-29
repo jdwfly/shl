@@ -84,27 +84,28 @@ class UI
       @setData(data.data)
       @headerView = data.headerView
     
+    editButtonListener = (e) ->
+      # Open modal window to edit prospect
+      editProspect = shl.Prospect.find(prospect.id)
+      editWin = self.createProspectFormWin(editProspect)
+      editWin.addEventListener('close', (e) ->
+        # Update the current information on the page
+        if e.source.exitValue
+          tableView.updateProspect(prospect)
+        else if @deleteProspect
+          win.close()
+      )
+      editWin.open({
+        modal:true,
+        modalTransitionStyle: Ti.UI.iPhone.MODAL_TRANSITION_STYLE_COVER_VERTICAL,
+        modalStyle: Ti.UI.iPhone.MODAL_PRESENTATION_FORMSHEET
+      })
+    
     if @platform is 'iPhone OS'
       editButton = Ti.UI.createButton({
         systemButton: Ti.UI.iPhone.SystemButton.EDIT
       })
-      editButton.addEventListener('click', (e) ->
-        # Open modal window to edit prospect
-        editProspect = shl.Prospect.find(prospect.id)
-        editWin = self.createProspectFormWin(editProspect)
-        editWin.addEventListener('close', (e) ->
-          # Update the current information on the page
-          if e.source.exitValue
-            tableView.updateProspect(prospect)
-          else if @deleteProspect
-            win.close()
-        )
-        editWin.open({
-          modal:true,
-          modalTransitionStyle: Ti.UI.iPhone.MODAL_TRANSITION_STYLE_COVER_VERTICAL,
-          modalStyle: Ti.UI.iPhone.MODAL_PRESENTATION_FORMSHEET
-        })
-      )
+      editButton.addEventListener('click', editButtonListener)
       win.setRightNavButton(editButton)
     
     win.addEventListener('open', (e) ->
@@ -113,6 +114,12 @@ class UI
         tableView.updateProspect(updateProspect)
       )
     )
+    win.activity = {
+      onCreateOptionsMenu : (e) ->
+        menu = e.menu
+        m1 = menu.add({title: 'Edit'})
+        m1.addEventListener('click', editButtonListener)
+    }
     
     win.add(tableView)
     return win
@@ -153,11 +160,11 @@ class UI
       color: '#4c596e'
     })
     if @isAndroid
-      nameLabel.color = '#616161'
-      contactLabel.color = '#616161'
+      nameLabel.color = '#bdbebd'
+      contactLabel.color = '#bdbebd'
       contactLabel.top = 29
       nextStepLabel.top = 43
-      nextStepLabel.color = '#616161'
+      nextStepLabel.color = '#bdbebd'
     recordContactButton = Ti.UI.createButton({
       width: 300,
       height: 57,

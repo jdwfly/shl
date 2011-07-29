@@ -67,7 +67,7 @@
       return tableView;
     };
     UI.prototype.createProspectViewWindow = function(prospect) {
-      var data, editButton, self, tableView, win;
+      var data, editButton, editButtonListener, self, tableView, win;
       prospect = shl.Prospect.find(prospect.id);
       win = Ti.UI.createWindow();
       self = this;
@@ -82,27 +82,28 @@
         this.setData(data.data);
         return this.headerView = data.headerView;
       };
+      editButtonListener = function(e) {
+        var editProspect, editWin;
+        editProspect = shl.Prospect.find(prospect.id);
+        editWin = self.createProspectFormWin(editProspect);
+        editWin.addEventListener('close', function(e) {
+          if (e.source.exitValue) {
+            return tableView.updateProspect(prospect);
+          } else if (this.deleteProspect) {
+            return win.close();
+          }
+        });
+        return editWin.open({
+          modal: true,
+          modalTransitionStyle: Ti.UI.iPhone.MODAL_TRANSITION_STYLE_COVER_VERTICAL,
+          modalStyle: Ti.UI.iPhone.MODAL_PRESENTATION_FORMSHEET
+        });
+      };
       if (this.platform === 'iPhone OS') {
         editButton = Ti.UI.createButton({
           systemButton: Ti.UI.iPhone.SystemButton.EDIT
         });
-        editButton.addEventListener('click', function(e) {
-          var editProspect, editWin;
-          editProspect = shl.Prospect.find(prospect.id);
-          editWin = self.createProspectFormWin(editProspect);
-          editWin.addEventListener('close', function(e) {
-            if (e.source.exitValue) {
-              return tableView.updateProspect(prospect);
-            } else if (this.deleteProspect) {
-              return win.close();
-            }
-          });
-          return editWin.open({
-            modal: true,
-            modalTransitionStyle: Ti.UI.iPhone.MODAL_TRANSITION_STYLE_COVER_VERTICAL,
-            modalStyle: Ti.UI.iPhone.MODAL_PRESENTATION_FORMSHEET
-          });
-        });
+        editButton.addEventListener('click', editButtonListener);
         win.setRightNavButton(editButton);
       }
       win.addEventListener('open', function(e) {
@@ -112,6 +113,16 @@
           return tableView.updateProspect(updateProspect);
         });
       });
+      win.activity = {
+        onCreateOptionsMenu: function(e) {
+          var m1, menu;
+          menu = e.menu;
+          m1 = menu.add({
+            title: 'Edit'
+          });
+          return m1.addEventListener('click', editButtonListener);
+        }
+      };
       win.add(tableView);
       return win;
     };
@@ -157,11 +168,11 @@
         color: '#4c596e'
       });
       if (this.isAndroid) {
-        nameLabel.color = '#616161';
-        contactLabel.color = '#616161';
+        nameLabel.color = '#bdbebd';
+        contactLabel.color = '#bdbebd';
         contactLabel.top = 29;
         nextStepLabel.top = 43;
-        nextStepLabel.color = '#616161';
+        nextStepLabel.color = '#bdbebd';
       }
       recordContactButton = Ti.UI.createButton({
         width: 300,
