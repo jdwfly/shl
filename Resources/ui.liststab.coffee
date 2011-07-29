@@ -402,6 +402,7 @@ class ListsTab
     return win
     
   processListData : (lists) ->
+    self = this
     data = for i in lists
       Ti.API.info('i.name = '+ i.name)
       row = Ti.UI.createTableViewRow({
@@ -413,7 +414,7 @@ class ListsTab
         moveable: true
       })
       # Android won't show list name unless its separate label
-      if @isAndroid
+      if shl.ui.isAndroid
         listnameLabel = Ti.UI.createLabel({
           text: i.name,
           left: 0
@@ -425,7 +426,7 @@ class ListsTab
         currentList = shl.List.find(i.id)
         listcount = currentList.getProspectCount()
       countView = Ti.UI.createLabel({
-        text: listcount,
+        text: listcount.toFixed(),
         fontSize: 12,
         height: 21,
         width: 36,
@@ -433,6 +434,8 @@ class ListsTab
         right: 5,
         color: '#616161'
       })
+      if shl.ui.isAndroid
+        countView.right = 15
       row.add(countView)
       row
     addCustom = Ti.UI.createTableViewRow({

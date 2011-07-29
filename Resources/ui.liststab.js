@@ -474,7 +474,8 @@
       return win;
     };
     ListsTab.prototype.processListData = function(lists) {
-      var addCustom, countView, currentList, data, i, listcount, listnameLabel, row, viewMore;
+      var addCustom, countView, currentList, data, i, listcount, listnameLabel, row, self, viewMore;
+      self = this;
       data = (function() {
         var _i, _len, _results;
         _results = [];
@@ -489,7 +490,7 @@
             editable: false,
             moveable: true
           });
-          if (this.isAndroid) {
+          if (shl.ui.isAndroid) {
             listnameLabel = Ti.UI.createLabel({
               text: i.name,
               left: 0
@@ -503,7 +504,7 @@
             listcount = currentList.getProspectCount();
           }
           countView = Ti.UI.createLabel({
-            text: listcount,
+            text: listcount.toFixed(),
             fontSize: 12,
             height: 21,
             width: 36,
@@ -511,11 +512,14 @@
             right: 5,
             color: '#616161'
           });
+          if (shl.ui.isAndroid) {
+            countView.right = 15;
+          }
           row.add(countView);
           _results.push(row);
         }
         return _results;
-      }).call(this);
+      })();
       addCustom = Ti.UI.createTableViewRow({
         height: 45,
         title: 'Create Custom List...',

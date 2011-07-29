@@ -152,6 +152,12 @@ class UI
       font: {fontSize: 12},
       color: '#4c596e'
     })
+    if @isAndroid
+      nameLabel.color = '#616161'
+      contactLabel.color = '#616161'
+      contactLabel.top = 29
+      nextStepLabel.top = 43
+      nextStepLabel.color = '#616161'
     recordContactButton = Ti.UI.createButton({
       width: 300,
       height: 57,
