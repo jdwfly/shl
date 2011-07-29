@@ -481,7 +481,6 @@
         _results = [];
         for (_i = 0, _len = lists.length; _i < _len; _i++) {
           i = lists[_i];
-          Ti.API.info('i.name = ' + i.name);
           row = Ti.UI.createTableViewRow({
             height: 45,
             hasChild: true,

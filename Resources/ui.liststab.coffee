@@ -404,7 +404,6 @@ class ListsTab
   processListData : (lists) ->
     self = this
     data = for i in lists
-      Ti.API.info('i.name = '+ i.name)
       row = Ti.UI.createTableViewRow({
         height: 45,
         hasChild: true,

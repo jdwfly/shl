@@ -1275,17 +1275,11 @@ class UI
         enrolledRow.hasCheck = false
         # TODO : open modal window that shows the prospect
         viewProspectWin = self.createProspectViewWindow(createdProspect)
-        closeButton = Ti.UI.createButton({
-          systemButton:Ti.UI.iPhone.SystemButton.DONE
-        })
-        closeButton.addEventListener('click', (e) ->
-          viewProspectWin.close()
-        )
         if self.isAndroid
           # TODO needs a different button
           Ti.API.info('todo')
         else
-          viewProspectWin.setRightNavButton(closeButton)
+          viewProspectWin.setRightNavButton()
         self.tabs.activeTab.open(viewProspectWin)
     )
     if prospect?

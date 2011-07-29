@@ -1325,7 +1325,7 @@
         systemButton: Ti.UI.iPhone.SystemButton.SAVE
       });
       b.addEventListener('click', function() {
-        var closeButton, createdProspect, datePattern, emailPattern, viewProspectWin;
+        var createdProspect, datePattern, emailPattern, viewProspectWin;
         emailPattern = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
         if (email.value !== '' && !email.value.match(emailPattern)) {
           alert('Invalid email address.');
@@ -1411,16 +1411,10 @@
           attendedRow.hasCheck = false;
           enrolledRow.hasCheck = false;
           viewProspectWin = self.createProspectViewWindow(createdProspect);
-          closeButton = Ti.UI.createButton({
-            systemButton: Ti.UI.iPhone.SystemButton.DONE
-          });
-          closeButton.addEventListener('click', function(e) {
-            return viewProspectWin.close();
-          });
           if (self.isAndroid) {
             Ti.API.info('todo');
           } else {
-            viewProspectWin.setRightNavButton(closeButton);
+            viewProspectWin.setRightNavButton();
           }
           return self.tabs.activeTab.open(viewProspectWin);
         }
