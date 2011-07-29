@@ -720,30 +720,6 @@ class UI
         width: 'auto',
         left: 5
       })
-      ###
-      if prospect.nextStep is 'Salvation'
-        nextstepColor = '#ae2a2a'
-      else if prospect.nextStep is 'Baptism'
-        nextstepColor = '#22678f'
-      else if prospect.nextStep is 'Attendance'
-        nextstepColor = '#cba81a'
-      else if prospect.nextStep is 'Membership'
-        nextstepColor = '#608f22'
-      nextstepLabel = Ti.UI.createLabel({
-        text: "  " + prospect.nextStep + "  ",
-        font: {fontWeight: 'normal', fontSize: 8},
-        backgroundColor: nextstepColor,
-        backgroundSelectedColor: nextstepColor,
-        color: '#ffffff'
-        borderRadius: 5,
-        backgroundPaddingLeft: 5,
-        backgroundPaddingRight: 5,
-        height: 15,
-        width: 43,
-        right: 5,
-        top: 5
-      })
-      ###
       starImage = Ti.UI.createImageView({
         url: if prospect.isStarred() then 'images/star-on.png' else 'images/star-off.png',
         width: 30,
@@ -770,7 +746,6 @@ class UI
           })
           z.destroy()
       )
-      #row.add(nextstepLabel)
       row.add(starImage)
       content.add(contentTitle)
       content.add(lastContactLabel)
