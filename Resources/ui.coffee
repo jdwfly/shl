@@ -54,8 +54,12 @@ class UI
     tableView.addEventListener('click', (e) ->
       # don't do anything if the star was clicked
       dataSourceString = e.source + ''
-      if dataSourceString.indexOf('TiUIImageView') isnt -1
-        return true
+      if self.isAndroid
+        if dataSourceString.indexOf('Ti.UI.ImageView') isnt -1.0
+          return true
+      else
+        if dataSourceString.indexOf('TiUIImageView') isnt -1
+          return true
       if not tableView.editing
         Ti.API.info(JSON.stringify(e.row))
         prospectWin = self.createProspectViewWindow(e.row.prospect)
@@ -76,9 +80,10 @@ class UI
     
     tableView = Ti.UI.createTableView({
       data: data.data,
-      headerView: data.headerView,
-      style: Titanium.UI.iPhone.TableViewStyle.GROUPED
+      headerView: data.headerView
     })
+    if not @isAndroid
+      tableView.style = Titanium.UI.iPhone.TableViewStyle.GROUPED
     tableView.updateProspect = (prospect) ->
       data = self.processProspectViewData(prospect)
       @setData(data.data)
@@ -95,11 +100,14 @@ class UI
         else if @deleteProspect
           win.close()
       )
-      editWin.open({
-        modal:true,
-        modalTransitionStyle: Ti.UI.iPhone.MODAL_TRANSITION_STYLE_COVER_VERTICAL,
-        modalStyle: Ti.UI.iPhone.MODAL_PRESENTATION_FORMSHEET
-      })
+      if self.isAndroid
+        self.tabs.activeTab.open(editWin)
+      else
+        editWin.open({
+          modal:true,
+          modalTransitionStyle: Ti.UI.iPhone.MODAL_TRANSITION_STYLE_COVER_VERTICAL,
+          modalStyle: Ti.UI.iPhone.MODAL_PRESENTATION_FORMSHEET
+        })
     
     if @platform is 'iPhone OS'
       editButton = Ti.UI.createButton({
@@ -734,7 +742,7 @@ class UI
         left: 5
       })
       starImage = Ti.UI.createImageView({
-        url: if prospect.isStarred() then 'images/star-on.png' else 'images/star-off.png',
+        backgroundImage: if prospect.isStarred() then 'images/star-on.png' else 'images/star-off.png',
         width: 30,
         height: 30,
         left: 0,
@@ -742,14 +750,17 @@ class UI
         prospectID: prospect.id
       })
       starImage.addEventListener('click', (e) ->
-        if @url is 'images/star-off.png'
-          @url = 'images/star-on.png'
+        Ti.API.info('Star click event fired')
+        currentProspect = shl.Prospect.find(starImage.prospectID)
+        if not currentProspect.isStarred()
+          @backgroundImage = 'images/star-on.png'
           starList = shl.List.find(1)
           starList.createListing({
             prospect_id: @prospectID
           })
+          Ti.API.info('Star should be on now : ' + @image)
         else
-          @url = 'images/star-off.png'
+          @backgroundImage = 'images/star-off.png'
           z = shl.Listing.find({
             first: true,
             where: {
@@ -758,6 +769,7 @@ class UI
             }
           })
           z.destroy()
+          Ti.API.info('Star should be off now : ' + @image)
       )
       row.add(starImage)
       content.add(contentTitle)

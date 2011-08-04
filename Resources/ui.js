@@ -51,8 +51,14 @@
       tableView.addEventListener('click', function(e) {
         var dataSourceString, prospectWin;
         dataSourceString = e.source + '';
-        if (dataSourceString.indexOf('TiUIImageView') !== -1) {
-          return true;
+        if (self.isAndroid) {
+          if (dataSourceString.indexOf('Ti.UI.ImageView') !== -1.0) {
+            return true;
+          }
+        } else {
+          if (dataSourceString.indexOf('TiUIImageView') !== -1) {
+            return true;
+          }
         }
         if (!tableView.editing) {
           Ti.API.info(JSON.stringify(e.row));
@@ -74,9 +80,11 @@
       data = this.processProspectViewData(prospect);
       tableView = Ti.UI.createTableView({
         data: data.data,
-        headerView: data.headerView,
-        style: Titanium.UI.iPhone.TableViewStyle.GROUPED
+        headerView: data.headerView
       });
+      if (!this.isAndroid) {
+        tableView.style = Titanium.UI.iPhone.TableViewStyle.GROUPED;
+      }
       tableView.updateProspect = function(prospect) {
         data = self.processProspectViewData(prospect);
         this.setData(data.data);
@@ -93,11 +101,15 @@
             return win.close();
           }
         });
-        return editWin.open({
-          modal: true,
-          modalTransitionStyle: Ti.UI.iPhone.MODAL_TRANSITION_STYLE_COVER_VERTICAL,
-          modalStyle: Ti.UI.iPhone.MODAL_PRESENTATION_FORMSHEET
-        });
+        if (self.isAndroid) {
+          return self.tabs.activeTab.open(editWin);
+        } else {
+          return editWin.open({
+            modal: true,
+            modalTransitionStyle: Ti.UI.iPhone.MODAL_TRANSITION_STYLE_COVER_VERTICAL,
+            modalStyle: Ti.UI.iPhone.MODAL_PRESENTATION_FORMSHEET
+          });
+        }
       };
       if (this.platform === 'iPhone OS') {
         editButton = Ti.UI.createButton({
@@ -825,7 +837,7 @@
             left: 5
           });
           starImage = Ti.UI.createImageView({
-            url: prospect.isStarred() ? 'images/star-on.png' : 'images/star-off.png',
+            backgroundImage: prospect.isStarred() ? 'images/star-on.png' : 'images/star-off.png',
             width: 30,
             height: 30,
             left: 0,
@@ -833,15 +845,18 @@
             prospectID: prospect.id
           });
           starImage.addEventListener('click', function(e) {
-            var starList, z;
-            if (this.url === 'images/star-off.png') {
-              this.url = 'images/star-on.png';
+            var currentProspect, starList, z;
+            Ti.API.info('Star click event fired');
+            currentProspect = shl.Prospect.find(starImage.prospectID);
+            if (!currentProspect.isStarred()) {
+              this.backgroundImage = 'images/star-on.png';
               starList = shl.List.find(1);
-              return starList.createListing({
+              starList.createListing({
                 prospect_id: this.prospectID
               });
+              return Ti.API.info('Star should be on now : ' + this.image);
             } else {
-              this.url = 'images/star-off.png';
+              this.backgroundImage = 'images/star-off.png';
               z = shl.Listing.find({
                 first: true,
                 where: {
@@ -849,7 +864,8 @@
                   prospect_id: this.prospectID
                 }
               });
-              return z.destroy();
+              z.destroy();
+              return Ti.API.info('Star should be off now : ' + this.image);
             }
           });
           row.add(starImage);
