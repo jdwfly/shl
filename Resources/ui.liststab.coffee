@@ -51,6 +51,7 @@ class ListsTab
       moveable: true
     })
     tableView.addEventListener('click', (e) ->
+      thistable = this
       Ti.API.info(JSON.stringify(e.row))
       if e.row.listID == 'custom'
         addW = Ti.UI.createWindow({
@@ -86,6 +87,12 @@ class ListsTab
             })
             # TODO : show a list of prospects to add to the list
             addW.close()
+            if shl.ui.isAndroid
+              lists = shl.List.find({
+                where: {active: 1},
+                order: 'weight ASC'
+              })
+              thistable.updateLists(lists)
           else
             alert('You must specify a name for the list.')
         )
@@ -142,7 +149,8 @@ class ListsTab
           else
             currentList = shl.List.find(e.row.listID)
             prospects = currentList.getProspectList()
-            listWin.setRightNavButton(listedit)
+            if not shl.ui.isAndroid
+              listWin.setRightNavButton(listedit)
             listview.editing = false
           data = shl.ui.processProspectData(prospects)
           listview.setData(data)
@@ -179,12 +187,16 @@ class ListsTab
           currentListing.destroy()
         )
         
+        
+        
         listWin.add(listview)
         listedit = Titanium.UI.createButton({
           title:'Edit'
         })
-        listedit.addEventListener('click', () ->
-          listWin.setRightNavButton(listcancel)
+        
+        makebrow = () ->
+          if not shl.ui.isAndroid
+            listWin.setRightNavButton(listcancel)
           listview.editing = true
           brow = Ti.UI.createTableViewRow({
             backgroundColor : '#999',
@@ -233,7 +245,8 @@ class ListsTab
                   listing.destroy()
                 currentList = shl.List.find(e.row.listID)
                 prospects = currentList.getProspectList()
-                listWin.setRightNavButton(listedit)
+                if not shl.ui.isAndroid
+                  listWin.setRightNavButton(listedit)
                 listview.editing = false
                 data = shl.ui.processProspectData(prospects)
                 listview.setData(data)
@@ -272,19 +285,28 @@ class ListsTab
             listview.insertRowBefore(0,brow)
           else
             listview.appendRow(brow)
-        )
+        
+        listedit.addEventListener('click', makebrow)
+        
+        
         
         listcancel = Titanium.UI.createButton({
           title:'Done',
           style:Titanium.UI.iPhone.SystemButtonStyle.DONE
         })
         listcancel.addEventListener('click', () ->
-          listWin.setRightNavButton(listedit)
+          if not shl.ui.isAndroid
+            listWin.setRightNavButton(listedit)
           listview.editing = false
           index = listview.getIndexByName('options');
           listview.deleteRow(index,{animationStyle:Titanium.UI.iPhone.RowAnimationStyle.UP})
         )
-        listWin.setRightNavButton(listedit)
+        if not shl.ui.isAndroid
+          listWin.setRightNavButton(listedit)
+        else
+          makebrow()
+          
+        
         
         shl.ui.tabs.activeTab.open(listWin)
     )
@@ -297,7 +319,8 @@ class ListsTab
   createAddProspectsWindow : (listId) ->
     self = this
     win = Ti.UI.createWindow({
-      title : 'Add Prospects'
+      title : 'Add Prospects',
+      backgroundColor : '#000000'
     })
     doneBtn = Ti.UI.createButton({
       title:'Done',
@@ -307,7 +330,8 @@ class ListsTab
     doneBtn.addEventListener('click', () ->
       win.close()
     )
-    win.setRightNavButton(doneBtn)
+    if not shl.ui.isAndroid
+      win.setRightNavButton(doneBtn)
     prospects = shl.Prospect.find()
     if prospects.length < 1
       return win
