@@ -83,11 +83,15 @@
       data = this.processProspectViewData(prospect);
       tableView = Ti.UI.createTableView({
         data: data.data,
-        headerView: data.headerView
+        headerView: data.headerView,
+        style: Titanium.UI.iPhone.TableViewStyle.GROUPED
       });
-      if (!this.isAndroid) {
-        tableView.style = Titanium.UI.iPhone.TableViewStyle.GROUPED;
-      }
+      tableView.addEventListener('delete', function(e) {
+        var d;
+        Ti.API.info(e.row.contactID);
+        d = shl.Contact.find(e.row.contactID);
+        return d.destroy();
+      });
       tableView.updateProspect = function(prospect) {
         data = self.processProspectViewData(prospect);
         this.setData(data.data);
@@ -539,14 +543,14 @@
           height: 75
         });
         addressLabel = Ti.UI.createLabel({
-          text: prospect.formatAddress(),
+          text: typeof prospect.formatAddress === "function" ? prospect.formatAddress() : void 0,
           left: 10
         });
         addressRow.add(addressLabel);
         addressSection.add(addressRow);
         addressSection.addEventListener('click', function(e) {
           var query;
-          query = prospect.formatAddressGoogle();
+          query = typeof prospect.formatAddressGoogle === "function" ? prospect.formatAddressGoogle() : void 0;
           query = query.replace(/[ ]/gi, "+");
           Ti.API.info(query);
           return Ti.Platform.openURL("http://maps.google.com/maps?q=" + query);
@@ -753,13 +757,15 @@
         for (_j = 0, _len2 = contacts.length; _j < _len2; _j++) {
           contact = contacts[_j];
           row = Ti.UI.createTableViewRow({
-            height: 'auto'
+            height: 'auto',
+            editable: 'true'
           });
           rowLabel = Ti.UI.createLabel({
             text: date('n/j/Y', contact.date) + " " + contact.type + ": " + contact.comments,
             width: 280,
             left: 10
           });
+          row.contactID = contact.id;
           row.add(rowLabel);
           contactSection.add(row);
         }
@@ -833,7 +839,7 @@
             left: 5
           });
           addressLabel = Ti.UI.createLabel({
-            text: prospect.formatAddress(),
+            text: typeof prospect.formatAddress === "function" ? prospect.formatAddress() : void 0,
             font: {
               fontWeight: 'normal',
               fontSize: 12
@@ -843,7 +849,7 @@
             left: 5
           });
           starImage = Ti.UI.createImageView({
-            backgroundImage: prospect.isStarred() ? 'images/star-on.png' : 'images/star-off.png',
+            backgroundImage: (typeof prospect.isStarred === "function" ? prospect.isStarred() : void 0) ? 'images/star-on.png' : 'images/star-off.png',
             width: 30,
             height: 30,
             left: 0,
@@ -853,7 +859,7 @@
           starImage.addEventListener('click', function(e) {
             var currentProspect, starList, z;
             currentProspect = shl.Prospect.find(starImage.prospectID);
-            if (!currentProspect.isStarred()) {
+            if (!(typeof currentProspect.isStarred === "function" ? currentProspect.isStarred() : void 0)) {
               this.backgroundImage = 'images/star-on.png';
               starList = shl.List.find(1);
               return starList.createListing({
@@ -1489,7 +1495,18 @@
           };
           deleteProspectDialog = Ti.UI.createOptionDialog(options);
           deleteProspectDialog.addEventListener('click', function(f) {
+            var z;
             if (f.index === 0) {
+              if (typeof prospect.isStarred === "function" ? prospect.isStarred() : void 0) {
+                z = shl.Listing.find({
+                  first: true,
+                  where: {
+                    list_id: 1,
+                    prospect_id: prospect.id
+                  }
+                });
+                z.destroy();
+              }
               prospect.destroy();
               win.deleteProspect = true;
               win.exitValue = false;

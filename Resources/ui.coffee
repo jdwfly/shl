@@ -83,10 +83,14 @@ class UI
     
     tableView = Ti.UI.createTableView({
       data: data.data,
-      headerView: data.headerView
+      headerView: data.headerView,
+      style: Titanium.UI.iPhone.TableViewStyle.GROUPED
     })
-    if not @isAndroid
-      tableView.style = Titanium.UI.iPhone.TableViewStyle.GROUPED
+    tableView.addEventListener('delete', (e) ->
+      Ti.API.info(e.row.contactID)
+      d = shl.Contact.find(e.row.contactID)
+      d.destroy()
+    )
     tableView.updateProspect = (prospect) ->
       data = self.processProspectViewData(prospect)
       @setData(data.data)
@@ -503,13 +507,13 @@ class UI
       addressSection = Ti.UI.createTableViewSection()
       addressRow = Ti.UI.createTableViewRow({height: 75})
       addressLabel = Ti.UI.createLabel({
-        text: prospect.formatAddress()
+        text: prospect.formatAddress?()
         left: 10
       })
       addressRow.add(addressLabel)
       addressSection.add(addressRow)
       addressSection.addEventListener('click', (e) ->
-        query = prospect.formatAddressGoogle()
+        query = prospect.formatAddressGoogle?()
         query = query.replace /[ ]/gi, "+"
         Ti.API.info(query)
         Ti.Platform.openURL("http://maps.google.com/maps?q="+query)
@@ -674,13 +678,15 @@ class UI
     else
       for contact in contacts
         row = Ti.UI.createTableViewRow({
-          height: 'auto'
+          height: 'auto',
+          editable: 'true'
         })
         rowLabel = Ti.UI.createLabel({
           text: date('n/j/Y', contact.date) + " " + contact.type + ": " + contact.comments,
           width: 280,
           left: 10
         })
+        row.contactID = contact.id
         row.add(rowLabel)
         contactSection.add(row)
     ###
@@ -739,14 +745,14 @@ class UI
         left: 5
       })
       addressLabel = Ti.UI.createLabel({
-        text: prospect.formatAddress(),
+        text: prospect.formatAddress?(),
         font: {fontWeight: 'normal', fontSize: 12},
         height: 'auto',
         width: 'auto',
         left: 5
       })
       starImage = Ti.UI.createImageView({
-        backgroundImage: if prospect.isStarred() then 'images/star-on.png' else 'images/star-off.png',
+        backgroundImage: if prospect.isStarred?() then 'images/star-on.png' else 'images/star-off.png',
         width: 30,
         height: 30,
         left: 0,
@@ -755,7 +761,7 @@ class UI
       })
       starImage.addEventListener('click', (e) ->
         currentProspect = shl.Prospect.find(starImage.prospectID)
-        if not currentProspect.isStarred()
+        if not currentProspect.isStarred?()
           @backgroundImage = 'images/star-on.png'
           starList = shl.List.find(1)
           starList.createListing({
@@ -1343,6 +1349,15 @@ class UI
         deleteProspectDialog.addEventListener('click', (f) ->
           if f.index is 0
             # delete prospect
+            if prospect.isStarred?()
+              z = shl.Listing.find({
+                first: true,
+                where: {
+                  list_id: 1,
+                  prospect_id: prospect.id
+                }
+              })
+              z.destroy()
             prospect.destroy()
             win.deleteProspect = true
             win.exitValue = false
