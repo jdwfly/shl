@@ -64,7 +64,8 @@
         moveable: true
       });
       tableView.addEventListener('click', function(e) {
-        var addW, allLists, b, c, currentList, index, listWin, listcancel, listedit, listview, lname, newRow, prospects, query;
+        var addW, allLists, b, c, currentList, index, listWin, listcancel, listedit, listview, lname, makebrow, newRow, prospects, query, thistable;
+        thistable = this;
         Ti.API.info(JSON.stringify(e.row));
         if (e.row.listID === 'custom') {
           addW = Ti.UI.createWindow({
@@ -98,7 +99,16 @@
                 weight: 0,
                 active: 1
               });
-              return addW.close();
+              addW.close();
+              if (shl.ui.isAndroid) {
+                lists = shl.List.find({
+                  where: {
+                    active: 1
+                  },
+                  order: 'weight ASC'
+                });
+                return thistable.updateLists(lists);
+              }
             } else {
               return alert('You must specify a name for the list.');
             }
@@ -161,7 +171,9 @@
             } else {
               currentList = shl.List.find(e.row.listID);
               prospects = currentList.getProspectList();
-              listWin.setRightNavButton(listedit);
+              if (!shl.ui.isAndroid) {
+                listWin.setRightNavButton(listedit);
+              }
               listview.editing = false;
             }
             data = shl.ui.processProspectData(prospects);
@@ -202,9 +214,11 @@
           listedit = Titanium.UI.createButton({
             title: 'Edit'
           });
-          listedit.addEventListener('click', function() {
+          makebrow = function() {
             var addBtn, brow, clearBtn, deleteBtn, editBtns;
-            listWin.setRightNavButton(listcancel);
+            if (!shl.ui.isAndroid) {
+              listWin.setRightNavButton(listcancel);
+            }
             listview.editing = true;
             brow = Ti.UI.createTableViewRow({
               backgroundColor: '#999',
@@ -258,7 +272,9 @@
                   }
                   currentList = shl.List.find(e.row.listID);
                   prospects = currentList.getProspectList();
-                  listWin.setRightNavButton(listedit);
+                  if (!shl.ui.isAndroid) {
+                    listWin.setRightNavButton(listedit);
+                  }
                   listview.editing = false;
                   data = shl.ui.processProspectData(prospects);
                   return listview.setData(data);
@@ -304,20 +320,27 @@
             } else {
               return listview.appendRow(brow);
             }
-          });
+          };
+          listedit.addEventListener('click', makebrow);
           listcancel = Titanium.UI.createButton({
             title: 'Done',
             style: Titanium.UI.iPhone.SystemButtonStyle.DONE
           });
           listcancel.addEventListener('click', function() {
-            listWin.setRightNavButton(listedit);
+            if (!shl.ui.isAndroid) {
+              listWin.setRightNavButton(listedit);
+            }
             listview.editing = false;
             index = listview.getIndexByName('options');
             return listview.deleteRow(index, {
               animationStyle: Titanium.UI.iPhone.RowAnimationStyle.UP
             });
           });
-          listWin.setRightNavButton(listedit);
+          if (!shl.ui.isAndroid) {
+            listWin.setRightNavButton(listedit);
+          } else {
+            makebrow();
+          }
           return shl.ui.tabs.activeTab.open(listWin);
         }
       });
@@ -331,7 +354,8 @@
       var createRow, data, doneBtn, prospect, prospects, self, tableView, win;
       self = this;
       win = Ti.UI.createWindow({
-        title: 'Add Prospects'
+        title: 'Add Prospects',
+        backgroundColor: '#000000'
       });
       doneBtn = Ti.UI.createButton({
         title: 'Done',
@@ -341,7 +365,9 @@
       doneBtn.addEventListener('click', function() {
         return win.close();
       });
-      win.setRightNavButton(doneBtn);
+      if (!shl.ui.isAndroid) {
+        win.setRightNavButton(doneBtn);
+      }
       prospects = shl.Prospect.find();
       if (prospects.length < 1) {
         return win;
