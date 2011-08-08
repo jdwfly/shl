@@ -536,7 +536,6 @@ class UI
         })
         phoneMobileRow.add(phoneMobileLabel)
         phoneSection.add(phoneMobileRow)
-      # TODO: Test on device to see if this works
       phoneSection.addEventListener('click', (e) ->
         Ti.Platform.openURL('tel:' + e.source.phone)
       )
@@ -551,7 +550,6 @@ class UI
       })
       emailRow.add(emailLabel)
       emailSection.add(emailRow)
-      # TODO: Test on device to ensure email sends
       emailSection.addEventListener('click', (e) ->
         emailDialog = Ti.UI.createEmailDialog()
         emailDialog.toRecipients = [e.source.text]
@@ -920,7 +918,6 @@ class UI
     s1.footerView = genderView
     data.push(s1)
     
-    # TODO add spacing to front of fields
     s3 = Ti.UI.createTableViewSection()
     streetRow = Ti.UI.createTableViewRow({
       height: 45,
