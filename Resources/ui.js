@@ -770,24 +770,6 @@
           contactSection.add(row);
         }
       }
-      /*
-          contactSection.addContactRows = (contacts) ->
-            Ti.API.info("Contacts = " + JSON.stringify(contacts))
-            # Loop through contacts and append rows
-            for contact in contacts
-              row = Ti.UI.createTableViewRow({
-                height: 'auto'
-              })
-              rowLabel = Ti.UI.createLabel({
-                text: date('n/j/Y', contact.date) + " " + contact.type + ": " + contact.comments,
-                width: 280,
-                left: 10
-              })
-              row.add(rowLabel)
-              tableView.appendRow(row)
-            if tableView.getIndexByName('None') isnt -1
-              tableView.deleteRow(tableView.getIndexByName('None'))
-          */
       data.data.push(contactSection);
       return data;
     };
