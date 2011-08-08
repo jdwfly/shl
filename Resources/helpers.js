@@ -1,3 +1,21 @@
+function formatPhone (phone) {
+  var area, middle, last,
+  phoneArray = phone.split('');
+  if (phone.length == 10) {
+    area = phone.slice(0,3);
+    middle = phone.slice(3,6);
+    last = phone.slice(6,10);
+    return area + '-' + middle + '-' + last;
+  } else if (phone.length == 7) {
+    middle = phone.slice(0,3);
+    last = phone.slice(3,7);
+    return middle + '-' + last;
+  } else {
+    return phone;
+  }
+}
+
+// PHPjs functions below
 function date (format, timestamp) {
     var that = this,
         jsdate, f, formatChr = /\\?([a-z])/gi,

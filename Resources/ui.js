@@ -562,7 +562,7 @@
         if (prospect.phoneHome !== '') {
           phoneHomeRow = Ti.UI.createTableViewRow();
           phoneHomeLabel = Ti.UI.createLabel({
-            text: 'home: ' + prospect.phoneHome,
+            text: 'home: ' + formatPhone(prospect.phoneHome),
             phone: prospect.phoneHome,
             left: 10
           });
@@ -572,7 +572,7 @@
         if (prospect.phoneMobile !== '') {
           phoneMobileRow = Ti.UI.createTableViewRow();
           phoneMobileLabel = Ti.UI.createLabel({
-            text: 'mobile: ' + prospect.phoneMobile,
+            text: 'mobile: ' + formatPhone(prospect.phoneMobile),
             phone: prospect.phoneMobile,
             left: 10
           });
