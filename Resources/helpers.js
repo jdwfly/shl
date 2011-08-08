@@ -1,59 +1,4 @@
 function date (format, timestamp) {
-    // http://kevin.vanzonneveld.net
-    // +   original by: Carlos R. L. Rodrigues (http://www.jsfromhell.com)
-    // +      parts by: Peter-Paul Koch (http://www.quirksmode.org/js/beat.html)
-    // +   improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
-    // +   improved by: MeEtc (http://yass.meetcweb.com)
-    // +   improved by: Brad Touesnard
-    // +   improved by: Tim Wiel
-    // +   improved by: Bryan Elliott
-    //
-    // +   improved by: Brett Zamir (http://brett-zamir.me)
-    // +   improved by: David Randall
-    // +      input by: Brett Zamir (http://brett-zamir.me)
-    // +   bugfixed by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
-    // +   improved by: Brett Zamir (http://brett-zamir.me)
-    // +   improved by: Brett Zamir (http://brett-zamir.me)
-    // +   improved by: Theriault
-    // +  derived from: gettimeofday
-    // +      input by: majak
-    // +   bugfixed by: majak
-    // +   bugfixed by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
-    // +      input by: Alex
-    // +   bugfixed by: Brett Zamir (http://brett-zamir.me)
-    // +   improved by: Theriault
-    // +   improved by: Brett Zamir (http://brett-zamir.me)
-    // +   improved by: Theriault
-    // +   improved by: Thomas Beaucourt (http://www.webapp.fr)
-    // +   improved by: JT
-    // +   improved by: Theriault
-    // +   improved by: RafaÅ‚ Kukawski (http://blog.kukawski.pl)
-    // +      input by: Martin
-    // +      input by: Alex Wilson
-    // %        note 1: Uses global: php_js to store the default timezone
-    // %        note 2: Although the function potentially allows timezone info (see notes), it currently does not set
-    // %        note 2: per a timezone specified by date_default_timezone_set(). Implementers might use
-    // %        note 2: this.php_js.currentTimezoneOffset and this.php_js.currentTimezoneDST set by that function
-    // %        note 2: in order to adjust the dates in this function (or our other date functions!) accordingly
-    // *     example 1: date('H:m:s \\m \\i\\s \\m\\o\\n\\t\\h', 1062402400);
-    // *     returns 1: '09:09:40 m is month'
-    // *     example 2: date('F j, Y, g:i a', 1062462400);
-    // *     returns 2: 'September 2, 2003, 2:26 am'
-    // *     example 3: date('Y W o', 1062462400);
-    // *     returns 3: '2003 36 2003'
-    // *     example 4: x = date('Y m d', (new Date()).getTime()/1000); 
-    // *     example 4: (x+'').length == 10 // 2009 01 09
-    // *     returns 4: true
-    // *     example 5: date('W', 1104534000);
-    // *     returns 5: '53'
-    // *     example 6: date('B t', 1104534000);
-    // *     returns 6: '999 31'
-    // *     example 7: date('W U', 1293750000.82); // 2010-12-31
-    // *     returns 7: '52 1293750000'
-    // *     example 8: date('W', 1293836400); // 2011-01-01
-    // *     returns 8: '52'
-    // *     example 9: date('W Y-m-d', 1293974054); // 2011-01-02
-    // *     returns 9: '52 2011-01-02'
     var that = this,
         jsdate, f, formatChr = /\\?([a-z])/gi,
         formatChrCb,
@@ -261,23 +206,6 @@ function date (format, timestamp) {
 }
 
 function strtotime (str, now) {
-    // http://kevin.vanzonneveld.net
-    // +   original by: Caio Ariede (http://caioariede.com)
-    // +   improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
-    // +      input by: David
-    // +   improved by: Caio Ariede (http://caioariede.com)
-    // +   improved by: Brett Zamir (http://brett-zamir.me)
-    // +   bugfixed by: Wagner B. Soares
-    // +   bugfixed by: Artur Tchernychev
-    // %        note 1: Examples all have a fixed timestamp to prevent tests to fail because of variable time(zones)
-    // *     example 1: strtotime('+1 day', 1129633200);
-    // *     returns 1: 1129719600
-    // *     example 2: strtotime('+1 week 2 days 4 hours 2 seconds', 1129633200);
-    // *     returns 2: 1130425202
-    // *     example 3: strtotime('last month', 1129633200);
-    // *     returns 3: 1127041200
-    // *     example 4: strtotime('2009-05-04 08:30:00');
-    // *     returns 4: 1241418600
     var i, match, s, strTmp = '',
         parse = '';
 
@@ -444,13 +372,5 @@ function strtotime (str, now) {
 }
 
 function time () {
-    // Return current UNIX timestamp  
-    // 
-    // version: 1103.1210
-    // discuss at: http://phpjs.org/functions/time    // +   original by: GeekFG (http://geekfg.blogspot.com)
-    // +   improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
-    // +   improved by: metjay
-    // +   improved by: HKM
-    // *     example 1: timeStamp = time();    // *     results 1: timeStamp > 1000000000 && timeStamp < 2000000000
     return Math.floor(new Date().getTime() / 1000);
 }
