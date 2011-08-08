@@ -62,6 +62,9 @@
         }
         if (!tableView.editing) {
           Ti.API.info(JSON.stringify(e.row));
+          if (!(e.row.prospect != null)) {
+            return false;
+          }
           prospectWin = self.createProspectViewWindow(e.row.prospect);
           return self.tabs.activeTab.open(prospectWin);
         }
@@ -142,12 +145,15 @@
       var addressLabel, addressRow, addressSection, attendedRow, bogusNoneRow, bogusSection, contact, contactLabel, contactSection, contacts, data, decision, decisionList, decisionRow, emailLabel, emailRow, emailSection, essRow, firstContactLabel, firstContactRow, firstContactSection, headerView, nameLabel, nextStepLabel, noneRow, phoneHomeLabel, phoneHomeRow, phoneMobileLabel, phoneMobileRow, phoneSection, prevBaptRow, prevSavedRow, recordContactButton, row, rowLabel, self, statusLabel, statusRow, statusSection, statusValueLabel, _i, _j, _len, _len2;
       self = this;
       data = {};
+      if (!(prospect.id != null)) {
+        return {};
+      }
       prospect = shl.Prospect.find(prospect.id);
       headerView = Ti.UI.createView({
         height: '116'
       });
       nameLabel = Ti.UI.createLabel({
-        text: prospect.formatName(),
+        text: typeof prospect.formatName === "function" ? prospect.formatName() : void 0,
         left: 10,
         top: 7,
         width: 300,
@@ -158,7 +164,7 @@
         }
       });
       contactLabel = Ti.UI.createLabel({
-        text: 'Last Contact: ' + prospect.formatContactPretty(),
+        text: 'Last Contact: ' + (typeof prospect.formatContactPretty === "function" ? prospect.formatContactPretty() : void 0),
         left: 10,
         top: 25,
         width: 300,
@@ -273,7 +279,7 @@
         tdata = [];
         today = new Date();
         dateSection = Ti.UI.createTableViewSection({
-          headerTitle: prospect.formatName()
+          headerTitle: typeof prospect.formatName === "function" ? prospect.formatName() : void 0
         });
         dateRow = Ti.UI.createTableViewRow();
         dateField = Ti.UI.createTextField({
@@ -363,7 +369,7 @@
           });
           typeData = [];
           typeDecisionSection = Ti.UI.createTableViewSection({
-            headerTitle: prospect.formatName()
+            headerTitle: typeof prospect.formatName === "function" ? prospect.formatName() : void 0
           });
           savedRow = Ti.UI.createTableViewRow({
             title: 'Saved',
@@ -527,7 +533,7 @@
       headerView.add(recordContactButton);
       data.headerView = headerView;
       data.data = [];
-      if (prospect.formatAddress() !== '') {
+      if ((typeof prospect.formatAddress === "function" ? prospect.formatAddress() : void 0) !== '') {
         addressSection = Ti.UI.createTableViewSection();
         addressRow = Ti.UI.createTableViewRow({
           height: 75
@@ -547,7 +553,7 @@
         });
         data.data.push(addressSection);
       }
-      if (prospect.phoneHome !== '' && prospect.phoneMobile !== '') {
+      if (prospect.phoneHome !== '' || prospect.phoneMobile !== '') {
         phoneSection = Ti.UI.createTableViewSection();
         if (prospect.phoneHome !== '') {
           phoneHomeRow = Ti.UI.createTableViewRow();
@@ -796,7 +802,7 @@
             height: 'auto',
             hasChild: true,
             selectedBackgroundColor: '#ffffff',
-            searchTerm: prospect.formatName() + ' ' + prospect.formatAddress()
+            searchTerm: (typeof prospect.formatName === "function" ? prospect.formatName() : void 0) + ' ' + (typeof prospect.formatAddress === "function" ? prospect.formatAddress() : void 0)
           });
           content = Ti.UI.createView({
             height: 'auto',
@@ -807,7 +813,7 @@
             right: 10
           });
           contentTitle = Ti.UI.createLabel({
-            text: prospect.formatName(),
+            text: typeof prospect.formatName === "function" ? prospect.formatName() : void 0,
             font: {
               fontWeight: 'bold',
               fontSize: 18
@@ -817,7 +823,7 @@
             left: 5
           });
           lastContactLabel = Ti.UI.createLabel({
-            text: 'Last Contact: ' + prospect.formatContactPretty(),
+            text: 'Last Contact: ' + (typeof prospect.formatContactPretty === "function" ? prospect.formatContactPretty() : void 0),
             font: {
               fontWeight: 'normal',
               fontSize: 12
@@ -846,15 +852,13 @@
           });
           starImage.addEventListener('click', function(e) {
             var currentProspect, starList, z;
-            Ti.API.info('Star click event fired');
             currentProspect = shl.Prospect.find(starImage.prospectID);
             if (!currentProspect.isStarred()) {
               this.backgroundImage = 'images/star-on.png';
               starList = shl.List.find(1);
-              starList.createListing({
+              return starList.createListing({
                 prospect_id: this.prospectID
               });
-              return Ti.API.info('Star should be on now : ' + this.image);
             } else {
               this.backgroundImage = 'images/star-off.png';
               z = shl.Listing.find({
@@ -864,8 +868,7 @@
                   prospect_id: this.prospectID
                 }
               });
-              z.destroy();
-              return Ti.API.info('Star should be off now : ' + this.image);
+              return z.destroy();
             }
           });
           row.add(starImage);

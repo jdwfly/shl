@@ -62,6 +62,9 @@ class UI
           return true
       if not tableView.editing
         Ti.API.info(JSON.stringify(e.row))
+        # Don't open a window if there is no prospect in the row
+        if !e.row.prospect?
+          return false
         prospectWin = self.createProspectViewWindow(e.row.prospect)
         self.tabs.activeTab.open(prospectWin)
     )
@@ -135,13 +138,16 @@ class UI
   processProspectViewData : (prospect) ->
     self = this
     data = {}
+    # Sometimes prospect will be undefined so exit
+    if !prospect.id?
+      return {}
     prospect = shl.Prospect.find(prospect.id)
     
     headerView = Ti.UI.createView({
       height: '116'
     })
     nameLabel = Ti.UI.createLabel({
-      text: prospect.formatName(),
+      text: prospect.formatName?(),
       left: 10,
       top: 7,
       width: 300,
@@ -150,7 +156,7 @@ class UI
       font: {fontSize: 20}
     })
     contactLabel = Ti.UI.createLabel({
-      text: 'Last Contact: ' + prospect.formatContactPretty(),
+      text: 'Last Contact: ' + prospect.formatContactPretty?(),
       left: 10,
       top: 25,
       width: 300,
@@ -251,7 +257,7 @@ class UI
       
       today = new Date()
       dateSection = Ti.UI.createTableViewSection({
-        headerTitle: prospect.formatName()
+        headerTitle: prospect.formatName?()
       })
       dateRow = Ti.UI.createTableViewRow()
       dateField = Ti.UI.createTextField({
@@ -342,7 +348,7 @@ class UI
         })
         typeData = []
         typeDecisionSection = Ti.UI.createTableViewSection({
-          headerTitle: prospect.formatName()
+          headerTitle: prospect.formatName?()
         })
         savedRow = Ti.UI.createTableViewRow({
           title: 'Saved',
@@ -493,7 +499,7 @@ class UI
     data.headerView = headerView
     data.data = []
     
-    if prospect.formatAddress() isnt ''
+    if prospect.formatAddress?() isnt ''
       addressSection = Ti.UI.createTableViewSection()
       addressRow = Ti.UI.createTableViewRow({height: 75})
       addressLabel = Ti.UI.createLabel({
@@ -510,7 +516,7 @@ class UI
       )
       data.data.push(addressSection)
     
-    if prospect.phoneHome isnt '' and prospect.phoneMobile isnt ''
+    if prospect.phoneHome isnt '' or prospect.phoneMobile isnt ''
       phoneSection = Ti.UI.createTableViewSection()
       if prospect.phoneHome isnt ''
         phoneHomeRow = Ti.UI.createTableViewRow()
@@ -710,7 +716,7 @@ class UI
         height: 'auto',
         hasChild: true,
         selectedBackgroundColor: '#ffffff',
-        searchTerm: prospect.formatName() + ' ' + prospect.formatAddress()
+        searchTerm: prospect.formatName?() + ' ' + prospect.formatAddress?()
       })
       content = Ti.UI.createView({
         height: 'auto',
@@ -721,14 +727,14 @@ class UI
         right: 10
       })
       contentTitle = Ti.UI.createLabel({
-        text: prospect.formatName(),
+        text: prospect.formatName?(),
         font: {fontWeight: 'bold', fontSize:18},
         height: 'auto',
         width: 'auto',
         left: 5
       })
       lastContactLabel = Ti.UI.createLabel({
-        text: 'Last Contact: ' + prospect.formatContactPretty(),
+        text: 'Last Contact: ' + prospect.formatContactPretty?(),
         font: {fontWeight: 'normal', fontSize: 12},
         height: 'auto',
         width: 'auto',
@@ -750,7 +756,6 @@ class UI
         prospectID: prospect.id
       })
       starImage.addEventListener('click', (e) ->
-        Ti.API.info('Star click event fired')
         currentProspect = shl.Prospect.find(starImage.prospectID)
         if not currentProspect.isStarred()
           @backgroundImage = 'images/star-on.png'
@@ -758,7 +763,6 @@ class UI
           starList.createListing({
             prospect_id: @prospectID
           })
-          Ti.API.info('Star should be on now : ' + @image)
         else
           @backgroundImage = 'images/star-off.png'
           z = shl.Listing.find({
@@ -769,7 +773,6 @@ class UI
             }
           })
           z.destroy()
-          Ti.API.info('Star should be off now : ' + @image)
       )
       row.add(starImage)
       content.add(contentTitle)
