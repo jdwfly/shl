@@ -1331,15 +1331,15 @@ class UI
         deleteProspectDialog.addEventListener('click', (f) ->
           if f.index is 0
             # delete prospect
-            if prospect.isStarred?()
-              z = shl.Listing.find({
-                first: true,
-                where: {
-                  list_id: 1,
-                  prospect_id: prospect.id
-                }
-              })
-              z.destroy()
+            #if prospect.isStarred?()
+            #  z = shl.Listing.find({
+            #    first: true,
+            #    where: {
+            #      list_id: 1,
+            #      prospect_id: prospect.id
+            #    }
+            #  })
+            #  z.destroy()
             prospect.destroy()
             win.deleteProspect = true
             win.exitValue = false

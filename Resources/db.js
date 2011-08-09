@@ -249,6 +249,28 @@
 
   });
   
+
+  shl.Prospect.beforeDestroy(function(prospect) {
+    z = shl.Listing.find({
+      where : {
+        prospect_id : prospect.id
+      }
+    });
+    for (listing in z){
+      listing.destroy();
+    }
+    y = shl.Contact.find({
+      where : {
+        prospect_id : prospect.id
+      }
+    });
+    for (contact in y){
+      contact.destroy();
+    }
+  });
+
+
+  
   
   
   shl.Prospect.observe('beforeUpdate', function(prospect){
