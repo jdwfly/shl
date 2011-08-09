@@ -1477,18 +1477,7 @@
           };
           deleteProspectDialog = Ti.UI.createOptionDialog(options);
           deleteProspectDialog.addEventListener('click', function(f) {
-            var z;
             if (f.index === 0) {
-              if (typeof prospect.isStarred === "function" ? prospect.isStarred() : void 0) {
-                z = shl.Listing.find({
-                  first: true,
-                  where: {
-                    list_id: 1,
-                    prospect_id: prospect.id
-                  }
-                });
-                z.destroy();
-              }
               prospect.destroy();
               win.deleteProspect = true;
               win.exitValue = false;
