@@ -403,9 +403,8 @@
     Ti.App.Properties.setBool('dbInitComplete', true);
   }
   
-  // Check for orphaned starred prospects records
+  // Check and remove orphaned starred prospects records
   function removeStarOrphans() {
-    var starList;
     starListing = shl.Listing.find({
       all: true,
       order: 'id DESC',
@@ -426,7 +425,6 @@
     }
   }
   removeStarOrphans();
-  
   
   //************************* Tests ******************************************
   /*
