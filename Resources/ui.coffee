@@ -840,10 +840,18 @@ class UI
       backgroundColor: 'transparent',
       borderWidth: 0,
       borderColor: 'transparent',
-      height: 50,
+      height: if prospect? then 0 else 60,
       selectionStyle: "none"
     })
     if @platform is 'iPhone OS'
+      if prospect?
+        if sname.value isnt ''
+          genderValue = 1
+        if fname.value isnt ''
+          genderValue = 0
+        if sname.value isnt '' and fname.value isnt ''
+          genderValue = 2
+      
       gender = Titanium.UI.createTabbedBar({
         labels: ['Male', 'Female', 'Couple'],
         backgroundColor: '#336699',
@@ -851,7 +859,7 @@ class UI
         height: 45,
         top: 5,
         width: 302,
-        index: 0
+        index: if prospect? then genderValue else 0
       })
       genderView.addEventListener('click', (e) ->
         if @index == 0

@@ -871,7 +871,7 @@
       })();
     };
     UI.prototype.createProspectFormWin = function(prospect) {
-      var attendedRow, b, cancel, city, citystateRow, country, data, deleteProspectButton, deleteProspectView, email, emailRow, enrolledRow, fname, fnameRow, gender, genderView, homeLabel, homeRow, homeText, initContactLabel, initialContactRow, initialPicker, lname, lnameRow, mobileLabel, mobileRow, mobileText, nameSep, pocRow, pocTextfield, prevBaptRow, prevSavedRow, s1, s3, s4, s5, s6, s7, self, sep1, sep2, sep3, sep4, sep5, sname, state, street, streetRow, tableView, win, zip, zipcountryRow;
+      var attendedRow, b, cancel, city, citystateRow, country, data, deleteProspectButton, deleteProspectView, email, emailRow, enrolledRow, fname, fnameRow, gender, genderValue, genderView, homeLabel, homeRow, homeText, initContactLabel, initialContactRow, initialPicker, lname, lnameRow, mobileLabel, mobileRow, mobileText, nameSep, pocRow, pocTextfield, prevBaptRow, prevSavedRow, s1, s3, s4, s5, s6, s7, self, sep1, sep2, sep3, sep4, sep5, sname, state, street, streetRow, tableView, win, zip, zipcountryRow;
       self = this;
       win = Ti.UI.createWindow({
         title: prospect != null ? 'Edit Prospect' : 'Add Prospect',
@@ -938,10 +938,21 @@
         backgroundColor: 'transparent',
         borderWidth: 0,
         borderColor: 'transparent',
-        height: 50,
+        height: prospect != null ? 0 : 60,
         selectionStyle: "none"
       });
       if (this.platform === 'iPhone OS') {
+        if (prospect != null) {
+          if (sname.value !== '') {
+            genderValue = 1;
+          }
+          if (fname.value !== '') {
+            genderValue = 0;
+          }
+          if (sname.value !== '' && fname.value !== '') {
+            genderValue = 2;
+          }
+        }
         gender = Titanium.UI.createTabbedBar({
           labels: ['Male', 'Female', 'Couple'],
           backgroundColor: '#336699',
@@ -949,7 +960,7 @@
           height: 45,
           top: 5,
           width: 302,
-          index: 0
+          index: prospect != null ? genderValue : 0
         });
         genderView.addEventListener('click', function(e) {
           if (this.index === 0) {
