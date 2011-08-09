@@ -256,8 +256,9 @@
         prospect_id : prospect.id
       }
     });
+    Ti.API.info(JSON.stringify(z));
     for (listing in z){
-      listing.destroy();
+      z[listing].destroy();
     }
     y = shl.Contact.find({
       where : {
@@ -265,7 +266,7 @@
       }
     });
     for (contact in y){
-      contact.destroy();
+      y[contact].destroy();
     }
   });
 
@@ -426,13 +427,10 @@
   }
   
   // Check and remove orphaned starred prospects records
-  function removeStarOrphans() {
+  function removeListingOrphans() {
     starListing = shl.Listing.find({
       all: true,
-      order: 'id DESC',
-      where: {
-        list_id: 1
-      }
+      order: 'id DESC'
     });
     if (starListing.length > 0) {
       for (id in starListing) {
@@ -446,7 +444,7 @@
       }
     }
   }
-  removeStarOrphans();
+  removeListingOrphans();
   
   //************************* Tests ******************************************
   /*
