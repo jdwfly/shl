@@ -257,8 +257,10 @@
       }
     });
     for (var listing in z){
-      fulllisting = shl.Listing.find(listing.id);
-      fulllisting.destroy();
+      if (z[listing].id != null) {
+        fulllisting = shl.Listing.find(z[listing].id);
+        fulllisting.destroy();
+      }
     }
     var y = shl.Contact.find({
       where : {
@@ -266,8 +268,10 @@
       }
     });
     for (var contact in y){
-      fullcontact = shl.Contact.find(contact.id);
-      fullcontact.destroy();
+      if (y[contact].id != null) {
+        fullcontact = shl.Contact.find(y[contact].id);
+        fullcontact.destroy();
+      }
     }
   });
 
