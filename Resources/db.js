@@ -403,6 +403,31 @@
     Ti.App.Properties.setBool('dbInitComplete', true);
   }
   
+  // Check for orphaned starred prospects records
+  function removeStarOrphans() {
+    var starList;
+    starListing = shl.Listing.find({
+      all: true,
+      order: 'id DESC',
+      where: {
+        list_id: 1
+      }
+    });
+    if (starListing.length > 0) {
+      for (id in starListing) {
+        Ti.API.info('Listing = ' + JSON.stringify(starListing[id]));
+        if (starListing[id].id != null) {
+          prospect = shl.Prospect.find(starListing[id].prospect_id);
+          if (prospect == false) {
+            starListing[id].destroy();
+          }
+        }
+      }
+    }
+  }
+  removeStarOrphans();
+  
+  
   //************************* Tests ******************************************
   /*
     var testProspect = shl.Prospect.create({
