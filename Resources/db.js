@@ -428,13 +428,10 @@
   }
   
   // Check and remove orphaned starred prospects records
-  function removeStarOrphans() {
+  function removeListingOrphans() {
     starListing = shl.Listing.find({
       all: true,
-      order: 'id DESC',
-      where: {
-        list_id: 1
-      }
+      order: 'id DESC'
     });
     if (starListing.length > 0) {
       for (id in starListing) {
@@ -448,7 +445,7 @@
       }
     }
   }
-  removeStarOrphans();
+  removeListingOrphans();
   
   //************************* Tests ******************************************
   /*
