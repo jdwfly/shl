@@ -251,21 +251,23 @@
   
 
   shl.Prospect.beforeDestroy(function(prospect) {
-    z = shl.Listing.find({
+    var z = shl.Listing.find({
       where : {
         prospect_id : prospect.id
       }
     });
-    for (listing in z){
-      listing.destroy();
+    for (var listing in z){
+      fulllisting = shl.Listing.find(listing.id);
+      fulllisting.destroy();
     }
-    y = shl.Contact.find({
+    var y = shl.Contact.find({
       where : {
         prospect_id : prospect.id
       }
     });
-    for (contact in y){
-      contact.destroy();
+    for (var contact in y){
+      fullcontact = shl.Contact.find(contact.id);
+      fullcontact.destroy();
     }
   });
 
