@@ -988,6 +988,9 @@
                 visible: true
               });
             });
+            sname.animate({
+              visible: true
+            });
             sname.top = -40;
             if (!sname.value) {
               sname.value = fname.value;
@@ -1001,47 +1004,58 @@
               sname.animate({
                 top: 0
               });
-              return nameSep.visible = true;
+              nameSep.visible = true;
+              return sname.top = 0;
+            });
+            sname.animate({
+              visible: true
             });
             return sname.animate({
-              visible: true
+              top: 0
             });
           }
         });
         genderView.add(gender);
-      } else if (this.isAndroid) {
-        fnameRow.height = 80;
-        sname.top = 0;
-      }
-      if (fname.value !== '' && sname.value !== '') {
-        fnameRow.height = 80;
-        fname.animate({
-          visible: true
-        }, function() {
-          sname.animate({
-            top: 0
+        if (fname.value !== '' && sname.value !== '') {
+          fnameRow.height = 80;
+          fname.animate({
+            visible: true
+          }, function() {
+            sname.animate({
+              top: 0
+            });
+            return nameSep.visible = true;
           });
-          return nameSep.visible = true;
-        });
-        sname.animate({
-          visible: true
-        });
-      } else if (sname.value !== '') {
-        nameSep.visible = false;
-        fnameRow.height = 40;
-        fname.animate({
-          visible: false
-        }, function() {
-          return sname.animate({
+          sname.top = 0;
+          nameSep.visible = true;
+          sname.visible = true;
+          sname.animate({
             visible: true
           });
-        });
-        sname.top = -40;
-        if (!sname.value) {
-          sname.value = fname.value;
+        } else if (sname.value !== '') {
+          nameSep.visible = false;
+          fnameRow.height = 40;
+          fname.visible = false;
+          fname.animate({
+            visible: false
+          }, function() {
+            return sname.animate({
+              visible: true
+            });
+          });
+          sname.visible = true;
+          sname.top = -40;
+          if (!sname.value) {
+            sname.value = fname.value;
+          }
+          fname.value = '';
         }
-        fname.value = '';
       }
+      /*
+          if @isAndroid
+            fnameRow.height = 80
+            sname.top = 0
+          */
       s1.footerView = genderView;
       data.push(s1);
       s3 = Ti.UI.createTableViewSection();

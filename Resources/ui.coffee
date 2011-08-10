@@ -878,6 +878,7 @@ class UI
           fname.animate({visible:false},()->
             sname.animate({visible:true})
           )
+          sname.animate({visible:true})
           sname.top = -40
           if not sname.value
             sname.value = fname.value
@@ -887,30 +888,39 @@ class UI
           fname.animate({visible:true},()->
             sname.animate({top:0})
             nameSep.visible = true
+            sname.top = 0
           )
           sname.animate({visible:true})
+          sname.animate({top:0})
       )
       genderView.add(gender)
-    else if @isAndroid
+      if fname.value != '' and sname.value != ''
+        fnameRow.height = 80
+        fname.animate({visible:true},()->
+          sname.animate({top:0})
+          nameSep.visible = true
+        )
+        sname.top = 0
+        nameSep.visible = true
+        sname.visible = true
+        sname.animate({visible:true})
+      else if sname.value != ''
+        nameSep.visible = false
+        fnameRow.height = 40
+        fname.visible = false
+        fname.animate({visible:false},()->
+          sname.animate({visible:true})
+        )
+        sname.visible = true
+        sname.top = -40
+        if not sname.value
+          sname.value = fname.value
+        fname.value = ''
+    ###
+    if @isAndroid
       fnameRow.height = 80
       sname.top = 0
-    if fname.value != '' and sname.value != ''
-      fnameRow.height = 80
-      fname.animate({visible:true},()->
-        sname.animate({top:0})
-        nameSep.visible = true
-      )
-      sname.animate({visible:true})
-    else if sname.value != ''
-      nameSep.visible = false
-      fnameRow.height = 40
-      fname.animate({visible:false},()->
-        sname.animate({visible:true})
-      )
-      sname.top = -40
-      if not sname.value
-        sname.value = fname.value
-      fname.value = ''
+    ###
     s1.footerView = genderView
     data.push(s1)
     
