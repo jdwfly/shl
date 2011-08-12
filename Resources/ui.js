@@ -648,27 +648,6 @@
         });
         bogusSection.add(bogusNoneRow);
       }
-      /*
-          bogusSection.updateRows = () ->
-            bogusSection.rows = []
-            if prevSavedRow? then bogusSection.add(prevSavedRow)
-            if prevBaptRow? then bogusSection.add(prevBaptRow)
-            if attendedRow? then bogusSection.add(attendedRow)
-            if essRow? then bogusSection.add(essRow)
-            decisionList = prospect.getContactList({
-              where: 'prospect_id = '+prospect.id+' AND (type = "Saved" OR type="Baptized" OR type="Joined the Church")'
-            })
-            Ti.API.info(decisionList)
-            if decisionList.length >= 1
-              for decision in decisionList
-                decisionRow = Ti.UI.createTableViewRow({
-                  title: decision.individual + " - " + decision.type + " " + date('n/j/Y', decision.date)
-                })
-                bogusSection.add(decisionRow)
-            if bogusSection.rows.length is 0
-              bogusNoneRow = Ti.UI.createTableViewRow({title: 'None', name: 'bogusNone'})
-              bogusSection.add(bogusNoneRow)
-          */
       data.data.push(bogusSection);
       firstContactSection = Ti.UI.createTableViewSection();
       firstContactRow = Ti.UI.createTableViewRow({
@@ -871,7 +850,7 @@
       })();
     };
     UI.prototype.createProspectFormWin = function(prospect) {
-      var attendedRow, b, cancel, city, citystateRow, country, data, deleteProspectButton, deleteProspectView, email, emailRow, enrolledRow, fname, fnameRow, gender, genderValue, genderView, homeLabel, homeRow, homeText, initContactLabel, initialContactRow, initialPicker, lname, lnameRow, mobileLabel, mobileRow, mobileText, nameSep, pocRow, pocTextfield, prevBaptRow, prevSavedRow, s1, s3, s4, s5, s6, s7, self, sep1, sep2, sep3, sep4, sep5, sname, state, street, streetRow, tableView, win, zip, zipcountryRow;
+      var attendValue, attendedRow, b, cancel, city, citystateRow, country, data, deleteProspectButton, email, emailRow, enrolledRow, enrolledValue, fname, fnameRow, gender, genderValue, genderView, homeLabel, homeRow, homeText, initContactLabel, initialContactRow, initialPicker, lname, lnameRow, mobileLabel, mobileRow, mobileText, nameSep, pocRow, pocTextfield, prevBaptRow, prevBaptValue, prevSavedRow, prevSavedValue, s1, s3, s4, s5, s6, s7, self, sep1, sep2, sep3, sep4, sep5, sname, state, street, streetRow, tableFooterView, tableView, win, zip, zipcountryRow;
       self = this;
       win = Ti.UI.createWindow({
         title: prospect != null ? 'Edit Prospect' : 'Add Prospect',
@@ -1292,34 +1271,27 @@
       s6.add(pocRow);
       data.push(s6);
       s7 = Ti.UI.createTableViewSection();
+      if (prospect != null) {
+        prevSavedValue = prospect.previouslySaved.toFixed() == 1 ? true : false;
+        prevBaptValue = prospect.previouslyBaptized.toFixed() == 1 ? true : false;
+        attendValue = prospect.attended.toFixed() == 1 ? true : false;
+        enrolledValue = prospect.sundaySchool.toFixed() == 1 ? true : false;
+      }
       prevSavedRow = Ti.UI.createTableViewRow({
         title: 'Previously Saved',
-        hasCheck: prospect != null ? prospect.previouslySaved.toFixed() : false
+        hasCheck: prospect != null ? prevSavedValue : false
       });
       prevBaptRow = Ti.UI.createTableViewRow({
         title: 'Previously Baptized',
-        hasCheck: prospect != null ? prospect.previouslyBaptized.toFixed() : false
+        hasCheck: prospect != null ? prevBaptValue : false
       });
       attendedRow = Ti.UI.createTableViewRow({
         title: 'Attended Church',
-        hasCheck: prospect != null ? prospect.attended.toFixed() : false
+        hasCheck: prospect != null ? attendValue : false
       });
       enrolledRow = Ti.UI.createTableViewRow({
         title: 'Enrolled in Sunday School',
-        hasCheck: prospect != null ? prospect.sundaySchool.toFixed() : false
-      });
-      s7.add(prevSavedRow);
-      s7.add(prevBaptRow);
-      s7.add(attendedRow);
-      s7.add(enrolledRow);
-      s7.addEventListener('click', function(e) {
-        if (!self.isAndroid) {
-          if (e.row.hasCheck) {
-            return e.row.hasCheck = false;
-          } else {
-            return e.row.hasCheck = true;
-          }
-        }
+        hasCheck: prospect != null ? enrolledValue : false
       });
       if (this.isAndroid) {
         prevSavedRow.addEventListener('click', function(e) {
@@ -1351,6 +1323,19 @@
           }
         });
       }
+      s7.add(prevSavedRow);
+      s7.add(prevBaptRow);
+      s7.add(attendedRow);
+      s7.add(enrolledRow);
+      s7.addEventListener('click', function(e) {
+        if (!self.isAndroid) {
+          if (e.row.hasCheck) {
+            return e.row.hasCheck = false;
+          } else {
+            return e.row.hasCheck = true;
+          }
+        }
+      });
       data.push(s7);
       b = Ti.UI.createButton({
         systemButton: Ti.UI.iPhone.SystemButton.SAVE
@@ -1464,21 +1449,21 @@
         data: data,
         style: Titanium.UI.iPhone.TableViewStyle.GROUPED
       });
+      tableFooterView = Ti.UI.createView({
+        layout: 'vertical',
+        height: 0,
+        width: 300
+      });
       if (this.isAndroid) {
         tableView.backgroundColor = '#181818';
         b.height = 40;
         b.width = 300;
         b.title = 'Save Prospect';
-        tableView.footerView = b;
+        tableFooterView.add(b);
       } else {
         win.setRightNavButton(b);
       }
       if (prospect != null) {
-        deleteProspectView = Ti.UI.createView({
-          width: 300,
-          height: 57,
-          layout: 'vertical'
-        });
         deleteProspectButton = Ti.UI.createButton({
           width: 300,
           height: 57,
@@ -1514,9 +1499,14 @@
           });
           return deleteProspectDialog.show();
         });
-        deleteProspectView.add(deleteProspectButton);
-        tableView.footerView = deleteProspectView;
+        tableFooterView.add(deleteProspectButton);
+        if (this.isAndroid) {
+          tableFooterView.height = 120;
+        } else {
+          tableFooterView.height = 60;
+        }
       }
+      tableView.footerView = tableFooterView;
       win.add(tableView);
       return win;
     };

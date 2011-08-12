@@ -587,27 +587,6 @@ class UI
     if !bogusSection.rows?
       bogusNoneRow = Ti.UI.createTableViewRow({title: 'None', name: 'bogusNone'})
       bogusSection.add(bogusNoneRow)
-    ###
-    bogusSection.updateRows = () ->
-      bogusSection.rows = []
-      if prevSavedRow? then bogusSection.add(prevSavedRow)
-      if prevBaptRow? then bogusSection.add(prevBaptRow)
-      if attendedRow? then bogusSection.add(attendedRow)
-      if essRow? then bogusSection.add(essRow)
-      decisionList = prospect.getContactList({
-        where: 'prospect_id = '+prospect.id+' AND (type = "Saved" OR type="Baptized" OR type="Joined the Church")'
-      })
-      Ti.API.info(decisionList)
-      if decisionList.length >= 1
-        for decision in decisionList
-          decisionRow = Ti.UI.createTableViewRow({
-            title: decision.individual + " - " + decision.type + " " + date('n/j/Y', decision.date)
-          })
-          bogusSection.add(decisionRow)
-      if bogusSection.rows.length is 0
-        bogusNoneRow = Ti.UI.createTableViewRow({title: 'None', name: 'bogusNone'})
-        bogusSection.add(bogusNoneRow)
-    ###
     data.data.push(bogusSection)
     
     firstContactSection = Ti.UI.createTableViewSection()
@@ -1156,31 +1135,27 @@ class UI
     data.push(s6)
     
     s7 = Ti.UI.createTableViewSection()
+    if prospect?
+      prevSavedValue = `prospect.previouslySaved.toFixed() == 1 ? true : false`
+      prevBaptValue = `prospect.previouslyBaptized.toFixed() == 1 ? true : false`
+      attendValue = `prospect.attended.toFixed() == 1 ? true : false`
+      enrolledValue = `prospect.sundaySchool.toFixed() == 1 ? true : false`
     prevSavedRow = Ti.UI.createTableViewRow({
       title: 'Previously Saved',
-      hasCheck: if prospect? then prospect.previouslySaved.toFixed() else false
+      hasCheck: if prospect? then prevSavedValue else false
     })
     prevBaptRow = Ti.UI.createTableViewRow({
       title: 'Previously Baptized',
-      hasCheck: if prospect? then prospect.previouslyBaptized.toFixed() else false
+      hasCheck: if prospect? then prevBaptValue else false
     })
     attendedRow = Ti.UI.createTableViewRow({
       title: 'Attended Church',
-      hasCheck: if prospect? then prospect.attended.toFixed() else false
+      hasCheck: if prospect? then attendValue else false
     })
     enrolledRow = Ti.UI.createTableViewRow({
       title: 'Enrolled in Sunday School',
-      hasCheck: if prospect? then prospect.sundaySchool.toFixed() else false
+      hasCheck: if prospect? then enrolledValue else false
     })
-    s7.add(prevSavedRow)
-    s7.add(prevBaptRow)
-    s7.add(attendedRow)
-    s7.add(enrolledRow)
-    s7.addEventListener('click', (e) ->
-      # Stop the event bubbling for Android
-      if !self.isAndroid
-        if e.row.hasCheck then e.row.hasCheck = false else e.row.hasCheck = true
-    )
     # Android will only fire the click event if it is on the rows not the section
     if @isAndroid
       prevSavedRow.addEventListener('click', (e) ->
@@ -1195,6 +1170,15 @@ class UI
       enrolledRow.addEventListener('click', (e) ->
         if e.row.hasCheck then e.row.hasCheck = false else e.row.hasCheck = true
       )
+    s7.add(prevSavedRow)
+    s7.add(prevBaptRow)
+    s7.add(attendedRow)
+    s7.add(enrolledRow)
+    s7.addEventListener('click', (e) ->
+      # Stop the event bubbling for Android
+      if !self.isAndroid
+        if e.row.hasCheck then e.row.hasCheck = false else e.row.hasCheck = true
+    )
     data.push(s7)
     
     b = Ti.UI.createButton({
@@ -1213,7 +1197,6 @@ class UI
       
       if prospect?
         # Update the existing prospect
-        #alert(prevSavedRow.hasCheck)
         shl.Prospect.update(prospect.id,{
           last: lname.value,
           firstMale: fname.value,
@@ -1312,21 +1295,17 @@ class UI
       data: data,
       style: Titanium.UI.iPhone.TableViewStyle.GROUPED
     })
+    tableFooterView = Ti.UI.createView({layout: 'vertical', height: 0, width: 300})
     if @isAndroid
       tableView.backgroundColor = '#181818'
       b.height = 40
       b.width = 300
       b.title = 'Save Prospect'
-      tableView.footerView = b
+      tableFooterView.add(b)
     else
       win.setRightNavButton(b)
     # Add delete button if editing prospect
     if prospect?
-      deleteProspectView = Ti.UI.createView({
-        width: 300,
-        height: 57,
-        layout: 'vertical'
-      })
       deleteProspectButton = Ti.UI.createButton({
         width: 300,
         height: 57,
@@ -1346,16 +1325,6 @@ class UI
         deleteProspectDialog = Ti.UI.createOptionDialog(options)
         deleteProspectDialog.addEventListener('click', (f) ->
           if f.index is 0
-            # delete prospect
-            #if prospect.isStarred?()
-            #  z = shl.Listing.find({
-            #    first: true,
-            #    where: {
-            #      list_id: 1,
-            #      prospect_id: prospect.id
-            #    }
-            #  })
-            #  z.destroy()
             prospect.destroy()
             win.deleteProspect = true
             win.exitValue = false
@@ -1368,9 +1337,9 @@ class UI
         )
         deleteProspectDialog.show()
       )
-      deleteProspectView.add(deleteProspectButton)
-      tableView.footerView = deleteProspectView
-    
+      tableFooterView.add(deleteProspectButton)
+      if @isAndroid then tableFooterView.height = 120 else tableFooterView.height = 60
+    tableView.footerView = tableFooterView
     win.add(tableView)
     return win
   
