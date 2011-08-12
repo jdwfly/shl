@@ -1051,11 +1051,10 @@
           fname.value = '';
         }
       }
-      /*
-          if @isAndroid
-            fnameRow.height = 80
-            sname.top = 0
-          */
+      if (this.isAndroid) {
+        fnameRow.height = 80;
+        sname.top = 0;
+      }
       s1.footerView = genderView;
       data.push(s1);
       s3 = Ti.UI.createTableViewSection();
@@ -1295,19 +1294,19 @@
       s7 = Ti.UI.createTableViewSection();
       prevSavedRow = Ti.UI.createTableViewRow({
         title: 'Previously Saved',
-        hasCheck: prospect != null ? prospect.previouslySaved : false
+        hasCheck: prospect != null ? prospect.previouslySaved.toFixed() : false
       });
       prevBaptRow = Ti.UI.createTableViewRow({
         title: 'Previously Baptized',
-        hasCheck: prospect != null ? prospect.previouslyBaptized : false
+        hasCheck: prospect != null ? prospect.previouslyBaptized.toFixed() : false
       });
       attendedRow = Ti.UI.createTableViewRow({
         title: 'Attended Church',
-        hasCheck: prospect != null ? prospect.attended : false
+        hasCheck: prospect != null ? prospect.attended.toFixed() : false
       });
       enrolledRow = Ti.UI.createTableViewRow({
         title: 'Enrolled in Sunday School',
-        hasCheck: prospect != null ? prospect.sundaySchool : false
+        hasCheck: prospect != null ? prospect.sundaySchool.toFixed() : false
       });
       s7.add(prevSavedRow);
       s7.add(prevBaptRow);

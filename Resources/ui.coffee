@@ -916,11 +916,9 @@ class UI
         if not sname.value
           sname.value = fname.value
         fname.value = ''
-    ###
     if @isAndroid
       fnameRow.height = 80
       sname.top = 0
-    ###
     s1.footerView = genderView
     data.push(s1)
     
@@ -1160,19 +1158,19 @@ class UI
     s7 = Ti.UI.createTableViewSection()
     prevSavedRow = Ti.UI.createTableViewRow({
       title: 'Previously Saved',
-      hasCheck: if prospect? then prospect.previouslySaved else false
+      hasCheck: if prospect? then prospect.previouslySaved.toFixed() else false
     })
     prevBaptRow = Ti.UI.createTableViewRow({
       title: 'Previously Baptized',
-      hasCheck: if prospect? then prospect.previouslyBaptized else false
+      hasCheck: if prospect? then prospect.previouslyBaptized.toFixed() else false
     })
     attendedRow = Ti.UI.createTableViewRow({
       title: 'Attended Church',
-      hasCheck: if prospect? then prospect.attended else false
+      hasCheck: if prospect? then prospect.attended.toFixed() else false
     })
     enrolledRow = Ti.UI.createTableViewRow({
       title: 'Enrolled in Sunday School',
-      hasCheck: if prospect? then prospect.sundaySchool else false
+      hasCheck: if prospect? then prospect.sundaySchool.toFixed() else false
     })
     s7.add(prevSavedRow)
     s7.add(prevBaptRow)
