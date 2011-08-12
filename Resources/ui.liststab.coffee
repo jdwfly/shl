@@ -461,14 +461,15 @@ class ListsTab
         countView.right = 15
       row.add(countView)
       row
-    addCustom = Ti.UI.createTableViewRow({
-      height: 45,
-      title: 'Create Custom List...',
-      listID: 'custom',
-      editable: false,
-      moveable: false
-    })
-    data.push(addCustom)
+    if !shl.ui.isAndroid
+      addCustom = Ti.UI.createTableViewRow({
+        height: 45,
+        title: 'Create Custom List...',
+        listID: 'custom',
+        editable: false,
+        moveable: false
+      })
+      data.push(addCustom)
     viewMore = Ti.UI.createTableViewRow({
       height: 45,
       title: 'View All Lists',
