@@ -206,7 +206,7 @@
         backgroundImage: '/images/button_blue.png'
       });
       recordContactButton.addEventListener('click', function(e) {
-        var closeButton, commentRow, commentSection, commentsRow, commentsTextArea, contactTableView, dateField, dateRow, dateSection, decisionSection, emailRow, letterRow, phoneRow, recordContactNav, recordContactRoot, recordContactWin, recordDecisionRow, saveButton, tdata, today, visitRow, visitSection, visitedChurchRow;
+        var closeButton, commentRow, commentSection, commentsRow, commentsTextArea, contactTableView, dateField, dateRow, dateSection, decisionSection, emailRow, letterRow, phoneRow, recordContactNav, recordContactRoot, recordContactWin, recordDecisionRow, saveButton, saveButtonListener, tdata, today, visitRow, visitSection, visitedChurchRow;
         recordContactWin = Ti.UI.createWindow({
           backgroundColor: '#ffffff',
           navBarHidden: true
@@ -214,6 +214,56 @@
         recordContactRoot = Ti.UI.createWindow({
           title: 'Record Contact'
         });
+        saveButtonListener = function(e) {
+          var commentsValue, createdContacts, dateValue, groupHasCheck, i, re, row, thisTime, typeValue, _len, _len2, _ref, _ref2;
+          re = /^\d{1,2}\/\d{1,2}\/\d{4}$/;
+          if (dateField.value !== '' && !dateField.value.match(re)) {
+            alert('Invalid date format. Please format date MM/DD/YYYY');
+            return false;
+          }
+          if (dateField.value === '') {
+            dateValue = 0;
+          } else {
+            dateValue = strtotime(dateField.value);
+            thisTime = new Date();
+            dateValue = dateValue + (thisTime.getHours() * 3600) + (thisTime.getMinutes() * 60) + thisTime.getSeconds();
+            Ti.API.info(dateValue);
+          }
+          groupHasCheck = false;
+          _ref = visitSection.rows;
+          for (i = 0, _len = _ref.length; i < _len; i++) {
+            row = _ref[i];
+            if (visitSection.rows[i].hasCheck) {
+              typeValue = visitSection.rows[i].title;
+              groupHasCheck = true;
+            }
+          }
+          if (groupHasCheck === false) {
+            alert('You must select the type of visit.');
+            return false;
+          }
+          commentsValue = commentsTextArea.value;
+          createdContacts = [];
+          createdContacts.push(prospect.createContact({
+            type: typeValue,
+            date: dateValue,
+            comments: commentsValue
+          }));
+          if (decisionSection.rows.length > 1) {
+            _ref2 = decisionSection.rows;
+            for (i = 0, _len2 = _ref2.length; i < _len2; i++) {
+              row = _ref2[i];
+              if (!decisionSection.rows[i].hasChild) {
+                createdContacts.push(prospect.createContact({
+                  type: decisionSection.rows[i].decisionType,
+                  date: dateValue,
+                  individual: decisionSection.rows[i].decisionPerson
+                }));
+              }
+            }
+          }
+          return recordContactWin.close();
+        };
         if (self.platform === 'iPhone OS') {
           closeButton = Ti.UI.createButton({
             systemButton: Ti.UI.iPhone.SystemButton.CANCEL
@@ -225,61 +275,12 @@
           saveButton = Ti.UI.createButton({
             systemButton: Ti.UI.iPhone.SystemButton.SAVE
           });
-          saveButton.addEventListener('click', function(e) {
-            var commentsValue, createdContacts, dateValue, groupHasCheck, i, re, row, thisTime, typeValue, _len, _len2, _ref, _ref2;
-            re = /^\d{1,2}\/\d{1,2}\/\d{4}$/;
-            if (dateField.value !== '' && !dateField.value.match(re)) {
-              alert('Invalid date format. Please format date MM/DD/YYYY');
-              return false;
-            }
-            if (dateField.value === '') {
-              dateValue = 0;
-            } else {
-              dateValue = strtotime(dateField.value);
-              thisTime = new Date();
-              dateValue = dateValue + (thisTime.getHours() * 3600) + (thisTime.getMinutes() * 60) + thisTime.getSeconds();
-              Ti.API.info(dateValue);
-            }
-            groupHasCheck = false;
-            _ref = visitSection.rows;
-            for (i = 0, _len = _ref.length; i < _len; i++) {
-              row = _ref[i];
-              if (visitSection.rows[i].hasCheck) {
-                typeValue = visitSection.rows[i].title;
-                groupHasCheck = true;
-              }
-            }
-            if (groupHasCheck === false) {
-              alert('You must select the type of visit.');
-              return false;
-            }
-            commentsValue = commentsTextArea.value;
-            createdContacts = [];
-            createdContacts.push(prospect.createContact({
-              type: typeValue,
-              date: dateValue,
-              comments: commentsValue
-            }));
-            if (decisionSection.rows.length > 1) {
-              _ref2 = decisionSection.rows;
-              for (i = 0, _len2 = _ref2.length; i < _len2; i++) {
-                row = _ref2[i];
-                if (!decisionSection.rows[i].hasChild) {
-                  createdContacts.push(prospect.createContact({
-                    type: decisionSection.rows[i].decisionType,
-                    date: dateValue,
-                    individual: decisionSection.rows[i].decisionPerson
-                  }));
-                }
-              }
-            }
-            return recordContactWin.close();
-          });
+          saveButton.addEventListener('click', saveButtonListener);
           recordContactRoot.setRightNavButton(saveButton);
+          recordContactNav = Ti.UI.iPhone.createNavigationGroup({
+            window: recordContactRoot
+          });
         }
-        recordContactNav = Ti.UI.iPhone.createNavigationGroup({
-          window: recordContactRoot
-        });
         tdata = [];
         today = new Date();
         dateSection = Ti.UI.createTableViewSection({
@@ -524,12 +525,16 @@
           style: Titanium.UI.iPhone.TableViewStyle.GROUPED
         });
         recordContactRoot.add(contactTableView);
-        recordContactWin.add(recordContactNav);
-        return recordContactWin.open({
-          modal: true,
-          modalTransitionStyle: Ti.UI.iPhone.MODAL_TRANSITION_STYLE_COVER_VERTICAL,
-          modalStyle: Ti.UI.iPhone.MODAL_PRESENTATION_FORMSHEET
-        });
+        if (self.platform === 'iPhone OS') {
+          recordContactWin.add(recordContactNav);
+          return recordContactWin.open({
+            modal: true,
+            modalTransitionStyle: Ti.UI.iPhone.MODAL_TRANSITION_STYLE_COVER_VERTICAL,
+            modalStyle: Ti.UI.iPhone.MODAL_PRESENTATION_FORMSHEET
+          });
+        } else {
+          return self.tabs.activeTab.open(recordContactRoot);
+        }
       });
       headerView.add(nameLabel);
       headerView.add(contactLabel);

@@ -201,6 +201,46 @@ class UI
       recordContactRoot = Ti.UI.createWindow({
         title: 'Record Contact'
       })
+      saveButtonListener = (e) ->
+        # Convert the date
+        re = /^\d{1,2}\/\d{1,2}\/\d{4}$/
+        if dateField.value isnt '' and not dateField.value.match(re)
+          alert('Invalid date format. Please format date MM/DD/YYYY')
+          return false
+        if dateField.value is ''
+          dateValue = 0
+        else
+          dateValue = strtotime(dateField.value)
+          thisTime = new Date()
+          dateValue = dateValue + (thisTime.getHours() * 3600) + (thisTime.getMinutes() * 60) + thisTime.getSeconds()
+          Ti.API.info(dateValue)
+        # Get the type of contact
+        groupHasCheck = false
+        for row, i in visitSection.rows
+          if visitSection.rows[i].hasCheck
+            typeValue = visitSection.rows[i].title
+            groupHasCheck = true
+        if groupHasCheck is false
+          alert('You must select the type of visit.')
+          return false
+        # Get the comments
+        commentsValue = commentsTextArea.value
+        createdContacts = []
+        createdContacts.push(prospect.createContact({
+          type: typeValue,
+          date: dateValue,
+          comments: commentsValue
+        }))
+        if decisionSection.rows.length > 1
+          for row, i in decisionSection.rows
+            if not decisionSection.rows[i].hasChild
+              createdContacts.push(prospect.createContact({
+                type: decisionSection.rows[i].decisionType,
+                date: dateValue,
+                individual: decisionSection.rows[i].decisionPerson
+              }))
+        recordContactWin.close()
+      
       if self.platform is 'iPhone OS'
         closeButton = Ti.UI.createButton({
           systemButton: Ti.UI.iPhone.SystemButton.CANCEL
@@ -212,53 +252,13 @@ class UI
         saveButton = Ti.UI.createButton({
           systemButton: Ti.UI.iPhone.SystemButton.SAVE
         })
-        saveButton.addEventListener('click', (e) ->
-          # Convert the date
-          re = /^\d{1,2}\/\d{1,2}\/\d{4}$/
-          if dateField.value isnt '' and not dateField.value.match(re)
-            alert('Invalid date format. Please format date MM/DD/YYYY')
-            return false
-          if dateField.value is ''
-            dateValue = 0
-          else
-            dateValue = strtotime(dateField.value)
-            thisTime = new Date()
-            dateValue = dateValue + (thisTime.getHours() * 3600) + (thisTime.getMinutes() * 60) + thisTime.getSeconds()
-            Ti.API.info(dateValue)
-          # Get the type of contact
-          groupHasCheck = false
-          for row, i in visitSection.rows
-            if visitSection.rows[i].hasCheck
-              typeValue = visitSection.rows[i].title
-              groupHasCheck = true
-          if groupHasCheck is false
-            alert('You must select the type of visit.')
-            return false
-          # Get the comments
-          commentsValue = commentsTextArea.value
-          createdContacts = []
-          createdContacts.push(prospect.createContact({
-            type: typeValue,
-            date: dateValue,
-            comments: commentsValue
-          }))
-          if decisionSection.rows.length > 1
-            for row, i in decisionSection.rows
-              if not decisionSection.rows[i].hasChild
-                createdContacts.push(prospect.createContact({
-                  type: decisionSection.rows[i].decisionType,
-                  date: dateValue,
-                  individual: decisionSection.rows[i].decisionPerson
-                }))
-          recordContactWin.close()
-        )
+        saveButton.addEventListener('click', saveButtonListener)
         recordContactRoot.setRightNavButton(saveButton)
+        recordContactNav = Ti.UI.iPhone.createNavigationGroup({
+          window: recordContactRoot
+        })
       
-      recordContactNav = Ti.UI.iPhone.createNavigationGroup({
-        window: recordContactRoot
-      })
       tdata = []
-      
       today = new Date()
       dateSection = Ti.UI.createTableViewSection({
         headerTitle: prospect.formatName?()
@@ -488,13 +488,16 @@ class UI
         style: Titanium.UI.iPhone.TableViewStyle.GROUPED
       })
       recordContactRoot.add(contactTableView)
-      recordContactWin.add(recordContactNav)
       
-      recordContactWin.open({
-        modal:true,
-        modalTransitionStyle: Ti.UI.iPhone.MODAL_TRANSITION_STYLE_COVER_VERTICAL,
-        modalStyle: Ti.UI.iPhone.MODAL_PRESENTATION_FORMSHEET
-      })
+      if self.platform is 'iPhone OS'
+        recordContactWin.add(recordContactNav)
+        recordContactWin.open({
+          modal:true,
+          modalTransitionStyle: Ti.UI.iPhone.MODAL_TRANSITION_STYLE_COVER_VERTICAL,
+          modalStyle: Ti.UI.iPhone.MODAL_PRESENTATION_FORMSHEET
+        })
+      else
+        self.tabs.activeTab.open(recordContactRoot)
     )
     headerView.add(nameLabel)
     headerView.add(contactLabel)
