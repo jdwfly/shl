@@ -516,7 +516,11 @@
               editable: true
             });
             contactTableView.insertRowBefore(rowIndex, newDecisionRow);
-            return recordContactNav.close(recordDecisionWin);
+            if (self.platform === 'iPhone OS') {
+              return recordContactNav.close(recordDecisionWin);
+            } else {
+              return recordDecisionWin.close();
+            }
           });
           footerView.add(saveButton);
           typeDecisionTableView = Ti.UI.createTableView({
@@ -525,7 +529,11 @@
             footerView: footerView
           });
           recordDecisionWin.add(typeDecisionTableView);
-          return recordContactNav.open(recordDecisionWin);
+          if (self.platform === 'iPhone OS') {
+            return recordContactNav.open(recordDecisionWin);
+          } else {
+            return self.tabs.activeTab.open(recordDecisionWin);
+          }
         });
         decisionSection.add(recordDecisionRow);
         tdata.push(decisionSection);

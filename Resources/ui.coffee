@@ -475,7 +475,10 @@ class UI
             editable: true
           })
           contactTableView.insertRowBefore(rowIndex, newDecisionRow)
-          recordContactNav.close(recordDecisionWin)
+          if self.platform is 'iPhone OS'
+            recordContactNav.close(recordDecisionWin)
+          else
+            recordDecisionWin.close()
         )
         footerView.add(saveButton)
         
@@ -485,8 +488,10 @@ class UI
           footerView: footerView
         })
         recordDecisionWin.add(typeDecisionTableView)
-        
-        recordContactNav.open(recordDecisionWin)
+        if self.platform is 'iPhone OS'
+          recordContactNav.open(recordDecisionWin)
+        else
+          self.tabs.activeTab.open(recordDecisionWin)
       )
       decisionSection.add(recordDecisionRow)
       tdata.push(decisionSection)
