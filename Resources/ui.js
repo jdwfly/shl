@@ -378,13 +378,10 @@
           var baptizedRow, decisionMakerSection, femaleRow, footerView, joinedRow, maleRow, otherRow, otherTextField, recordDecisionWin, rowIndex, savedRow, typeData, typeDecisionSection, typeDecisionTableView;
           rowIndex = e.index;
           recordDecisionWin = Ti.UI.createWindow({
-            title: 'Record Decision',
-            backgroundColor: '#ffffff'
+            title: 'Record Decision'
           });
           typeData = [];
-          typeDecisionSection = Ti.UI.createTableViewSection({
-            headerTitle: typeof prospect.formatName === "function" ? prospect.formatName() : void 0
-          });
+          typeDecisionSection = Ti.UI.createTableViewSection();
           savedRow = Ti.UI.createTableViewRow({
             title: 'Saved',
             hasCheck: false
@@ -411,7 +408,9 @@
             return _results;
           });
           typeData.push(typeDecisionSection);
-          decisionMakerSection = Ti.UI.createTableViewSection();
+          decisionMakerSection = Ti.UI.createTableViewSection({
+            headerTitle: 'Who made the decision?'
+          });
           if (prospect.firstMale !== '') {
             maleRow = Ti.UI.createTableViewRow({
               title: prospect.firstMale,
@@ -430,7 +429,7 @@
             hasCheck: false
           });
           otherTextField = Ti.UI.createTextField({
-            height: 35,
+            height: 40,
             width: 270,
             left: 7,
             keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
@@ -471,7 +470,7 @@
             width: 300,
             height: 50
           });
-          saveButton.addEventListener('click', function(e) {
+          saveButtonListener = function(e) {
             var decisionPerson, decisionTitle, decisionType, groupHasCheck, i, newDecisionRow, row, _len, _len2, _ref, _ref2;
             decisionTitle = '';
             decisionType = '';
@@ -521,15 +520,32 @@
             } else {
               return recordDecisionWin.close();
             }
-          });
+          };
+          saveButton.addEventListener('click', saveButtonListener);
           footerView.add(saveButton);
           typeDecisionTableView = Ti.UI.createTableView({
             data: typeData,
-            style: Titanium.UI.iPhone.TableViewStyle.GROUPED,
-            footerView: footerView
+            style: Titanium.UI.iPhone.TableViewStyle.GROUPED
           });
           recordDecisionWin.add(typeDecisionTableView);
+          recordDecisionWin.activity = {
+            onCreateOptionsMenu: function(w) {
+              var m1, m2, menu;
+              menu = w.menu;
+              m1 = menu.add({
+                title: 'Save'
+              });
+              m1.addEventListener('click', saveButtonListener);
+              m2 = menu.add({
+                title: 'Cancel'
+              });
+              return m2.addEventListener('click', function(x) {
+                return recordDecisionWin.close();
+              });
+            }
+          };
           if (self.platform === 'iPhone OS') {
+            typeDecisionTableView.footerView = footerView;
             return recordContactNav.open(recordDecisionWin);
           } else {
             return self.tabs.activeTab.open(recordDecisionWin);

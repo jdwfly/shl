@@ -355,13 +355,10 @@ class UI
         # create the add decision window
         rowIndex = e.index
         recordDecisionWin = Ti.UI.createWindow({
-          title: 'Record Decision',
-          backgroundColor: '#ffffff'
+          title: 'Record Decision'
         })
         typeData = []
-        typeDecisionSection = Ti.UI.createTableViewSection({
-          headerTitle: prospect.formatName?()
-        })
+        typeDecisionSection = Ti.UI.createTableViewSection()
         savedRow = Ti.UI.createTableViewRow({
           title: 'Saved',
           hasCheck: false
@@ -386,7 +383,9 @@ class UI
         )
         typeData.push(typeDecisionSection)
         
-        decisionMakerSection = Ti.UI.createTableViewSection()
+        decisionMakerSection = Ti.UI.createTableViewSection({
+          headerTitle: 'Who made the decision?'
+        })
         if prospect.firstMale isnt ''
           maleRow = Ti.UI.createTableViewRow({
             title: prospect.firstMale,
@@ -403,7 +402,7 @@ class UI
           hasCheck: false
         })
         otherTextField = Ti.UI.createTextField({
-          height: 35,
+          height: 40,
           width: 270,
           left: 7,
           keyboardType:Titanium.UI.KEYBOARD_DEFAULT,
@@ -438,7 +437,7 @@ class UI
           width: 300,
           height: 50
         })
-        saveButton.addEventListener('click', (e) ->
+        saveButtonListener = (e) ->
           # Save and go back to other window in the navgroup
           # Loop through the two sections to find the one that hasCheck
           decisionTitle = ''
@@ -474,21 +473,33 @@ class UI
             decisionPerson: decisionPerson,
             editable: true
           })
+          
           contactTableView.insertRowBefore(rowIndex, newDecisionRow)
           if self.platform is 'iPhone OS'
             recordContactNav.close(recordDecisionWin)
           else
             recordDecisionWin.close()
-        )
+        
+        saveButton.addEventListener('click', saveButtonListener)
         footerView.add(saveButton)
         
         typeDecisionTableView = Ti.UI.createTableView({
           data: typeData,
-          style: Titanium.UI.iPhone.TableViewStyle.GROUPED,
-          footerView: footerView
+          style: Titanium.UI.iPhone.TableViewStyle.GROUPED
         })
         recordDecisionWin.add(typeDecisionTableView)
+        recordDecisionWin.activity = {
+          onCreateOptionsMenu : (w) ->
+            menu = w.menu
+            m1 = menu.add({title: 'Save'})
+            m1.addEventListener('click', saveButtonListener)
+            m2 = menu.add({title: 'Cancel'})
+            m2.addEventListener('click', (x) ->
+              recordDecisionWin.close()
+            )
+        }
         if self.platform is 'iPhone OS'
+          typeDecisionTableView.footerView = footerView
           recordContactNav.open(recordDecisionWin)
         else
           self.tabs.activeTab.open(recordDecisionWin)
