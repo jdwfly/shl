@@ -288,7 +288,7 @@
         });
         dateRow = Ti.UI.createTableViewRow();
         dateField = Ti.UI.createTextField({
-          height: 35,
+          height: 40,
           width: 300,
           left: 7,
           value: (today.getMonth() + 1) + '/' + today.getDate() + '/' + today.getFullYear(),
