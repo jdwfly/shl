@@ -206,7 +206,7 @@
         backgroundImage: '/images/button_blue.png'
       });
       recordContactButton.addEventListener('click', function(e) {
-        var closeButton, commentRow, commentSection, commentsRow, commentsTextArea, contactTableView, dateField, dateRow, dateSection, decisionSection, emailRow, letterRow, phoneRow, recordContactNav, recordContactRoot, recordContactWin, recordDecisionRow, saveButton, saveButtonListener, tdata, today, visitRow, visitSection, visitedChurchRow;
+        var closeButton, commentRow, commentSection, commentsRow, commentsTextArea, contactTableView, dateField, dateRow, dateSection, decisionSection, emailRow, letterRow, phoneRow, recordContactNav, recordContactRoot, recordContactWin, recordDecisionRow, saveButton, saveButtonListener, tdata, today, visitRow, visitSection, visitSectionListener, visitedChurchRow;
         recordContactWin = Ti.UI.createWindow({
           backgroundColor: '#ffffff',
           navBarHidden: true
@@ -326,13 +326,7 @@
           title: 'Comment',
           hasCheck: false
         });
-        visitSection.add(visitRow);
-        visitSection.add(letterRow);
-        visitSection.add(visitedChurchRow);
-        visitSection.add(phoneRow);
-        visitSection.add(emailRow);
-        visitSection.add(commentRow);
-        visitSection.addEventListener('click', function(e) {
+        visitSectionListener = function(e) {
           var i, row, _len, _ref, _results;
           _ref = visitSection.rows;
           _results = [];
@@ -341,7 +335,22 @@
             _results.push(i === (e.index - 1) ? visitSection.rows[i].hasCheck = true : visitSection.rows[i].hasCheck = false);
           }
           return _results;
-        });
+        };
+        if (self.isAndroid) {
+          visitRow.addEventListener('click', visitSectionListener);
+          letterRow.addEventListener('click', visitSectionListener);
+          visitedChurchRow.addEventListener('click', visitSectionListener);
+          phoneRow.addEventListener('click', visitSectionListener);
+          emailRow.addEventListener('click', visitSectionListener);
+          commentRow.addEventListener('click', visitSectionListener);
+        }
+        visitSection.add(visitRow);
+        visitSection.add(letterRow);
+        visitSection.add(visitedChurchRow);
+        visitSection.add(phoneRow);
+        visitSection.add(emailRow);
+        visitSection.add(commentRow);
+        visitSection.addEventListener('click', visitSectionListener);
         tdata.push(visitSection);
         commentSection = Ti.UI.createTableViewSection({
           headerTitle: 'Comments'

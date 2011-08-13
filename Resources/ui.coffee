@@ -304,20 +304,28 @@ class UI
         title: 'Comment',
         hasCheck: false
       })
-      visitSection.add(visitRow)
-      visitSection.add(letterRow)
-      visitSection.add(visitedChurchRow)
-      visitSection.add(phoneRow)
-      visitSection.add(emailRow)
-      visitSection.add(commentRow)
-      visitSection.addEventListener('click', (e) ->
+      visitSectionListener = (e) ->
+        # this is technically getting called twice due to android event bubbling but no ill side effects yet.
         for row, i in visitSection.rows
           # e.index is off by one because there is one row already
           if i is (e.index - 1)
             visitSection.rows[i].hasCheck = true
           else
             visitSection.rows[i].hasCheck = false
-      )
+      if self.isAndroid
+        visitRow.addEventListener('click', visitSectionListener)
+        letterRow.addEventListener('click', visitSectionListener)
+        visitedChurchRow.addEventListener('click', visitSectionListener)
+        phoneRow.addEventListener('click', visitSectionListener)
+        emailRow.addEventListener('click', visitSectionListener)
+        commentRow.addEventListener('click', visitSectionListener)
+      visitSection.add(visitRow)
+      visitSection.add(letterRow)
+      visitSection.add(visitedChurchRow)
+      visitSection.add(phoneRow)
+      visitSection.add(emailRow)
+      visitSection.add(commentRow)
+      visitSection.addEventListener('click', visitSectionListener)
       tdata.push(visitSection)
       
       commentSection = Ti.UI.createTableViewSection({
