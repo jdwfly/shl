@@ -239,6 +239,8 @@ class UI
                 date: dateValue,
                 individual: decisionSection.rows[i].decisionPerson
               }))
+        if self.isAndroid
+          recordContactRoot.close()
         recordContactWin.close()
       
       if self.platform is 'iPhone OS'
@@ -371,32 +373,48 @@ class UI
           title: 'Joined the Church',
           hasCheck: false
         })
-        typeDecisionSection.add(savedRow)
-        typeDecisionSection.add(baptizedRow)
-        typeDecisionSection.add(joinedRow)
-        typeDecisionSection.addEventListener('click', (e) ->
+        typeDecisionSectionListener = (e) ->
           for row, i in typeDecisionSection.rows
             if i is e.index
               typeDecisionSection.rows[i].hasCheck = true
             else
               typeDecisionSection.rows[i].hasCheck = false
-        )
+        if self.isAndroid
+          savedRow.addEventListener('click', typeDecisionSectionListener)
+          baptizedRow.addEventListener('click', typeDecisionSectionListener)
+          joinedRow.addEventListener('click', typeDecisionSectionListener)
+        typeDecisionSection.add(savedRow)
+        typeDecisionSection.add(baptizedRow)
+        typeDecisionSection.add(joinedRow)
+        typeDecisionSection.addEventListener('click', typeDecisionSectionListener)
         typeData.push(typeDecisionSection)
         
         decisionMakerSection = Ti.UI.createTableViewSection({
           headerTitle: 'Who made the decision?'
         })
+        decisionMakerSectionListener = (e) ->
+          for row, i in decisionMakerSection.rows
+            if i is (e.index - 3)
+              decisionMakerSection.rows[i].hasCheck = true
+              otherRow.hasCheck = false
+            else
+              decisionMakerSection.rows[i].hasCheck = false
+        
         if prospect.firstMale isnt ''
           maleRow = Ti.UI.createTableViewRow({
             title: prospect.firstMale,
             hasCheck: false
           })
+          if self.isAndroid
+            maleRow.addEventListener('click', decisionMakerSectionListener)
           decisionMakerSection.add(maleRow)
         if prospect.firstFemale isnt ''
           femaleRow = Ti.UI.createTableViewRow({
             title: prospect.firstFemale,
             hasCheck: false
           })
+          if self.isAndroid
+            femaleRow.addEventListener('click', decisionMakerSectionListener)
           decisionMakerSection.add(femaleRow)
         otherRow = Ti.UI.createTableViewRow({
           hasCheck: false
@@ -414,17 +432,10 @@ class UI
           if maleRow? then maleRow.hasCheck = false
           if femaleRow? then femaleRow.hasCheck = false
           otherRow.hasCheck = true
-        )
+        )        
         otherRow.add(otherTextField)
         decisionMakerSection.add(otherRow)
-        decisionMakerSection.addEventListener('click', (e) ->
-          for row, i in decisionMakerSection.rows
-            if i is (e.index - 3)
-              decisionMakerSection.rows[i].hasCheck = true
-              otherRow.hasCheck = false
-            else
-              decisionMakerSection.rows[i].hasCheck = false
-        )
+        decisionMakerSection.addEventListener('click', decisionMakerSectionListener)
         typeData.push(decisionMakerSection)
         footerView = Ti.UI.createView({
           height: 50,
@@ -512,6 +523,16 @@ class UI
         style: Titanium.UI.iPhone.TableViewStyle.GROUPED
       })
       recordContactRoot.add(contactTableView)
+      recordContactRoot.activity = {
+        onCreateOptionsMenu : (w) ->
+          menu = w.menu
+          m1 = menu.add({title: 'Save'})
+          m1.addEventListener('click', saveButtonListener)
+          m2 = menu.add({title: 'Cancel'})
+          m2.addEventListener('click', (x) ->
+            recordContactRoot.close()
+          )
+      }
       
       if self.platform is 'iPhone OS'
         recordContactWin.add(recordContactNav)
