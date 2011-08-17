@@ -924,7 +924,8 @@
       self = this;
       win = Ti.UI.createWindow({
         title: prospect != null ? 'Edit Prospect' : 'Add Prospect',
-        backgroundColor: '#eeeeee'
+        backgroundColor: '#eeeeee',
+        windowSoftInputMode: Ti.UI.Android.SOFT_INPUT_ADJUST_RESIZE
       });
       data = [];
       s1 = Ti.UI.createTableViewSection();

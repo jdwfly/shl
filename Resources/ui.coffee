@@ -799,7 +799,8 @@ class UI
     self = this
     win = Ti.UI.createWindow({
       title: if prospect? then 'Edit Prospect' else 'Add Prospect',
-      backgroundColor:'#eeeeee'
+      backgroundColor:'#eeeeee',
+      windowSoftInputMode: Ti.UI.Android.SOFT_INPUT_ADJUST_RESIZE
     })
     data = []
     s1 = Ti.UI.createTableViewSection()
