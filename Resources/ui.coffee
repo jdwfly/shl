@@ -799,8 +799,7 @@ class UI
     self = this
     win = Ti.UI.createWindow({
       title: if prospect? then 'Edit Prospect' else 'Add Prospect',
-      backgroundColor:'#eeeeee',
-      windowSoftInputMode: Ti.UI.Android.SOFT_INPUT_ADJUST_RESIZE
+      backgroundColor:'#eeeeee'
     })
     data = []
     s1 = Ti.UI.createTableViewSection()
@@ -1150,6 +1149,66 @@ class UI
       backgroundColor: '#cccccc'
     })
     # TODO : Change to a picker
+    initPickerView = Ti.UI.createView({
+      height: 251,
+      bottom: -251
+    })
+    pickerCancel = Ti.UI.createButton({
+      title: 'Cancel',
+      style: Ti.UI.iPhone.SystemButtonStyle.BORDERED
+    })
+    pickerDone = Ti.UI.createButton({
+      title: 'Done',
+      style: Ti.UI.iPhone.SystemButtonStyle.DONE
+    })
+    pickerSpacer = Ti.UI.createButton({
+      systemButton: Ti.UI.iPhone.SystemButton.FLEXIBLE_SPACE
+    })
+    pickerToolbar = Ti.UI.createToolbar({
+      top: 0,
+      items: [pickerCancel, pickerSpacer, pickerDone]
+    })
+    today = new Date()
+    initialPicker = Ti.UI.createPicker({
+      top: 43,
+      type: Ti.UI.PICKER_TYPE_DATE,
+      value: today
+    })
+    initialPicker.selectionIndicator = true
+    initialPicker.addEventListener('change', (e) ->
+      initialPicker.value = e.value
+    )
+    initPickerView.add(pickerToolbar)
+    initPickerView.add(initialPicker)
+    
+    initContactDate = Ti.UI.createTextField({
+      hintText: '1/10/2011',
+      value: if prospect? then date('n/j/Y', prospect.firstContactDate) else date('n/j/Y'),
+      height: 40,
+      width: 120,
+      left: 7,
+      borderStyle: Ti.UI.INPUT_BORDERSTYLE_NONE
+    })
+    
+    pickerSlideIn = Ti.UI.createAnimation({
+      bottom: 0
+    })
+    pickerSlideOut = Ti.UI.createAnimation({
+      bottom: -251
+    })
+    initContactDate.addEventListener('focus', () ->
+      initPickerView.animate(pickerSlideIn)
+      initContactDate.blur()
+    )
+    pickerCancel.addEventListener('click', () ->
+      initPickerView.animate(pickerSlideOut)
+    )
+    pickerDone.addEventListener('click', () ->
+      initContactDate.value = date('n/j/Y', initialPicker.value)
+      initPickerView.animate(pickerSlideOut)
+    )
+    
+    ###
     initialPicker = Ti.UI.createTextField({
       height: 40,
       width: 120,
@@ -1160,9 +1219,10 @@ class UI
       hintText: '1/10/2011',
       value: if prospect? then date('n/j/Y', prospect.firstContactDate) else date('n/j/Y')
     })
+    ###
     initialContactRow.add(initContactLabel)
     initialContactRow.add(sep5)
-    initialContactRow.add(initialPicker)
+    initialContactRow.add(initContactDate)
     s6.add(initialContactRow)
     pocRow = Ti.UI.createTableViewRow({
       height: 45,
@@ -1390,6 +1450,7 @@ class UI
       if @isAndroid then tableFooterView.height = 120 else tableFooterView.height = 60
     tableView.footerView = tableFooterView
     win.add(tableView)
+    win.add(initPickerView)
     return win
   
 shl.ui = new UI

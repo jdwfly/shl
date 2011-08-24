@@ -920,12 +920,11 @@
       })();
     };
     UI.prototype.createProspectFormWin = function(prospect) {
-      var attendValue, attendedRow, b, cancel, city, citystateRow, country, data, deleteProspectButton, email, emailRow, enrolledRow, enrolledValue, fname, fnameRow, gender, genderValue, genderView, homeLabel, homeRow, homeText, initContactLabel, initialContactRow, initialPicker, lname, lnameRow, mobileLabel, mobileRow, mobileText, nameSep, pocRow, pocTextfield, prevBaptRow, prevBaptValue, prevSavedRow, prevSavedValue, s1, s3, s4, s5, s6, s7, self, sep1, sep2, sep3, sep4, sep5, sname, state, street, streetRow, tableFooterView, tableView, win, zip, zipcountryRow;
+      var attendValue, attendedRow, b, cancel, city, citystateRow, country, data, deleteProspectButton, email, emailRow, enrolledRow, enrolledValue, fname, fnameRow, gender, genderValue, genderView, homeLabel, homeRow, homeText, initContactDate, initContactLabel, initPickerView, initialContactRow, initialPicker, lname, lnameRow, mobileLabel, mobileRow, mobileText, nameSep, pickerCancel, pickerDone, pickerSlideIn, pickerSlideOut, pickerSpacer, pickerToolbar, pocRow, pocTextfield, prevBaptRow, prevBaptValue, prevSavedRow, prevSavedValue, s1, s3, s4, s5, s6, s7, self, sep1, sep2, sep3, sep4, sep5, sname, state, street, streetRow, tableFooterView, tableView, today, win, zip, zipcountryRow;
       self = this;
       win = Ti.UI.createWindow({
         title: prospect != null ? 'Edit Prospect' : 'Add Prospect',
-        backgroundColor: '#eeeeee',
-        windowSoftInputMode: Ti.UI.Android.SOFT_INPUT_ADJUST_RESIZE
+        backgroundColor: '#eeeeee'
       });
       data = [];
       s1 = Ti.UI.createTableViewSection();
@@ -1309,19 +1308,77 @@
         left: 0,
         backgroundColor: '#cccccc'
       });
-      initialPicker = Ti.UI.createTextField({
+      initPickerView = Ti.UI.createView({
+        height: 251,
+        bottom: -251
+      });
+      pickerCancel = Ti.UI.createButton({
+        title: 'Cancel',
+        style: Ti.UI.iPhone.SystemButtonStyle.BORDERED
+      });
+      pickerDone = Ti.UI.createButton({
+        title: 'Done',
+        style: Ti.UI.iPhone.SystemButtonStyle.DONE
+      });
+      pickerSpacer = Ti.UI.createButton({
+        systemButton: Ti.UI.iPhone.SystemButton.FLEXIBLE_SPACE
+      });
+      pickerToolbar = Ti.UI.createToolbar({
+        top: 0,
+        items: [pickerCancel, pickerSpacer, pickerDone]
+      });
+      today = new Date();
+      initialPicker = Ti.UI.createPicker({
+        top: 43,
+        type: Ti.UI.PICKER_TYPE_DATE,
+        value: today
+      });
+      initialPicker.selectionIndicator = true;
+      initialPicker.addEventListener('change', function(e) {
+        return initialPicker.value = e.value;
+      });
+      initPickerView.add(pickerToolbar);
+      initPickerView.add(initialPicker);
+      initContactDate = Ti.UI.createTextField({
+        hintText: '1/10/2011',
+        value: prospect != null ? date('n/j/Y', prospect.firstContactDate) : date('n/j/Y'),
         height: 40,
         width: 120,
         left: 7,
-        keyboardType: Titanium.UI.KEYBOARD_NUMBERS_PUNCTUATION,
-        returnKeyType: Titanium.UI.RETURNKEY_DONE,
-        borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
-        hintText: '1/10/2011',
-        value: prospect != null ? date('n/j/Y', prospect.firstContactDate) : date('n/j/Y')
+        borderStyle: Ti.UI.INPUT_BORDERSTYLE_NONE
       });
+      pickerSlideIn = Ti.UI.createAnimation({
+        bottom: 0
+      });
+      pickerSlideOut = Ti.UI.createAnimation({
+        bottom: -251
+      });
+      initContactDate.addEventListener('focus', function() {
+        initPickerView.animate(pickerSlideIn);
+        return initContactDate.blur();
+      });
+      pickerCancel.addEventListener('click', function() {
+        return initPickerView.animate(pickerSlideOut);
+      });
+      pickerDone.addEventListener('click', function() {
+        initContactDate.value = date('n/j/Y', initialPicker.value);
+        return initPickerView.animate(pickerSlideOut);
+      });
+      /*
+          initialPicker = Ti.UI.createTextField({
+            height: 40,
+            width: 120,
+            left: 7,
+            keyboardType:Titanium.UI.KEYBOARD_NUMBERS_PUNCTUATION,
+            returnKeyType:Titanium.UI.RETURNKEY_DONE,
+            borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
+            hintText: '1/10/2011',
+            value: if prospect? then date('n/j/Y', prospect.firstContactDate) else date('n/j/Y')
+          })
+          */
       initialContactRow.add(initContactLabel);
       initialContactRow.add(sep5);
-      initialContactRow.add(initialPicker);
+      initialContactRow.add(initContactDate);
       s6.add(initialContactRow);
       pocRow = Ti.UI.createTableViewRow({
         height: 45,
@@ -1579,6 +1636,7 @@
       }
       tableView.footerView = tableFooterView;
       win.add(tableView);
+      win.add(initPickerView);
       return win;
     };
     return UI;
