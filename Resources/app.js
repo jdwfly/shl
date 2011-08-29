@@ -11,6 +11,7 @@ Ti.include('ui.starredtab.js');
 Ti.include('ui.addtab.js');
 Ti.include('ui.searchtab.js');
 Ti.include('ui.statstab.js');
+Ti.include('ui.settingstab.js');
 
 shl.ui.createApplicationTabGroup();
 

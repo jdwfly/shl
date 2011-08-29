@@ -6,23 +6,19 @@
       this.platform = Ti.Platform.name;
     }
     UI.prototype.createApplicationTabGroup = function() {
-      var addTab, listsTab, searchTab, starredTab, statsTab, tabs;
+      var addTab, listsTab, searchTab, settingsTab, starredTab, statsTab, tabs;
       tabs = Ti.UI.createTabGroup();
       listsTab = shl.listsTab.tab;
       starredTab = shl.starredTab.tab;
       addTab = shl.addTab.tab;
       searchTab = shl.searchTab.tab;
       statsTab = shl.statsTab.tab;
+      settingsTab = shl.settingsTab.tab;
       /*
           nearbyTab = Ti.UI.createTab({
             title: 'Nearby',
             window: nearby,
             icon: 'images/73-radar.png'
-          })
-          settingsTab = Ti.UI.createTab({
-            title: 'Settings',
-            window: settings,
-            icon: 'images/20-gear2.png'
           })
           helpTab = Ti.UI.createTab({
             title: 'Help',
@@ -35,6 +31,7 @@
       tabs.addTab(addTab);
       tabs.addTab(searchTab);
       tabs.addTab(statsTab);
+      tabs.addTab(settingsTab);
       tabs.open({
         transition: Ti.UI.iPhone.AnimationStyle.FLIP_FROM_LEFT
       });
