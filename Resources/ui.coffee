@@ -1295,10 +1295,6 @@ class UI
       if email.value isnt '' and not email.value.match(emailPattern)
         alert('Invalid email address.')
         return false
-      datePattern = /^\d{1,2}\/\d{1,2}\/\d{4}$/
-      if initialPicker.value isnt '' and not initialPicker.value.match(datePattern)
-        alert('Invalid date format. Please format date MM/DD/YYYY')
-        return false
       
       if prospect?
         # Update the existing prospect
@@ -1314,7 +1310,7 @@ class UI
           phoneHome: homeText.value,
           phoneMobile: mobileText.value,
           email: email.value,
-          firstContactDate: strtotime(initialPicker.value),
+          firstContactDate: Math.floor(initialPicker.value.getTime() / 1000),
           firstContactPoint: pocTextfield.value,
           previouslySaved: if prevSavedRow.hasCheck then "1" else "0",
           previouslyBaptized: if prevBaptRow.hasCheck then "1" else "0",
@@ -1337,7 +1333,7 @@ class UI
           phoneHome: homeText.value,
           phoneMobile: mobileText.value,
           email: email.value,
-          firstContactDate: strtotime(initialPicker.value),
+          firstContactDate: Math.floor(initialPicker.value.getTime() / 1000),
           firstContactPoint: pocTextfield.value,
           previouslySaved: if prevSavedRow.hasCheck then "1" else "0",
           previouslyBaptized: if prevBaptRow.hasCheck then "1" else "0",

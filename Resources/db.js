@@ -283,27 +283,31 @@
     var currentTime = Math.round(new Date().getTime()/1000.0);
     prospect.set('modified',currentTime);
     //Set next step
-    if (!prospect.previouslySaved && ActiveRecord.Contact.count({
+    if (prospect.previouslySaved == 0 && shl.Contact.count({
       where : {
         type : 'Saved',
-        prospect_id : propect.id
+        prospect_id : prospect.id
       }
     }) < 1){
       prospect.set('nextStep','Salvation');
     }
-    else if(!prospect.previouslyBaptized && ActiveRecord.Contact.count({
-      where : {
-        type : 'Baptized',
-        prospect_id : propect.id
-      }
-    }) < 1){
-      prospect.set('nextStep','Baptism');
-    }
-    else if(!prospect.attended){
-      prospect.set('nextStep','Attendance');
-    }
     else {
-      prospect.set('nextStep','Membership');
+      if(prospect.previouslyBaptized == 0 && shl.Contact.count({
+        where : {
+          type : 'Baptized',
+          prospect_id : prospect.id
+        }
+      }) < 1){
+        prospect.set('nextStep','Baptism');
+      }
+      else {
+        if(!prospect.attended){
+          prospect.set('nextStep','Attendance');
+        }
+        else {
+          prospect.set('nextStep','Membership');
+        }
+      }
     }
     
     //date of last contact

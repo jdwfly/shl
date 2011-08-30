@@ -1466,15 +1466,10 @@
         systemButton: Ti.UI.iPhone.SystemButton.SAVE
       });
       b.addEventListener('click', function() {
-        var createdProspect, datePattern, emailPattern, viewProspectWin;
+        var createdProspect, emailPattern, viewProspectWin;
         emailPattern = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
         if (email.value !== '' && !email.value.match(emailPattern)) {
           alert('Invalid email address.');
-          return false;
-        }
-        datePattern = /^\d{1,2}\/\d{1,2}\/\d{4}$/;
-        if (initialPicker.value !== '' && !initialPicker.value.match(datePattern)) {
-          alert('Invalid date format. Please format date MM/DD/YYYY');
           return false;
         }
         if (prospect != null) {
@@ -1490,7 +1485,7 @@
             phoneHome: homeText.value,
             phoneMobile: mobileText.value,
             email: email.value,
-            firstContactDate: strtotime(initialPicker.value),
+            firstContactDate: Math.floor(initialPicker.value.getTime() / 1000),
             firstContactPoint: pocTextfield.value,
             previouslySaved: prevSavedRow.hasCheck ? "1" : "0",
             previouslyBaptized: prevBaptRow.hasCheck ? "1" : "0",
@@ -1512,7 +1507,7 @@
             phoneHome: homeText.value,
             phoneMobile: mobileText.value,
             email: email.value,
-            firstContactDate: strtotime(initialPicker.value),
+            firstContactDate: Math.floor(initialPicker.value.getTime() / 1000),
             firstContactPoint: pocTextfield.value,
             previouslySaved: prevSavedRow.hasCheck ? "1" : "0",
             previouslyBaptized: prevBaptRow.hasCheck ? "1" : "0",
