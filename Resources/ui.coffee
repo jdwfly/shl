@@ -1217,7 +1217,7 @@ class UI
     initialPicker = Ti.UI.createPicker({
       top: 43,
       type: Ti.UI.PICKER_TYPE_DATE,
-      value: today
+      value: if prospect? then new Date(prospect.firstContactDate*1000) else today
     })
     initialPicker.selectionIndicator = true
     initialPicker.addEventListener('change', (e) ->

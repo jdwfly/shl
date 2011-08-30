@@ -1375,7 +1375,7 @@
       initialPicker = Ti.UI.createPicker({
         top: 43,
         type: Ti.UI.PICKER_TYPE_DATE,
-        value: today
+        value: prospect != null ? new Date(prospect.firstContactDate * 1000) : today
       });
       initialPicker.selectionIndicator = true;
       initialPicker.addEventListener('change', function(e) {
