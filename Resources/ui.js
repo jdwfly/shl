@@ -203,7 +203,7 @@
         backgroundImage: '/images/button_blue.png'
       });
       recordContactButton.addEventListener('click', function(e) {
-        var closeButton, commentRow, commentSection, commentsRow, commentsTextArea, contactTableView, dateField, dateRow, dateSection, decisionSection, emailRow, letterRow, phoneRow, recordContactNav, recordContactRoot, recordContactWin, recordDecisionRow, saveButton, saveButtonListener, tdata, today, visitRow, visitSection, visitSectionListener, visitedChurchRow;
+        var closeButton, commentRow, commentSection, commentsRow, commentsTextArea, contactTableView, dateField, datePicker, datePickerView, dateRow, dateSection, decisionSection, emailRow, letterRow, phoneRow, pickerCancel, pickerDone, pickerSlideIn, pickerSlideOut, pickerSpacer, pickerToolbar, recordContactNav, recordContactRoot, recordContactWin, recordDecisionRow, saveButton, saveButtonListener, tdata, today, visitRow, visitSection, visitSectionListener, visitedChurchRow;
         recordContactWin = Ti.UI.createWindow({
           backgroundColor: '#ffffff',
           navBarHidden: true
@@ -287,14 +287,60 @@
           headerTitle: typeof prospect.formatName === "function" ? prospect.formatName() : void 0
         });
         dateRow = Ti.UI.createTableViewRow();
+        datePickerView = Ti.UI.createView({
+          height: 251,
+          bottom: -251
+        });
+        pickerCancel = Ti.UI.createButton({
+          title: 'Cancel',
+          style: Ti.UI.iPhone.SystemButtonStyle.BORDERED
+        });
+        pickerDone = Ti.UI.createButton({
+          title: 'Done',
+          style: Ti.UI.iPhone.SystemButtonStyle.DONE
+        });
+        pickerSpacer = Ti.UI.createButton({
+          systemButton: Ti.UI.iPhone.SystemButton.FLEXIBLE_SPACE
+        });
+        pickerToolbar = Ti.UI.createToolbar({
+          top: 0,
+          items: [pickerCancel, pickerSpacer, pickerDone]
+        });
+        today = new Date();
+        datePicker = Ti.UI.createPicker({
+          top: 43,
+          type: Ti.UI.PICKER_TYPE_DATE,
+          value: today
+        });
+        datePicker.selectionIndicator = true;
+        datePicker.addEventListener('change', function(e) {
+          return datePicker.value = e.value;
+        });
+        datePickerView.add(pickerToolbar);
+        datePickerView.add(datePicker);
         dateField = Ti.UI.createTextField({
           height: 40,
           width: 300,
           left: 7,
           value: (today.getMonth() + 1) + '/' + today.getDate() + '/' + today.getFullYear(),
-          keyboardType: Titanium.UI.KEYBOARD_NUMBERS_PUNCTUATION,
-          returnKeyType: Titanium.UI.RETURNKEY_DONE,
           borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE
+        });
+        pickerSlideIn = Ti.UI.createAnimation({
+          bottom: 0
+        });
+        pickerSlideOut = Ti.UI.createAnimation({
+          bottom: -251
+        });
+        dateField.addEventListener('focus', function() {
+          datePickerView.animate(pickerSlideIn);
+          return dateField.blur();
+        });
+        pickerCancel.addEventListener('click', function() {
+          return datePickerView.animate(pickerSlideOut);
+        });
+        pickerDone.addEventListener('click', function() {
+          dateField.value = date('n/j/Y', datePicker.value);
+          return datePickerView.animate(pickerSlideOut);
         });
         dateRow.add(dateField);
         dateSection.add(dateRow);
@@ -571,6 +617,7 @@
           style: Titanium.UI.iPhone.TableViewStyle.GROUPED
         });
         recordContactRoot.add(contactTableView);
+        recordContactRoot.add(datePickerView);
         recordContactRoot.activity = {
           onCreateOptionsMenu: function(w) {
             var m1, m2, menu;
@@ -1361,18 +1408,6 @@
         initContactDate.value = date('n/j/Y', initialPicker.value);
         return initPickerView.animate(pickerSlideOut);
       });
-      /*
-          initialPicker = Ti.UI.createTextField({
-            height: 40,
-            width: 120,
-            left: 7,
-            keyboardType:Titanium.UI.KEYBOARD_NUMBERS_PUNCTUATION,
-            returnKeyType:Titanium.UI.RETURNKEY_DONE,
-            borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
-            hintText: '1/10/2011',
-            value: if prospect? then date('n/j/Y', prospect.firstContactDate) else date('n/j/Y')
-          })
-          */
       initialContactRow.add(initContactLabel);
       initialContactRow.add(sep5);
       initialContactRow.add(initContactDate);
@@ -1537,8 +1572,8 @@
           mobileText.blur();
           email.value = '';
           email.blur();
-          initialPicker.value = date('n/j/Y');
-          initialPicker.blur();
+          initialPicker.value = new Date();
+          initPickerView.animate(pickerSlideOut);
           pocTextfield.value = '';
           pocTextfield.blur();
           tableView.scrollToTop(0);
@@ -1547,6 +1582,9 @@
           attendedRow.hasCheck = false;
           enrolledRow.hasCheck = false;
           viewProspectWin = self.createProspectViewWindow(createdProspect);
+          viewProspectWin.addEventListener('blur', function(f) {
+            return this.close();
+          });
           if (self.isAndroid) {
             Ti.API.info('todo');
           } else {

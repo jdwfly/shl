@@ -189,7 +189,6 @@ class UI
       backgroundImage: '/images/button_blue.png'
     })
     recordContactButton.addEventListener('click', (e) ->
-      # TODO : create modal window to add contact
       recordContactWin = Ti.UI.createWindow({
         backgroundColor: '#ffffff',
         navBarHidden: true
@@ -262,15 +261,64 @@ class UI
         headerTitle: prospect.formatName?()
       })
       dateRow = Ti.UI.createTableViewRow()
+      datePickerView = Ti.UI.createView({
+        height: 251,
+        bottom: -251
+      })
+      pickerCancel = Ti.UI.createButton({
+        title: 'Cancel',
+        style: Ti.UI.iPhone.SystemButtonStyle.BORDERED
+      })
+      pickerDone = Ti.UI.createButton({
+        title: 'Done',
+        style: Ti.UI.iPhone.SystemButtonStyle.DONE
+      })
+      pickerSpacer = Ti.UI.createButton({
+        systemButton: Ti.UI.iPhone.SystemButton.FLEXIBLE_SPACE
+      })
+      pickerToolbar = Ti.UI.createToolbar({
+        top: 0,
+        items: [pickerCancel, pickerSpacer, pickerDone]
+      })
+      today = new Date()
+      datePicker = Ti.UI.createPicker({
+        top: 43,
+        type: Ti.UI.PICKER_TYPE_DATE,
+        value: today
+      })
+      datePicker.selectionIndicator = true
+      datePicker.addEventListener('change', (e) ->
+        datePicker.value = e.value
+      )
+      datePickerView.add(pickerToolbar)
+      datePickerView.add(datePicker)
+      
       dateField = Ti.UI.createTextField({
         height: 40,
         width: 300,
         left: 7,
         value: (today.getMonth()+1) + '/' + today.getDate() + '/' + today.getFullYear(),
-        keyboardType:Titanium.UI.KEYBOARD_NUMBERS_PUNCTUATION,
-        returnKeyType:Titanium.UI.RETURNKEY_DONE,
         borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE
       })
+
+      pickerSlideIn = Ti.UI.createAnimation({
+        bottom: 0
+      })
+      pickerSlideOut = Ti.UI.createAnimation({
+        bottom: -251
+      })
+      dateField.addEventListener('focus', () ->
+        datePickerView.animate(pickerSlideIn)
+        dateField.blur()
+      )
+      pickerCancel.addEventListener('click', () ->
+        datePickerView.animate(pickerSlideOut)
+      )
+      pickerDone.addEventListener('click', () ->
+        dateField.value = date('n/j/Y', datePicker.value)
+        datePickerView.animate(pickerSlideOut)
+      )
+      
       dateRow.add(dateField)
       dateSection.add(dateRow)
       tdata.push(dateSection)
@@ -519,6 +567,7 @@ class UI
         style: Titanium.UI.iPhone.TableViewStyle.GROUPED
       })
       recordContactRoot.add(contactTableView)
+      recordContactRoot.add(datePickerView)
       recordContactRoot.activity = {
         onCreateOptionsMenu : (w) ->
           menu = w.menu
@@ -1144,7 +1193,7 @@ class UI
       left: 0,
       backgroundColor: '#cccccc'
     })
-    # TODO : Change to a picker
+    
     initPickerView = Ti.UI.createView({
       height: 251,
       bottom: -251
@@ -1204,18 +1253,6 @@ class UI
       initPickerView.animate(pickerSlideOut)
     )
     
-    ###
-    initialPicker = Ti.UI.createTextField({
-      height: 40,
-      width: 120,
-      left: 7,
-      keyboardType:Titanium.UI.KEYBOARD_NUMBERS_PUNCTUATION,
-      returnKeyType:Titanium.UI.RETURNKEY_DONE,
-      borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
-      hintText: '1/10/2011',
-      value: if prospect? then date('n/j/Y', prospect.firstContactDate) else date('n/j/Y')
-    })
-    ###
     initialContactRow.add(initContactLabel)
     initialContactRow.add(sep5)
     initialContactRow.add(initContactDate)
@@ -1364,8 +1401,8 @@ class UI
         mobileText.blur()
         email.value = ''
         email.blur()
-        initialPicker.value = date('n/j/Y')
-        initialPicker.blur()
+        initialPicker.value = new Date()
+        initPickerView.animate(pickerSlideOut)
         pocTextfield.value = ''
         pocTextfield.blur()
         tableView.scrollToTop(0)
@@ -1375,6 +1412,9 @@ class UI
         enrolledRow.hasCheck = false
         # TODO : open modal window that shows the prospect
         viewProspectWin = self.createProspectViewWindow(createdProspect)
+        viewProspectWin.addEventListener('blur', (f) ->
+          @close()
+        )
         if self.isAndroid
           # TODO needs a different button
           Ti.API.info('todo')
