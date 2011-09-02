@@ -11,7 +11,7 @@
       });
     }
     SettingsTab.prototype.createSettingsWindow = function() {
-      var data, self, settingsWin, tableView, testRow, testRowText;
+      var data, self, settingsWin, tableView, testRow, testRowList, testRowText;
       self = this;
       settingsWin = Ti.UI.createWindow({
         title: 'Settings'
@@ -33,6 +33,25 @@
         debug: true
       });
       data.push(testRowText);
+      testRowList = SettingRow({}, {
+        name: 'testRowList',
+        control: 'select',
+        value: Ti.App.Properties.getString('testRowList'),
+        title: 'Test Row List',
+        options: [
+          {
+            name: 'Option 1'
+          }, {
+            name: 'Option 2'
+          }, {
+            name: 'Option 3'
+          }, {
+            name: 'Option 4'
+          }
+        ],
+        debug: true
+      });
+      data.push(testRowList);
       tableView = Ti.UI.createTableView({
         data: data
       });
