@@ -4,7 +4,7 @@ now there is just the standard On/Off switch, textfield, and select option list.
 Examples of how to do so are below for posterity.
 
 Example of an On/Off Switch
-testRow = SettingRow({},{
+testRow = new SettingRow({},{
   name: 'testRow',
   control: 'boolean',
   value: Ti.App.Properties.getBool('testRow'),
@@ -14,7 +14,7 @@ testRow = SettingRow({},{
 data.push(testRow)
 
 Example of a Test Field
-testRowText = SettingRow({},{
+testRowText = new SettingRow({},{
   name: 'testRowText',
   control: 'text',
   value: Ti.App.Properties.getString('testRowText'),
@@ -23,7 +23,7 @@ testRowText = SettingRow({},{
 })
 
 Example of a Select List
-testRowList = SettingRow({},{
+testRowList = new SettingRow({},{
   name: 'testRowList',
   control: 'select',
   value: Ti.App.Properties.getString('testRowList')
@@ -54,7 +54,7 @@ class exports.SettingRow
       height: 'auto'
     })
     instance.add(settingTitleLabel)
-    settingValueLabel = Ti.UI.createLabel({
+    @settingValueLabel = Ti.UI.createLabel({
       text: settings.value,
       right: if Ti.Platform.osname is 'iphone' then 5 else 30,
       width: 150,
@@ -62,7 +62,7 @@ class exports.SettingRow
       textAlign: 'right'
     })
     if settings.control isnt 'boolean'
-      instance.add(settingValueLabel)
+      instance.add(@settingValueLabel)
     # Add the type of control
     switch settings.control
       when 'select', 'text'
@@ -97,7 +97,7 @@ class exports.SettingRow
                 if i is f.index
                   optionsTableView.data[0].rows[i].hasCheck = true
                   Ti.App.Properties.setString(settings.name, optionsTableView.data[0].rows[i].title)
-                  settingValueLabel.text = optionsTableView.data[0].rows[i].title
+                  self.settingValueLabel.text = optionsTableView.data[0].rows[i].title
                 else
                   optionsTableView.data[0].rows[i].hasCheck = false
             )
@@ -117,7 +117,7 @@ class exports.SettingRow
             textField.addEventListener('return', (f) ->
               if debug then Ti.API.info(settings.name + ' = ' + @value)
               Ti.App.Properties.setString(settings.name, @value)
-              settingValueLabel.text = @value
+              self.settingValueLabel.text = @value
               optionsWin.close()
             )
             optionsWin.add(textField)

@@ -5,7 +5,7 @@
   Examples of how to do so are below for posterity.
   
   Example of an On/Off Switch
-  testRow = SettingRow({},{
+  testRow = new SettingRow({},{
     name: 'testRow',
     control: 'boolean',
     value: Ti.App.Properties.getBool('testRow'),
@@ -15,7 +15,7 @@
   data.push(testRow)
   
   Example of a Test Field
-  testRowText = SettingRow({},{
+  testRowText = new SettingRow({},{
     name: 'testRowText',
     control: 'text',
     value: Ti.App.Properties.getString('testRowText'),
@@ -24,7 +24,7 @@
   })
   
   Example of a Select List
-  testRowList = SettingRow({},{
+  testRowList = new SettingRow({},{
     name: 'testRowList',
     control: 'select',
     value: Ti.App.Properties.getString('testRowList')
@@ -39,7 +39,7 @@
   })
   */  exports.SettingRow = (function() {
     function SettingRow(args, settings) {
-      var debug, instance, self, settingSwitch, settingTitleLabel, settingValueLabel, value;
+      var debug, instance, self, settingSwitch, settingTitleLabel, value;
       self = this;
       instance = Ti.UI.createTableViewRow(args);
       instance.settingName = settings.name;
@@ -51,7 +51,7 @@
         height: 'auto'
       });
       instance.add(settingTitleLabel);
-      settingValueLabel = Ti.UI.createLabel({
+      this.settingValueLabel = Ti.UI.createLabel({
         text: settings.value,
         right: Ti.Platform.osname === 'iphone' ? 5 : 30,
         width: 150,
@@ -59,7 +59,7 @@
         textAlign: 'right'
       });
       if (settings.control !== 'boolean') {
-        instance.add(settingValueLabel);
+        instance.add(this.settingValueLabel);
       }
       switch (settings.control) {
         case 'select':
@@ -99,7 +99,7 @@
                 _results = [];
                 for (i = 0, _len2 = _ref2.length; i < _len2; i++) {
                   row = _ref2[i];
-                  _results.push(i === f.index ? (optionsTableView.data[0].rows[i].hasCheck = true, Ti.App.Properties.setString(settings.name, optionsTableView.data[0].rows[i].title), settingValueLabel.text = optionsTableView.data[0].rows[i].title) : optionsTableView.data[0].rows[i].hasCheck = false);
+                  _results.push(i === f.index ? (optionsTableView.data[0].rows[i].hasCheck = true, Ti.App.Properties.setString(settings.name, optionsTableView.data[0].rows[i].title), self.settingValueLabel.text = optionsTableView.data[0].rows[i].title) : optionsTableView.data[0].rows[i].hasCheck = false);
                 }
                 return _results;
               });
@@ -120,7 +120,7 @@
                   Ti.API.info(settings.name + ' = ' + this.value);
                 }
                 Ti.App.Properties.setString(settings.name, this.value);
-                settingValueLabel.text = this.value;
+                self.settingValueLabel.text = this.value;
                 return optionsWin.close();
               });
               optionsWin.add(textField);
