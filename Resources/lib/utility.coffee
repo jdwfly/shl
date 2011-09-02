@@ -17,9 +17,10 @@ class exports.SettingRow
     instance.add(settingTitleLabel)
     settingValueLabel = Ti.UI.createLabel({
       text: settings.value,
-      right: 5,
-      width: 'auto',
-      height: 'auto'
+      right: if Ti.Platform.osname is 'iphone' then 5 else 30,
+      width: 150,
+      height: 'auto',
+      textAlign: 'right'
     })
     if settings.control isnt 'boolean'
       instance.add(settingValueLabel)
@@ -30,12 +31,38 @@ class exports.SettingRow
         
         instance.addEventListener('click', (e) ->
           # create a new window with one textfield with focus
-          textFieldWin = Ti.UI.createWindow({
+          optionsWin = Ti.UI.createWindow({
             title: settings.title,
-            backgroundColor: 'stripped'
+            backgroundColor: if Ti.Platform.osname is 'iphone' then 'stripped' else '#181818'
           })
           if settings.control is 'select'
             # add the list options
+            value = Ti.App.Properties.getString(settings.name)
+            data = []
+            for option in settings.options
+              row = Ti.UI.createTableViewRow({
+                title: option.name,
+                hasCheck: false
+              })
+              if option.name is value
+                row.hasCheck = true
+              data.push(row)
+            optionsTableView = Ti.UI.createTableView({
+              data: data,
+              style: Titanium.UI.iPhone.TableViewStyle.GROUPED
+            })
+            optionsTableView.addEventListener('click', (f) ->
+              if debug
+                Ti.API.info(f)
+              for row, i in optionsTableView.data[0].rows
+                if i is f.index
+                  optionsTableView.data[0].rows[i].hasCheck = true
+                  Ti.App.Properties.setString(settings.name, optionsTableView.data[0].rows[i].title)
+                  settingValueLabel.text = optionsTableView.data[0].rows[i].title
+                else
+                  optionsTableView.data[0].rows[i].hasCheck = false
+            )
+            optionsWin.add(optionsTableView)
           else
             # add the textfield option with keyboard focus
             textField = Ti.UI.createTextField({
@@ -43,7 +70,7 @@ class exports.SettingRow
               height: 40,
               left: 10,
               top: 10,
-              value: @value,
+              value: Ti.App.Properties.getString(settings.name),
               keyboardType:Titanium.UI.KEYBOARD_DEFAULT,
               returnKeyType:Titanium.UI.RETURNKEY_DONE,
               borderStyle:Titanium.UI.INPUT_BORDERSTYLE_ROUNDED
@@ -52,19 +79,20 @@ class exports.SettingRow
               if debug then Ti.API.info(settings.name + ' = ' + @value)
               Ti.App.Properties.setString(settings.name, @value)
               settingValueLabel.text = @value
-              textFieldWin.close()
+              optionsWin.close()
             )
-            textFieldWin.add(textField)
-            textFieldWin.addEventListener('focus', (f) ->
+            optionsWin.add(textField)
+            optionsWin.addEventListener('open', (f) ->
               textField.focus()
             )
-            
-          textFieldWin.open()
+          # this line doesn't make it very modular but I can't figure any other way to do this
+          shl.ui.tabs.activeTab.open(optionsWin)
         )
       # creates an on/off switch
       when 'boolean'
+        value = Ti.App.Properties.getBool(settings.name)
         settingSwitch = Ti.UI.createSwitch({
-          value: settings.value,
+          value: if value? then value else false,
           right: 5
         })
         settingSwitch.addEventListener('change', (e) ->
