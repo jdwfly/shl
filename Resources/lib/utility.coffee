@@ -1,3 +1,42 @@
+###
+This class extends the TableViewRow to set an App wide property setting. Right
+now there is just the standard On/Off switch, textfield, and select option list.
+Examples of how to do so are below for posterity.
+
+Example of an On/Off Switch
+testRow = SettingRow({},{
+  name: 'testRow',
+  control: 'boolean',
+  value: Ti.App.Properties.getBool('testRow'),
+  title: 'Test Row',
+  debug: true
+})
+data.push(testRow)
+
+Example of a Test Field
+testRowText = SettingRow({},{
+  name: 'testRowText',
+  control: 'text',
+  value: Ti.App.Properties.getString('testRowText'),
+  title: 'Test Row Text',
+  debug: true
+})
+
+Example of a Select List
+testRowList = SettingRow({},{
+  name: 'testRowList',
+  control: 'select',
+  value: Ti.App.Properties.getString('testRowList')
+  title: 'Test Row List',
+  options: [
+    {name: 'Option 1'},
+    {name: 'Option 2'},
+    {name: 'Option 3'},
+    {name: 'Option 4'}
+    ]
+  debug: true
+})
+###
 class exports.SettingRow
   constructor: (args, settings) ->
     self = this
