@@ -1025,7 +1025,7 @@ class UI
       returnKeyType:Titanium.UI.RETURNKEY_DONE,
       borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
       hintText: 'City',
-      value: if prospect? then prospect.city else ''
+      value: if prospect? then prospect.city else Ti.App.Properties.getString('defaultCity', '')
     })
     sep1 = Ti.UI.createTextField({
       width: 1,
@@ -1041,7 +1041,7 @@ class UI
       returnKeyType:Titanium.UI.RETURNKEY_DONE,
       borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
       hintText: 'State',
-      value: if prospect? then prospect.state else ''
+      value: if prospect? then prospect.state else Ti.App.Properties.getString('defaultState', '')
     })
     citystateRow.add(city)
     citystateRow.add(sep1)
@@ -1060,7 +1060,7 @@ class UI
       returnKeyType:Titanium.UI.RETURNKEY_DONE,
       borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
       hintText: 'Zip',
-      value: if prospect? then prospect.zip else ''
+      value: if prospect? then prospect.zip else Ti.App.Properties.getString('defaultZip', '')
     })
     sep2 = Ti.UI.createTextField({
       width: 1,
@@ -1077,7 +1077,7 @@ class UI
       returnKeyType:Titanium.UI.RETURNKEY_DONE,
       borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
       hintText: 'Country',
-      value: if prospect? then prospect.country else ''
+      value: if prospect? then prospect.country else Ti.App.Properties.getString('defaultCountry', '')
     })
     zipcountryRow.add(zip)
     zipcountryRow.add(sep2)
@@ -1387,13 +1387,13 @@ class UI
         lname.blur()
         street.value = ''
         street.blur()
-        city.value = ''
+        city.value = Ti.App.Properties.getString('defaultCity','')
         city.blur()
-        state.value = ''
+        state.value = Ti.App.Properties.getString('defaultState','')
         state.blur()
-        zip.value = ''
+        zip.value = Ti.App.Properties.getString('defaultZip','')
         zip.blur()
-        country.value = ''
+        country.value = Ti.App.Properties.getString('defaultCountry','')
         country.blur()
         homeText.value = ''
         homeText.blur()
@@ -1483,6 +1483,20 @@ class UI
     tableView.footerView = tableFooterView
     win.add(tableView)
     win.add(initPickerView)
+    
+    # Window Events
+    win.addEventListener('open', (e) ->
+      win.addEventListener('focus', (f) ->
+        if city.value is ''
+          city.value = Ti.App.Properties.getString('defaultCity', '')
+        if state.value is ''
+          state.value = Ti.App.Properties.getString('defaultState', '')
+        if zip.value is ''
+          zip.value = Ti.App.Properties.getString('defaultZip', '')
+        if country.value is ''
+          country.value = Ti.App.Properties.getString('defaultCountry', '')
+      )
+    )
     return win
   
 shl.ui = new UI

@@ -1181,7 +1181,7 @@
         returnKeyType: Titanium.UI.RETURNKEY_DONE,
         borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
         hintText: 'City',
-        value: prospect != null ? prospect.city : ''
+        value: prospect != null ? prospect.city : Ti.App.Properties.getString('defaultCity', '')
       });
       sep1 = Ti.UI.createTextField({
         width: 1,
@@ -1197,7 +1197,7 @@
         returnKeyType: Titanium.UI.RETURNKEY_DONE,
         borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
         hintText: 'State',
-        value: prospect != null ? prospect.state : ''
+        value: prospect != null ? prospect.state : Ti.App.Properties.getString('defaultState', '')
       });
       citystateRow.add(city);
       citystateRow.add(sep1);
@@ -1216,7 +1216,7 @@
         returnKeyType: Titanium.UI.RETURNKEY_DONE,
         borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
         hintText: 'Zip',
-        value: prospect != null ? prospect.zip : ''
+        value: prospect != null ? prospect.zip : Ti.App.Properties.getString('defaultZip', '')
       });
       sep2 = Ti.UI.createTextField({
         width: 1,
@@ -1232,7 +1232,7 @@
         returnKeyType: Titanium.UI.RETURNKEY_DONE,
         borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
         hintText: 'Country',
-        value: prospect != null ? prospect.country : ''
+        value: prospect != null ? prospect.country : Ti.App.Properties.getString('defaultCountry', '')
       });
       zipcountryRow.add(zip);
       zipcountryRow.add(sep2);
@@ -1558,13 +1558,13 @@
           lname.blur();
           street.value = '';
           street.blur();
-          city.value = '';
+          city.value = Ti.App.Properties.getString('defaultCity', '');
           city.blur();
-          state.value = '';
+          state.value = Ti.App.Properties.getString('defaultState', '');
           state.blur();
-          zip.value = '';
+          zip.value = Ti.App.Properties.getString('defaultZip', '');
           zip.blur();
-          country.value = '';
+          country.value = Ti.App.Properties.getString('defaultCountry', '');
           country.blur();
           homeText.value = '';
           homeText.blur();
@@ -1667,6 +1667,22 @@
       tableView.footerView = tableFooterView;
       win.add(tableView);
       win.add(initPickerView);
+      win.addEventListener('open', function(e) {
+        return win.addEventListener('focus', function(f) {
+          if (city.value === '') {
+            city.value = Ti.App.Properties.getString('defaultCity', '');
+          }
+          if (state.value === '') {
+            state.value = Ti.App.Properties.getString('defaultState', '');
+          }
+          if (zip.value === '') {
+            zip.value = Ti.App.Properties.getString('defaultZip', '');
+          }
+          if (country.value === '') {
+            return country.value = Ti.App.Properties.getString('defaultCountry', '');
+          }
+        });
+      });
       return win;
     };
     return UI;
