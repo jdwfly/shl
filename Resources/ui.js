@@ -1667,7 +1667,9 @@
       tableView.footerView = tableFooterView;
       win.add(tableView);
       win.add(initPickerView);
+      initPickerView.hide();
       win.addEventListener('open', function(e) {
+        initPickerView.show();
         return win.addEventListener('focus', function(f) {
           if (city.value === '') {
             city.value = Ti.App.Properties.getString('defaultCity', '');

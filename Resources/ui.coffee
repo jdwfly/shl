@@ -1483,9 +1483,11 @@ class UI
     tableView.footerView = tableFooterView
     win.add(tableView)
     win.add(initPickerView)
+    initPickerView.hide()
     
     # Window Events
     win.addEventListener('open', (e) ->
+      initPickerView.show()
       win.addEventListener('focus', (f) ->
         if city.value is ''
           city.value = Ti.App.Properties.getString('defaultCity', '')
@@ -1497,6 +1499,7 @@ class UI
           country.value = Ti.App.Properties.getString('defaultCountry', '')
       )
     )
+    
     return win
   
 shl.ui = new UI
