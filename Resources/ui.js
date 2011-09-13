@@ -1691,7 +1691,7 @@
       return win;
     };
     UI.prototype.createProspectFormWinAndroid = function(prospect) {
-      var fields, fname, scrollView, self, sname, win;
+      var city, country, fields, fname, lname, scrollView, self, sname, state, street, win, zip;
       self = this;
       win = Ti.UI.createWindow({
         title: prospect != null ? 'Edit Prospect' : 'Add Prospect',
@@ -1703,7 +1703,38 @@
               title: 'Save'
             });
             mSave.addEventListener('click', function(f) {
-              return alert('Save it!');
+              var createdProspect, emailPattern, formValues, homePhoneNum, mobilePhoneNum;
+              emailPattern = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+              if (email.value !== '' && !email.value.match(emailPattern)) {
+                alert('Invalid email address.');
+                return false;
+              }
+              homePhoneNum = homeText.value.replace(/[^0-9]/g, '');
+              mobilePhoneNum = mobileText.value.replace(/[^0-9]/g, '');
+              formValues = {
+                last: lname.value,
+                firstMale: fname.value,
+                firstFemale: sname.value,
+                street: street.value,
+                city: city.value,
+                state: state.value,
+                zip: zip.value,
+                country: country.value,
+                phoneHome: homePhoneNum,
+                phoneMobile: mobilePhoneNum,
+                email: email.value,
+                firstContactDate: Math.floor(initialPicker.value.getTime() / 1000),
+                firstContactPoint: pocTextfield.value,
+                previouslySaved: prevSavedRow.hasCheck ? "1" : "0",
+                previouslyBaptized: prevBaptRow.hasCheck ? "1" : "0",
+                attended: attendedRow.hasCheck ? "1" : "0",
+                sundaySchool: enrolledRow.hasCheck ? "1" : "0"
+              };
+              if (prospect != null) {
+                return shl.Prospect.update(prospect.id, formValues);
+              } else {
+                return createdProspect = shl.Prospect.create(formValues);
+              }
             });
             mClear = menu.add({
               title: 'Clear'
@@ -1748,6 +1779,79 @@
       });
       fields.push(sname);
       scrollView.add(sname);
+      lname = Ti.UI.createTextField({
+        height: 40,
+        width: 300,
+        left: 10,
+        top: 0,
+        keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
+        returnKeyType: Titanium.UI.RETURNKEY_DONE,
+        borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
+        hintText: 'Last Name',
+        value: prospect != null ? prospect.last : ''
+      });
+      fields.push(lname);
+      scrollView.add(lname);
+      street = Ti.UI.createTextField({
+        height: 40,
+        width: 300,
+        left: 10,
+        keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
+        returnKeyType: Titanium.UI.RETURNKEY_DONE,
+        borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
+        hintText: 'Street',
+        value: prospect != null ? prospect.street : ''
+      });
+      fields.push(street);
+      scrollView.add(street);
+      city = Ti.UI.createTextField({
+        width: 300,
+        height: 40,
+        left: 10,
+        keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
+        returnKeyType: Titanium.UI.RETURNKEY_DONE,
+        borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
+        hintText: 'City',
+        value: prospect != null ? prospect.city : Ti.App.Properties.getString('defaultCity', '')
+      });
+      fields.push(city);
+      scrollView.add(city);
+      state = Ti.UI.createTextField({
+        width: 139,
+        height: 40,
+        left: 10,
+        keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
+        returnKeyType: Titanium.UI.RETURNKEY_DONE,
+        borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
+        hintText: 'State',
+        value: prospect != null ? prospect.state : Ti.App.Properties.getString('defaultState', '')
+      });
+      fields.push(state);
+      scrollView.add(state);
+      zip = Ti.UI.createTextField({
+        width: 139,
+        height: 40,
+        left: 10,
+        keyboardType: Titanium.UI.KEYBOARD_NUMBERS_PUNCTUATION,
+        returnKeyType: Titanium.UI.RETURNKEY_DONE,
+        borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
+        hintText: 'Zip',
+        value: prospect != null ? prospect.zip : Ti.App.Properties.getString('defaultZip', '')
+      });
+      fields.push(zip);
+      scrollView.add(zip);
+      country = Ti.UI.createTextField({
+        width: 139,
+        height: 40,
+        left: 10,
+        keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
+        returnKeyType: Titanium.UI.RETURNKEY_DONE,
+        borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
+        hintText: 'Country',
+        value: prospect != null ? prospect.country : Ti.App.Properties.getString('defaultCountry', '')
+      });
+      fields.push(country);
+      scrollView.add(country);
       win.add(scrollView);
       return win;
     };

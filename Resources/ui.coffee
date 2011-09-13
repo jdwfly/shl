@@ -1513,10 +1513,41 @@ class UI
           menu = e.menu
           mSave = menu.add({title: 'Save'})
           mSave.addEventListener('click', (f) ->
-            alert('Save it!')
+            # TODO : Write Save Function
+            emailPattern = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+            if email.value isnt '' and not email.value.match(emailPattern)
+              alert('Invalid email address.')
+              return false
+            homePhoneNum = homeText.value.replace(/[^0-9]/g, '')
+            mobilePhoneNum = mobileText.value.replace(/[^0-9]/g, '')
+            formValues = {
+              last: lname.value,
+              firstMale: fname.value,
+              firstFemale: sname.value,
+              street: street.value,
+              city: city.value,
+              state: state.value,
+              zip: zip.value,
+              country: country.value,
+              phoneHome: homePhoneNum,
+              phoneMobile: mobilePhoneNum,
+              email: email.value,
+              firstContactDate: Math.floor(initialPicker.value.getTime() / 1000),
+              firstContactPoint: pocTextfield.value,
+              previouslySaved: if prevSavedRow.hasCheck then "1" else "0",
+              previouslyBaptized: if prevBaptRow.hasCheck then "1" else "0",
+              attended: if attendedRow.hasCheck then "1" else "0",
+              sundaySchool: if enrolledRow.hasCheck then "1" else "0"
+            }
+            if prospect?
+              shl.Prospect.update(prospect.id, formValues)
+            else
+              createdProspect = shl.Prospect.create(formValues)
+            
           )
           mClear = menu.add({title: 'Clear'})
           mClear.addEventListener('click', (f) ->
+            # TODO : Write Clear function
             alert('Clear it!')
           )
       }
@@ -1555,6 +1586,79 @@ class UI
     })
     fields.push(sname)
     scrollView.add(sname)
+    lname = Ti.UI.createTextField({
+      height:40,
+      width: 300,
+      left: 10,
+      top: 0,
+      keyboardType:Titanium.UI.KEYBOARD_DEFAULT,
+      returnKeyType:Titanium.UI.RETURNKEY_DONE,
+      borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
+      hintText: 'Last Name',
+      value: if prospect? then prospect.last else ''
+    })
+    fields.push(lname)
+    scrollView.add(lname)
+    street = Ti.UI.createTextField({
+      height:40,
+      width: 300,
+      left: 10,
+      keyboardType:Titanium.UI.KEYBOARD_DEFAULT,
+      returnKeyType:Titanium.UI.RETURNKEY_DONE,
+      borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
+      hintText: 'Street',
+      value: if prospect? then prospect.street else ''
+    })
+    fields.push(street)
+    scrollView.add(street)
+    city = Ti.UI.createTextField({
+      width: 300,
+      height:40,
+      left: 10,
+      keyboardType:Titanium.UI.KEYBOARD_DEFAULT,
+      returnKeyType:Titanium.UI.RETURNKEY_DONE,
+      borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
+      hintText: 'City',
+      value: if prospect? then prospect.city else Ti.App.Properties.getString('defaultCity', '')
+    })
+    fields.push(city)
+    scrollView.add(city)
+    state = Ti.UI.createTextField({
+      width: 139,
+      height: 40,
+      left: 10,
+      keyboardType:Titanium.UI.KEYBOARD_DEFAULT,
+      returnKeyType:Titanium.UI.RETURNKEY_DONE,
+      borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
+      hintText: 'State',
+      value: if prospect? then prospect.state else Ti.App.Properties.getString('defaultState', '')
+    })
+    fields.push(state)
+    scrollView.add(state)
+    zip = Ti.UI.createTextField({
+      width: 139,
+      height:40,
+      left: 10,
+      keyboardType:Titanium.UI.KEYBOARD_NUMBERS_PUNCTUATION,
+      returnKeyType:Titanium.UI.RETURNKEY_DONE,
+      borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
+      hintText: 'Zip',
+      value: if prospect? then prospect.zip else Ti.App.Properties.getString('defaultZip', '')
+    })
+    fields.push(zip)
+    scrollView.add(zip)
+    country = Ti.UI.createTextField({
+      width: 139,
+      height: 40,
+      left: 10,
+      keyboardType:Titanium.UI.KEYBOARD_DEFAULT,
+      returnKeyType:Titanium.UI.RETURNKEY_DONE,
+      borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
+      hintText: 'Country',
+      value: if prospect? then prospect.country else Ti.App.Properties.getString('defaultCountry', '')
+    })
+    fields.push(country)
+    scrollView.add(country)
     win.add(scrollView)
     return win
   
