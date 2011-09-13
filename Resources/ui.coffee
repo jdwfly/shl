@@ -1508,9 +1508,54 @@ class UI
     self = this
     win = Ti.UI.createWindow({
       title: if prospect? then 'Edit Prospect' else 'Add Prospect',
-      backgroundColor:'#eeeeee'
+      activity: {
+        onCreateOptionsMenu : (e) ->
+          menu = e.menu
+          mSave = menu.add({title: 'Save'})
+          mSave.addEventListener('click', (f) ->
+            alert('Save it!')
+          )
+          mClear = menu.add({title: 'Clear'})
+          mClear.addEventListener('click', (f) ->
+            alert('Clear it!')
+          )
+      }
     })
-    
+    scrollView = Ti.UI.createScrollView({
+      contentWidth: 'auto',
+      contentHeight: 'auto',
+      top: 0,
+      showVerticalScrollIndicator: true,
+      layout: 'vertical'
+    })
+    fields = []
+    fname = Ti.UI.createTextField({
+      height:40,
+      width: 300,
+      top:0,
+      left: 10,
+      keyboardType:Titanium.UI.KEYBOARD_DEFAULT,
+      returnKeyType:Titanium.UI.RETURNKEY_DONE,
+      borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
+      hintText:'First Name Male',
+      value: if prospect? then prospect.firstMale else ''
+    })
+    fields.push(fname)
+    scrollView.add(fname)
+    sname = Ti.UI.createTextField({
+      height: 40,
+      width: 300,
+      top: 0,
+      left: 10,
+      keyboardType:Titanium.UI.KEYBOARD_DEFAULT,
+      returnKeyType:Titanium.UI.RETURNKEY_DONE,
+      borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
+      hintText: 'First Name Female',
+      value: if prospect? then prospect.firstFemale else ''
+    })
+    fields.push(sname)
+    scrollView.add(sname)
+    win.add(scrollView)
     return win
   
 shl.ui = new UI
