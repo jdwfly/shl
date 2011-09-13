@@ -1545,11 +1545,17 @@ class UI
               createdProspect = shl.Prospect.create(formValues)
             
           )
-          mClear = menu.add({title: 'Clear'})
-          mClear.addEventListener('click', (f) ->
-            # TODO : Write Clear function
-            alert('Clear it!')
-          )
+          if prospect?
+            mDelete = menu.add({title: 'Delete'})
+            mDelete.addEventListener('click', (f) ->
+              
+            )
+          else
+            mClear = menu.add({title: 'Clear'})
+            mClear.addEventListener('click', (f) ->
+              # TODO : Write Clear function
+              alert('Clear it!')
+            )
       }
     })
     scrollView = Ti.UI.createScrollView({
@@ -1659,6 +1665,64 @@ class UI
     })
     fields.push(country)
     scrollView.add(country)
+    homeText = Ti.UI.createTextField({
+      width: 200,
+      height:40,
+      left: 5,
+      keyboardType:Titanium.UI.KEYBOARD_PHONE_PAD,
+      returnKeyType:Titanium.UI.RETURNKEY_DONE,
+      borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
+      value: if prospect? then prospect.phoneHome else ''
+    })
+    fields.push(homeText)
+    scrollView.add(homeText)
+    mobileText = Ti.UI.createTextField({
+      width: 200,
+      height:40,
+      left: 5,
+      keyboardType:Titanium.UI.KEYBOARD_PHONE_PAD,
+      returnKeyType:Titanium.UI.RETURNKEY_DONE,
+      borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
+      value: if prospect? then prospect.phoneMobile else ''
+    })
+    fields.push(mobileText)
+    scrollView.add(mobileText)
+    email = Ti.UI.createTextField({
+      width: 280,
+      height: 40,
+      left: 10,
+      keyboardType:Titanium.UI.KEYBOARD_EMAIL,
+      returnKeyType:Titanium.UI.RETURNKEY_DONE,
+      borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
+      autocapitalization: Titanium.UI.TEXT_AUTOCAPITALIZATION_NONE,
+      autocorrect: false,
+      hintText: 'Email',
+      value: if prospect? then prospect.email else ''
+    })
+    fields.push(email)
+    scrollView.add(email)
+    initContactDate = Ti.UI.createTextField({
+      hintText: '1/10/2011',
+      value: if prospect? then date('n/j/Y', prospect.firstContactDate) else date('n/j/Y'),
+      height: 40,
+      width: 120,
+      left: 7,
+      borderStyle: Ti.UI.INPUT_BORDERSTYLE_NONE
+    })
+    fields.push(initContactDate)
+    scrollView.add(initContactDate)
+    pocTextfield = Ti.UI.createTextField({
+      width: 280,
+      height: 40,
+      left: 10,
+      keyboardType:Titanium.UI.KEYBOARD_DEFAULT,
+      returnKeyType:Titanium.UI.RETURNKEY_DONE,
+      borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
+      hintText: 'Point of Contact',
+      value: if prospect? then prospect.firstContactPoint else ''
+    })
+    fields.push(pocTextfield)
+    scrollView.add(pocTextfield)
     win.add(scrollView)
     return win
   

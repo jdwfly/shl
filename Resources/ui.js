@@ -1691,13 +1691,13 @@
       return win;
     };
     UI.prototype.createProspectFormWinAndroid = function(prospect) {
-      var city, country, fields, fname, lname, scrollView, self, sname, state, street, win, zip;
+      var city, country, email, fields, fname, homeText, initContactDate, lname, mobileText, pocTextfield, scrollView, self, sname, state, street, win, zip;
       self = this;
       win = Ti.UI.createWindow({
         title: prospect != null ? 'Edit Prospect' : 'Add Prospect',
         activity: {
           onCreateOptionsMenu: function(e) {
-            var mClear, mSave, menu;
+            var mClear, mDelete, mSave, menu;
             menu = e.menu;
             mSave = menu.add({
               title: 'Save'
@@ -1736,12 +1736,19 @@
                 return createdProspect = shl.Prospect.create(formValues);
               }
             });
-            mClear = menu.add({
-              title: 'Clear'
-            });
-            return mClear.addEventListener('click', function(f) {
-              return alert('Clear it!');
-            });
+            if (prospect != null) {
+              mDelete = menu.add({
+                title: 'Delete'
+              });
+              return mDelete.addEventListener('click', function(f) {});
+            } else {
+              mClear = menu.add({
+                title: 'Clear'
+              });
+              return mClear.addEventListener('click', function(f) {
+                return alert('Clear it!');
+              });
+            }
           }
         }
       });
@@ -1852,6 +1859,64 @@
       });
       fields.push(country);
       scrollView.add(country);
+      homeText = Ti.UI.createTextField({
+        width: 200,
+        height: 40,
+        left: 5,
+        keyboardType: Titanium.UI.KEYBOARD_PHONE_PAD,
+        returnKeyType: Titanium.UI.RETURNKEY_DONE,
+        borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
+        value: prospect != null ? prospect.phoneHome : ''
+      });
+      fields.push(homeText);
+      scrollView.add(homeText);
+      mobileText = Ti.UI.createTextField({
+        width: 200,
+        height: 40,
+        left: 5,
+        keyboardType: Titanium.UI.KEYBOARD_PHONE_PAD,
+        returnKeyType: Titanium.UI.RETURNKEY_DONE,
+        borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
+        value: prospect != null ? prospect.phoneMobile : ''
+      });
+      fields.push(mobileText);
+      scrollView.add(mobileText);
+      email = Ti.UI.createTextField({
+        width: 280,
+        height: 40,
+        left: 10,
+        keyboardType: Titanium.UI.KEYBOARD_EMAIL,
+        returnKeyType: Titanium.UI.RETURNKEY_DONE,
+        borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
+        autocapitalization: Titanium.UI.TEXT_AUTOCAPITALIZATION_NONE,
+        autocorrect: false,
+        hintText: 'Email',
+        value: prospect != null ? prospect.email : ''
+      });
+      fields.push(email);
+      scrollView.add(email);
+      initContactDate = Ti.UI.createTextField({
+        hintText: '1/10/2011',
+        value: prospect != null ? date('n/j/Y', prospect.firstContactDate) : date('n/j/Y'),
+        height: 40,
+        width: 120,
+        left: 7,
+        borderStyle: Ti.UI.INPUT_BORDERSTYLE_NONE
+      });
+      fields.push(initContactDate);
+      scrollView.add(initContactDate);
+      pocTextfield = Ti.UI.createTextField({
+        width: 280,
+        height: 40,
+        left: 10,
+        keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
+        returnKeyType: Titanium.UI.RETURNKEY_DONE,
+        borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
+        hintText: 'Point of Contact',
+        value: prospect != null ? prospect.firstContactPoint : ''
+      });
+      fields.push(pocTextfield);
+      scrollView.add(pocTextfield);
       win.add(scrollView);
       return win;
     };
