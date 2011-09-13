@@ -965,6 +965,9 @@
     };
     UI.prototype.createProspectFormWin = function(prospect) {
       var attendValue, attendedRow, b, cancel, city, citystateRow, country, data, deleteProspectButton, email, emailRow, enrolledRow, enrolledValue, fname, fnameRow, gender, genderValue, genderView, homeLabel, homeRow, homeText, initContactDate, initContactLabel, initPickerView, initialContactRow, initialPicker, lname, lnameRow, mobileLabel, mobileRow, mobileText, nameSep, pickerCancel, pickerDone, pickerSlideIn, pickerSlideOut, pickerSpacer, pickerToolbar, pocRow, pocTextfield, prevBaptRow, prevBaptValue, prevSavedRow, prevSavedValue, s1, s3, s4, s5, s6, s7, self, sep1, sep2, sep3, sep4, sep5, sname, state, street, streetRow, tableFooterView, tableView, today, win, zip, zipcountryRow;
+      if (this.isAndroid) {
+        return this.createProspectFormWinAndroid(prospect);
+      }
       self = this;
       win = Ti.UI.createWindow({
         title: prospect != null ? 'Edit Prospect' : 'Add Prospect',
@@ -1684,6 +1687,15 @@
             return country.value = Ti.App.Properties.getString('defaultCountry', '');
           }
         });
+      });
+      return win;
+    };
+    UI.prototype.createProspectFormWinAndroid = function(prospect) {
+      var self, win;
+      self = this;
+      win = Ti.UI.createWindow({
+        title: prospect != null ? 'Edit Prospect' : 'Add Prospect',
+        backgroundColor: '#eeeeee'
       });
       return win;
     };

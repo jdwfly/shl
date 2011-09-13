@@ -841,6 +841,8 @@ class UI
       row
   # Create the form to either add or edit a prospect
   createProspectFormWin : (prospect) ->
+    if @isAndroid
+      return @createProspectFormWinAndroid(prospect)
     self = this
     win = Ti.UI.createWindow({
       title: if prospect? then 'Edit Prospect' else 'Add Prospect',
@@ -1499,6 +1501,15 @@ class UI
           country.value = Ti.App.Properties.getString('defaultCountry', '')
       )
     )
+    
+    return win
+  
+  createProspectFormWinAndroid : (prospect) ->
+    self = this
+    win = Ti.UI.createWindow({
+      title: if prospect? then 'Edit Prospect' else 'Add Prospect',
+      backgroundColor:'#eeeeee'
+    })
     
     return win
   
