@@ -1668,7 +1668,7 @@ class UI
     homeText = Ti.UI.createTextField({
       width: 200,
       height:40,
-      left: 5,
+      left: 10,
       keyboardType:Titanium.UI.KEYBOARD_PHONE_PAD,
       returnKeyType:Titanium.UI.RETURNKEY_DONE,
       borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
@@ -1679,7 +1679,7 @@ class UI
     mobileText = Ti.UI.createTextField({
       width: 200,
       height:40,
-      left: 5,
+      left: 10,
       keyboardType:Titanium.UI.KEYBOARD_PHONE_PAD,
       returnKeyType:Titanium.UI.RETURNKEY_DONE,
       borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
@@ -1688,7 +1688,7 @@ class UI
     fields.push(mobileText)
     scrollView.add(mobileText)
     email = Ti.UI.createTextField({
-      width: 280,
+      width: 300,
       height: 40,
       left: 10,
       keyboardType:Titanium.UI.KEYBOARD_EMAIL,
@@ -1706,13 +1706,13 @@ class UI
       value: if prospect? then date('n/j/Y', prospect.firstContactDate) else date('n/j/Y'),
       height: 40,
       width: 120,
-      left: 7,
+      left: 10,
       borderStyle: Ti.UI.INPUT_BORDERSTYLE_NONE
     })
     fields.push(initContactDate)
     scrollView.add(initContactDate)
     pocTextfield = Ti.UI.createTextField({
-      width: 280,
+      width: 300,
       height: 40,
       left: 10,
       keyboardType:Titanium.UI.KEYBOARD_DEFAULT,
@@ -1723,6 +1723,54 @@ class UI
     })
     fields.push(pocTextfield)
     scrollView.add(pocTextfield)
+    
+    data = []
+    s7 = Ti.UI.createTableViewSection()
+    if prospect?
+      prevSavedValue = `prospect.previouslySaved.toFixed() == 1 ? true : false`
+      prevBaptValue = `prospect.previouslyBaptized.toFixed() == 1 ? true : false`
+      attendValue = `prospect.attended.toFixed() == 1 ? true : false`
+      enrolledValue = `prospect.sundaySchool.toFixed() == 1 ? true : false`
+    prevSavedRow = Ti.UI.createTableViewRow({
+      title: 'Previously Saved',
+      hasCheck: if prospect? then prevSavedValue else false
+    })
+    prevBaptRow = Ti.UI.createTableViewRow({
+      title: 'Previously Baptized',
+      hasCheck: if prospect? then prevBaptValue else false
+    })
+    attendedRow = Ti.UI.createTableViewRow({
+      title: 'Attended Church',
+      hasCheck: if prospect? then attendValue else false
+    })
+    enrolledRow = Ti.UI.createTableViewRow({
+      title: 'Enrolled in Sunday School',
+      hasCheck: if prospect? then enrolledValue else false
+    })
+    # Android will only fire the click event if it is on the rows not the section
+    prevSavedRow.addEventListener('click', (e) ->
+      if e.row.hasCheck then e.row.hasCheck = false else e.row.hasCheck = true
+    )
+    prevBaptRow.addEventListener('click', (e) ->
+      if e.row.hasCheck then e.row.hasCheck = false else e.row.hasCheck = true
+    )
+    attendedRow.addEventListener('click', (e) ->
+      if e.row.hasCheck then e.row.hasCheck = false else e.row.hasCheck = true
+    )
+    enrolledRow.addEventListener('click', (e) ->
+      if e.row.hasCheck then e.row.hasCheck = false else e.row.hasCheck = true
+    )
+    s7.add(prevSavedRow)
+    s7.add(prevBaptRow)
+    s7.add(attendedRow)
+    s7.add(enrolledRow)
+    data.push(s7)
+    tableView = Ti.UI.createTableView({
+      data: data,
+      height: 200
+    })
+    scrollView.add(tableView)
+    
     win.add(scrollView)
     return win
   

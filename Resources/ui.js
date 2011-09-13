@@ -1691,7 +1691,7 @@
       return win;
     };
     UI.prototype.createProspectFormWinAndroid = function(prospect) {
-      var city, country, email, fields, fname, homeText, initContactDate, lname, mobileText, pocTextfield, scrollView, self, sname, state, street, win, zip;
+      var attendValue, attendedRow, city, country, data, email, enrolledRow, enrolledValue, fields, fname, homeText, initContactDate, lname, mobileText, pocTextfield, prevBaptRow, prevBaptValue, prevSavedRow, prevSavedValue, s7, scrollView, self, sname, state, street, tableView, win, zip;
       self = this;
       win = Ti.UI.createWindow({
         title: prospect != null ? 'Edit Prospect' : 'Add Prospect',
@@ -1862,7 +1862,7 @@
       homeText = Ti.UI.createTextField({
         width: 200,
         height: 40,
-        left: 5,
+        left: 10,
         keyboardType: Titanium.UI.KEYBOARD_PHONE_PAD,
         returnKeyType: Titanium.UI.RETURNKEY_DONE,
         borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
@@ -1873,7 +1873,7 @@
       mobileText = Ti.UI.createTextField({
         width: 200,
         height: 40,
-        left: 5,
+        left: 10,
         keyboardType: Titanium.UI.KEYBOARD_PHONE_PAD,
         returnKeyType: Titanium.UI.RETURNKEY_DONE,
         borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
@@ -1882,7 +1882,7 @@
       fields.push(mobileText);
       scrollView.add(mobileText);
       email = Ti.UI.createTextField({
-        width: 280,
+        width: 300,
         height: 40,
         left: 10,
         keyboardType: Titanium.UI.KEYBOARD_EMAIL,
@@ -1900,13 +1900,13 @@
         value: prospect != null ? date('n/j/Y', prospect.firstContactDate) : date('n/j/Y'),
         height: 40,
         width: 120,
-        left: 7,
+        left: 10,
         borderStyle: Ti.UI.INPUT_BORDERSTYLE_NONE
       });
       fields.push(initContactDate);
       scrollView.add(initContactDate);
       pocTextfield = Ti.UI.createTextField({
-        width: 280,
+        width: 300,
         height: 40,
         left: 10,
         keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
@@ -1917,6 +1917,68 @@
       });
       fields.push(pocTextfield);
       scrollView.add(pocTextfield);
+      data = [];
+      s7 = Ti.UI.createTableViewSection();
+      if (prospect != null) {
+        prevSavedValue = prospect.previouslySaved.toFixed() == 1 ? true : false;
+        prevBaptValue = prospect.previouslyBaptized.toFixed() == 1 ? true : false;
+        attendValue = prospect.attended.toFixed() == 1 ? true : false;
+        enrolledValue = prospect.sundaySchool.toFixed() == 1 ? true : false;
+      }
+      prevSavedRow = Ti.UI.createTableViewRow({
+        title: 'Previously Saved',
+        hasCheck: prospect != null ? prevSavedValue : false
+      });
+      prevBaptRow = Ti.UI.createTableViewRow({
+        title: 'Previously Baptized',
+        hasCheck: prospect != null ? prevBaptValue : false
+      });
+      attendedRow = Ti.UI.createTableViewRow({
+        title: 'Attended Church',
+        hasCheck: prospect != null ? attendValue : false
+      });
+      enrolledRow = Ti.UI.createTableViewRow({
+        title: 'Enrolled in Sunday School',
+        hasCheck: prospect != null ? enrolledValue : false
+      });
+      prevSavedRow.addEventListener('click', function(e) {
+        if (e.row.hasCheck) {
+          return e.row.hasCheck = false;
+        } else {
+          return e.row.hasCheck = true;
+        }
+      });
+      prevBaptRow.addEventListener('click', function(e) {
+        if (e.row.hasCheck) {
+          return e.row.hasCheck = false;
+        } else {
+          return e.row.hasCheck = true;
+        }
+      });
+      attendedRow.addEventListener('click', function(e) {
+        if (e.row.hasCheck) {
+          return e.row.hasCheck = false;
+        } else {
+          return e.row.hasCheck = true;
+        }
+      });
+      enrolledRow.addEventListener('click', function(e) {
+        if (e.row.hasCheck) {
+          return e.row.hasCheck = false;
+        } else {
+          return e.row.hasCheck = true;
+        }
+      });
+      s7.add(prevSavedRow);
+      s7.add(prevBaptRow);
+      s7.add(attendedRow);
+      s7.add(enrolledRow);
+      data.push(s7);
+      tableView = Ti.UI.createTableView({
+        data: data,
+        height: 200
+      });
+      scrollView.add(tableView);
       win.add(scrollView);
       return win;
     };
