@@ -12,6 +12,7 @@ class ListsTab
     self = this
     win = Ti.UI.createWindow({
       title: 'Lists'
+      ###
       activity: {
         onCreateOptionsMenu : (e) ->
           menu = e.menu
@@ -21,8 +22,8 @@ class ListsTab
             alert('clicked')
           )
       }
+      ###
     })
-    # TODO: call the function to get all Lists
     lists = shl.List.find({
       where: {active: 1},
       order: 'weight ASC'
@@ -40,6 +41,14 @@ class ListsTab
         tableView.updateLists(lists)
       )
     )
+    Ti.App.addEventListener('ListWinUpdate', (e) ->
+      lists = shl.List.find({
+        where: {active: 1},
+        order: 'weight ASC'
+      })
+      tableView.updateLists(lists)
+    )
+    
     
     return win
     
@@ -306,7 +315,6 @@ class ListsTab
         else
           makebrow()
           
-        
         
         shl.ui.tabs.activeTab.open(listWin)
     )

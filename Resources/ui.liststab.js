@@ -19,19 +19,18 @@
       var lists, self, tableView, win;
       self = this;
       win = Ti.UI.createWindow({
-        title: 'Lists',
-        activity: {
-          onCreateOptionsMenu: function(e) {
-            var m1, menu;
-            menu = e.menu;
-            m1 = menu.add({
-              title: 'Add Prospect'
-            });
-            return m1.addEventListener('click', function(e) {
-              return alert('clicked');
-            });
-          }
-        }
+        title: 'Lists'
+        /*
+              activity: {
+                onCreateOptionsMenu : (e) ->
+                  menu = e.menu
+                  m1 = menu.add({title: 'Add Prospect'})
+                  m1.addEventListener('click', (e) ->
+                    # TODO: call add prospect window
+                    alert('clicked')
+                  )
+              }
+              */
       });
       lists = shl.List.find({
         where: {
@@ -52,6 +51,15 @@
           });
           return tableView.updateLists(lists);
         });
+      });
+      Ti.App.addEventListener('ListWinUpdate', function(e) {
+        lists = shl.List.find({
+          where: {
+            active: 1
+          },
+          order: 'weight ASC'
+        });
+        return tableView.updateLists(lists);
       });
       return win;
     };

@@ -32,6 +32,14 @@
       tabs.addTab(searchTab);
       tabs.addTab(statsTab);
       tabs.addTab(settingsTab);
+      if (this.isAndroid) {
+        tabs.addEventListener('focus', function(e) {
+          Ti.API.info('Current Tab Index: ' + e.index);
+          if (e.index === 0) {
+            return Ti.App.fireEvent('ListWinUpdate');
+          }
+        });
+      }
       tabs.open({
         transition: Ti.UI.iPhone.AnimationStyle.FLIP_FROM_LEFT
       });

@@ -37,6 +37,12 @@ class UI
     #tabs.addTab(nearbyTab)
     tabs.addTab(settingsTab)
     #tabs.addTab(helpTab)
+    if @isAndroid
+      tabs.addEventListener('focus', (e) ->
+        Ti.API.info('Current Tab Index: ' + e.index)
+        if e.index is 0
+          Ti.App.fireEvent('ListWinUpdate')
+      )
     tabs.open({transition:Ti.UI.iPhone.AnimationStyle.FLIP_FROM_LEFT})
     @tabs = tabs
     return tabs
