@@ -1691,7 +1691,7 @@
       return win;
     };
     UI.prototype.createProspectFormWinAndroid = function(prospect) {
-      var attendValue, attendedRow, city, country, data, email, enrolledRow, enrolledValue, fields, fname, homeText, initContactDate, lname, mobileText, pocTextfield, prevBaptRow, prevBaptValue, prevSavedRow, prevSavedValue, s7, scrollView, self, sname, state, street, tableView, win, zip;
+      var attendValue, attendedRow, city, clearForm, country, data, email, enrolledRow, enrolledValue, fields, fname, homeText, initContactDate, lname, mobileText, pocTextfield, prevBaptRow, prevBaptValue, prevSavedRow, prevSavedValue, s7, scrollView, self, sname, state, street, tableView, win, zip;
       self = this;
       win = Ti.UI.createWindow({
         title: prospect != null ? 'Edit Prospect' : 'Add Prospect',
@@ -1723,7 +1723,7 @@
                 phoneHome: homePhoneNum,
                 phoneMobile: mobilePhoneNum,
                 email: email.value,
-                firstContactDate: Math.floor(initialPicker.value.getTime() / 1000),
+                firstContactDate: strtotime(initContactDate.value),
                 firstContactPoint: pocTextfield.value,
                 previouslySaved: prevSavedRow.hasCheck ? "1" : "0",
                 previouslyBaptized: prevBaptRow.hasCheck ? "1" : "0",
@@ -1731,27 +1731,66 @@
                 sundaySchool: enrolledRow.hasCheck ? "1" : "0"
               };
               if (prospect != null) {
-                return shl.Prospect.update(prospect.id, formValues);
+                shl.Prospect.update(prospect.id, formValues);
+                clearForm();
+                win.exitValue = true;
+                return win.close();
               } else {
-                return createdProspect = shl.Prospect.create(formValues);
+                createdProspect = shl.Prospect.create(formValues);
+                clearForm();
+                return alert('Prospect created');
               }
             });
             if (prospect != null) {
               mDelete = menu.add({
                 title: 'Delete'
               });
-              return mDelete.addEventListener('click', function(f) {});
+              return mDelete.addEventListener('click', function(f) {
+                var deleteProspectDialog, options;
+                options = {
+                  options: ['Delete Prospect', 'Mark as Dead End', 'Cancel'],
+                  destructive: 0,
+                  cancel: 2,
+                  title: 'Are you really sure?'
+                };
+                deleteProspectDialog = Ti.UI.createOptionDialog(options);
+                deleteProspectDialog.addEventListener('click', function(f) {
+                  if (f.index === 0) {
+                    prospect.destroy();
+                    win.deleteProspect = true;
+                    win.exitValue = false;
+                    return win.close();
+                  } else if (f.index === 1) {
+                    prospect.updateAttribute('status', 'Dead End');
+                    win.exitValue = true;
+                    return win.close();
+                  }
+                });
+                return deleteProspectDialog.show();
+              });
             } else {
               mClear = menu.add({
                 title: 'Clear'
               });
               return mClear.addEventListener('click', function(f) {
-                return alert('Clear it!');
+                return clearForm();
               });
             }
           }
         }
       });
+      clearForm = function() {
+        var field, _i, _len;
+        for (_i = 0, _len = fields.length; _i < _len; _i++) {
+          field = fields[_i];
+          field.value = '';
+        }
+        city.value = Ti.App.Properties.getString('defaultCity', '');
+        state.value = Ti.App.Properties.getString('defaultState', '');
+        zip.value = Ti.App.Properties.getString('defaultZip', '');
+        country.value = Ti.App.Properties.getString('defaultCountry', '');
+        return initContactDate.value = date('n/j/Y');
+      };
       scrollView = Ti.UI.createScrollView({
         contentWidth: 'auto',
         contentHeight: 'auto',
@@ -1863,6 +1902,7 @@
         width: 200,
         height: 40,
         left: 10,
+        hintText: 'Home Phone',
         keyboardType: Titanium.UI.KEYBOARD_PHONE_PAD,
         returnKeyType: Titanium.UI.RETURNKEY_DONE,
         borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
@@ -1874,6 +1914,7 @@
         width: 200,
         height: 40,
         left: 10,
+        hintText: 'Mobile Phone',
         keyboardType: Titanium.UI.KEYBOARD_PHONE_PAD,
         returnKeyType: Titanium.UI.RETURNKEY_DONE,
         borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,

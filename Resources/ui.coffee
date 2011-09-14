@@ -1532,7 +1532,7 @@ class UI
               phoneHome: homePhoneNum,
               phoneMobile: mobilePhoneNum,
               email: email.value,
-              firstContactDate: Math.floor(initialPicker.value.getTime() / 1000),
+              firstContactDate: strtotime(initContactDate.value),
               firstContactPoint: pocTextfield.value,
               previouslySaved: if prevSavedRow.hasCheck then "1" else "0",
               previouslyBaptized: if prevBaptRow.hasCheck then "1" else "0",
@@ -1541,23 +1541,54 @@ class UI
             }
             if prospect?
               shl.Prospect.update(prospect.id, formValues)
+              clearForm()
+              win.exitValue = true
+              win.close()
             else
               createdProspect = shl.Prospect.create(formValues)
-            
+              clearForm()
+              alert('Prospect created')
           )
           if prospect?
             mDelete = menu.add({title: 'Delete'})
             mDelete.addEventListener('click', (f) ->
-              
+              options = {
+                options: ['Delete Prospect', 'Mark as Dead End', 'Cancel'],
+                destructive: 0,
+                cancel: 2,
+                title: 'Are you really sure?'
+              }
+              deleteProspectDialog = Ti.UI.createOptionDialog(options)
+              deleteProspectDialog.addEventListener('click', (f) ->
+                if f.index is 0
+                  prospect.destroy()
+                  win.deleteProspect = true
+                  win.exitValue = false
+                  win.close()
+                else if f.index is 1
+                  # change prospect status to dead end
+                  prospect.updateAttribute('status', 'Dead End')
+                  win.exitValue = true
+                  win.close()
+              )
+              deleteProspectDialog.show()
             )
           else
             mClear = menu.add({title: 'Clear'})
             mClear.addEventListener('click', (f) ->
-              # TODO : Write Clear function
-              alert('Clear it!')
+              clearForm()
             )
       }
     })
+    clearForm = () ->
+      for field in fields
+        field.value = ''
+      city.value = Ti.App.Properties.getString('defaultCity', '')
+      state.value = Ti.App.Properties.getString('defaultState', '')
+      zip.value = Ti.App.Properties.getString('defaultZip', '')
+      country.value = Ti.App.Properties.getString('defaultCountry', '')
+      initContactDate.value = date('n/j/Y')
+    
     scrollView = Ti.UI.createScrollView({
       contentWidth: 'auto',
       contentHeight: 'auto',
@@ -1669,6 +1700,7 @@ class UI
       width: 200,
       height:40,
       left: 10,
+      hintText: 'Home Phone',
       keyboardType:Titanium.UI.KEYBOARD_PHONE_PAD,
       returnKeyType:Titanium.UI.RETURNKEY_DONE,
       borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
@@ -1680,6 +1712,7 @@ class UI
       width: 200,
       height:40,
       left: 10,
+      hintText: 'Mobile Phone',
       keyboardType:Titanium.UI.KEYBOARD_PHONE_PAD,
       returnKeyType:Titanium.UI.RETURNKEY_DONE,
       borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE,
