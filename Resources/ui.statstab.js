@@ -26,7 +26,7 @@
           fontSize: 22,
           fontWeight: 'bold'
         },
-        color: '#272b3e'
+        color: shl.ui.isAndroid ? '#eeeeee' : '#272b3e'
       });
       view.add(allTime);
       aVisits = shl.Contact.count({
@@ -107,7 +107,7 @@
           fontSize: 22,
           fontWeight: 'bold'
         },
-        color: '#272b3e'
+        color: shl.ui.isAndroid ? '#eeeeee' : '#272b3e'
       });
       view.add(thisMonth);
       mVisits = shl.Contact.count({

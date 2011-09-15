@@ -21,7 +21,7 @@ class StatsTab
      height: 'auto',
      width: 200,
      font: {fontSize: 22, fontWeight: 'bold'},
-     color: '#272b3e'
+     color: if shl.ui.isAndroid then '#eeeeee' else '#272b3e'
     })
     view.add(allTime)
     aVisits = shl.Contact.count({
@@ -91,7 +91,7 @@ class StatsTab
       height: 'auto',
       width: 200,
       font: {fontSize: 22, fontWeight: 'bold'},
-      color: '#272b3e'
+      color: if shl.ui.isAndroid then '#eeeeee' else '#272b3e'
     })
     view.add(thisMonth)
     mVisits = shl.Contact.count({
