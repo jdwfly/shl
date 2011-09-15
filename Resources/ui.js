@@ -36,7 +36,10 @@
         tabs.addEventListener('focus', function(e) {
           Ti.API.info('Current Tab Index: ' + e.index);
           if (e.index === 0) {
-            return Ti.App.fireEvent('ListWinUpdate');
+            Ti.App.fireEvent('ListWinUpdate');
+          }
+          if (e.index === 2) {
+            return Ti.App.fireEvent('AddFormUpdate');
           }
         });
       }
@@ -2029,6 +2032,9 @@
       });
       scrollView.add(tableView);
       win.add(scrollView);
+      Ti.App.addEventListener('AddFormUpdate', function(e) {
+        return clearForm();
+      });
       return win;
     };
     return UI;

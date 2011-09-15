@@ -42,6 +42,8 @@ class UI
         Ti.API.info('Current Tab Index: ' + e.index)
         if e.index is 0
           Ti.App.fireEvent('ListWinUpdate')
+        if e.index is 2
+          Ti.App.fireEvent('AddFormUpdate')
       )
     tabs.open({transition:Ti.UI.iPhone.AnimationStyle.FLIP_FROM_LEFT})
     @tabs = tabs
@@ -1811,6 +1813,10 @@ class UI
     scrollView.add(tableView)
     
     win.add(scrollView)
+    Ti.App.addEventListener('AddFormUpdate', (e) ->
+      clearForm()
+    )
+    
     return win
   
 shl.ui = new UI
