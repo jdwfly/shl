@@ -9,19 +9,6 @@ class AddTab
     })
   
   createAddWindow : () ->
-    # TODO: Biggest priority for android is this form
-    if @isAndroid
-      win = Ti.UI.createWindow({
-        title: 'Add Prospect'
-      })
-      webView = Ti.UI.createWebView({
-        url: 'addProspect.html'
-      })
-      Ti.App.addEventListener('webToTi', (e) ->
-        Ti.API.info('webToTi Sent: ' + JSON.stringify(e))
-      )
-      win.add(webView)
-      return win
     win = shl.ui.createProspectFormWin()
     return win
   
