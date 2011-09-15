@@ -710,7 +710,7 @@ class UI
       text: prospect.status,
       width: 'auto',
       height: 'auto',
-      right: 5,
+      right: if @isAndroid then 30 else 5,
       color: '#395587',
       font: {fontSize: 12}
     })
