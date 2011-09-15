@@ -1528,6 +1528,9 @@ class UI
               return false
             homePhoneNum = homeText.value.replace(/[^0-9]/g, '')
             mobilePhoneNum = mobileText.value.replace(/[^0-9]/g, '')
+            now = time()
+            firstContact = strtotime(initContactDate.value)
+            firstContactValue = (now - firstContact) + firstContact
             formValues = {
               last: lname.value,
               firstMale: fname.value,
@@ -1540,7 +1543,7 @@ class UI
               phoneHome: homePhoneNum,
               phoneMobile: mobilePhoneNum,
               email: email.value,
-              firstContactDate: strtotime(initContactDate.value),
+              firstContactDate: firstContactValue,
               firstContactPoint: pocTextfield.value,
               previouslySaved: if prevSavedRow.hasCheck then "1" else "0",
               previouslyBaptized: if prevBaptRow.hasCheck then "1" else "0",
