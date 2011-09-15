@@ -114,16 +114,24 @@ class exports.SettingRow
               returnKeyType:Titanium.UI.RETURNKEY_DONE,
               borderStyle:Titanium.UI.INPUT_BORDERSTYLE_ROUNDED
             })
-            textField.addEventListener('return', (f) ->
-              if debug then Ti.API.info(settings.name + ' = ' + @value)
-              Ti.App.Properties.setString(settings.name, @value)
-              self.settingValueLabel.text = @value
+            # Function saves property
+            saveProperty = (f) ->
+              if debug then Ti.API.info(settings.name + ' = ' + f)
+              Ti.App.Properties.setString(settings.name, f)
+              self.settingValueLabel.text = f
               optionsWin.close()
+            textField.addEventListener('return', (f) ->
+              saveProperty(@value)
             )
             optionsWin.add(textField)
             optionsWin.addEventListener('open', (f) ->
               textField.focus()
             )
+            Ti.API.info('Ti.Platform.osname = ' + Ti.Platform.osname)
+            if Ti.Platform.osname is 'android'
+              optionsWin.addEventListener('android:back', (f) ->
+                saveProperty(textField.value)
+              )
           # this line doesn't make it very modular but I can't figure any other way to do this
           shl.ui.tabs.activeTab.open(optionsWin)
         )

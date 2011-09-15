@@ -66,7 +66,7 @@
         case 'text':
           instance.hasChild = true;
           instance.addEventListener('click', function(e) {
-            var data, option, optionsTableView, optionsWin, row, textField, value, _i, _len, _ref;
+            var data, option, optionsTableView, optionsWin, row, saveProperty, textField, value, _i, _len, _ref;
             optionsWin = Ti.UI.createWindow({
               title: settings.title,
               backgroundColor: Ti.Platform.osname === 'iphone' ? 'stripped' : '#181818'
@@ -115,18 +115,27 @@
                 returnKeyType: Titanium.UI.RETURNKEY_DONE,
                 borderStyle: Titanium.UI.INPUT_BORDERSTYLE_ROUNDED
               });
-              textField.addEventListener('return', function(f) {
+              saveProperty = function(f) {
                 if (debug) {
-                  Ti.API.info(settings.name + ' = ' + this.value);
+                  Ti.API.info(settings.name + ' = ' + f);
                 }
-                Ti.App.Properties.setString(settings.name, this.value);
-                self.settingValueLabel.text = this.value;
+                Ti.App.Properties.setString(settings.name, f);
+                self.settingValueLabel.text = f;
                 return optionsWin.close();
+              };
+              textField.addEventListener('return', function(f) {
+                return saveProperty(this.value);
               });
               optionsWin.add(textField);
               optionsWin.addEventListener('open', function(f) {
                 return textField.focus();
               });
+              Ti.API.info('Ti.Platform.osname = ' + Ti.Platform.osname);
+              if (Ti.Platform.osname === 'android') {
+                optionsWin.addEventListener('android:back', function(f) {
+                  return saveProperty(textField.value);
+                });
+              }
             }
             return shl.ui.tabs.activeTab.open(optionsWin);
           });
