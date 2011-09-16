@@ -1599,6 +1599,10 @@ class UI
       zip.value = Ti.App.Properties.getString('defaultZip', '')
       country.value = Ti.App.Properties.getString('defaultCountry', '')
       initContactDate.value = date('n/j/Y')
+      prevSavedRow.hasCheck = false
+      prevBaptRow.hasCheck = false
+      attendedRow.hasCheck = false
+      enrolledRow.hasCheck = false
     
     scrollView = Ti.UI.createScrollView({
       contentWidth: 'auto',

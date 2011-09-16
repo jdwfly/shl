@@ -1803,7 +1803,11 @@
         state.value = Ti.App.Properties.getString('defaultState', '');
         zip.value = Ti.App.Properties.getString('defaultZip', '');
         country.value = Ti.App.Properties.getString('defaultCountry', '');
-        return initContactDate.value = date('n/j/Y');
+        initContactDate.value = date('n/j/Y');
+        prevSavedRow.hasCheck = false;
+        prevBaptRow.hasCheck = false;
+        attendedRow.hasCheck = false;
+        return enrolledRow.hasCheck = false;
       };
       scrollView = Ti.UI.createScrollView({
         contentWidth: 'auto',
