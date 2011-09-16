@@ -13,7 +13,7 @@ class StatsTab
     statsWin = Ti.UI.createWindow({
      title : 'My Outreach Stats'
     })
-    view = Ti.UI.createView()
+    view = Ti.UI.createScrollView()
     allTime = Ti.UI.createLabel ({
      text: 'TOTAL',
      top: 15,
