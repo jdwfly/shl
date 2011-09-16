@@ -1561,7 +1561,12 @@ class UI
             else
               createdProspect = shl.Prospect.create(formValues)
               clearForm()
-              alert('Prospect created')
+              alertCreate = Ti.UI.createAlertDialog({
+                title: 'Outreach',
+                message: 'Prospect created!',
+                buttonNames: ['OK']
+              })
+              alertCreate.show()
           )
           if prospect?
             mDelete = menu.add({title: 'Delete'})

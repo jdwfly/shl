@@ -1718,7 +1718,7 @@
               title: 'Save'
             });
             mSave.addEventListener('click', function(f) {
-              var createdProspect, emailPattern, firstContact, firstContactValue, formValues, homePhoneNum, mobilePhoneNum, now;
+              var alertCreate, createdProspect, emailPattern, firstContact, firstContactValue, formValues, homePhoneNum, mobilePhoneNum, now;
               emailPattern = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
               if (email.value !== '' && !email.value.match(emailPattern)) {
                 alert('Invalid email address.');
@@ -1756,7 +1756,12 @@
               } else {
                 createdProspect = shl.Prospect.create(formValues);
                 clearForm();
-                return alert('Prospect created');
+                alertCreate = Ti.UI.createAlertDialog({
+                  title: 'Outreach',
+                  message: 'Prospect created!',
+                  buttonNames: ['OK']
+                });
+                return alertCreate.show();
               }
             });
             if (prospect != null) {
