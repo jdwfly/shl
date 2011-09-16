@@ -96,9 +96,12 @@ class UI
       d.destroy()
     )
     tableView.updateProspect = (prospect) ->
-      data = self.processProspectViewData(prospect)
-      @setData(data.data)
-      @headerView = data.headerView
+      if prospect.id?
+        data = self.processProspectViewData(prospect)
+        @setData(data.data)
+        @headerView = data.headerView
+      else
+        win.close()
     
     editButtonListener = (e) ->
       # Open modal window to edit prospect

@@ -101,9 +101,13 @@
         return d.destroy();
       });
       tableView.updateProspect = function(prospect) {
-        data = self.processProspectViewData(prospect);
-        this.setData(data.data);
-        return this.headerView = data.headerView;
+        if (prospect.id != null) {
+          data = self.processProspectViewData(prospect);
+          this.setData(data.data);
+          return this.headerView = data.headerView;
+        } else {
+          return win.close();
+        }
       };
       editButtonListener = function(e) {
         var editProspect, editWin;
