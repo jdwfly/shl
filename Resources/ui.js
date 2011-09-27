@@ -218,7 +218,7 @@
         backgroundImage: '/images/button_blue.png'
       });
       recordContactButton.addEventListener('click', function(e) {
-        var closeButton, commentRow, commentSection, commentsRow, commentsTextArea, contactTableView, dateField, datePicker, datePickerView, dateRow, dateSection, decisionSection, emailRow, letterRow, phoneRow, pickerCancel, pickerDone, pickerSlideIn, pickerSlideOut, pickerSpacer, pickerToolbar, recordContactNav, recordContactRoot, recordContactWin, recordDecisionRow, saveButton, saveButtonListener, tdata, today, visitRow, visitSection, visitSectionListener, visitedChurchRow;
+        var closeButton, commentRow, commentSection, commentsRow, commentsTextArea, contactTableView, dateField, datePicker, datePickerView, dateRow, dateSection, decisionSection, emailRow, letterRow, phoneRow, pickerCancel, pickerDone, pickerSlideIn, pickerSlideOut, pickerSpacer, pickerToolbar, recordContactNav, recordContactRoot, recordContactWin, recordDecisionRow, saveButton, saveButtonListener, scrollView, tdata, today, visitRow, visitSection, visitSectionListener, visitedChurchRow;
         recordContactWin = Ti.UI.createWindow({
           backgroundColor: '#ffffff',
           navBarHidden: true
@@ -427,16 +427,22 @@
           returnKeyType: Titanium.UI.RETURNKEY_DONE,
           borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE
         });
-        commentsRow.add(commentsTextArea);
-        commentSection.add(commentsRow);
-        tdata.push(commentSection);
+        if (!self.isAndroid) {
+          commentsRow.add(commentsTextArea);
+          commentSection.add(commentsRow);
+          tdata.push(commentSection);
+        }
         decisionSection = Ti.UI.createTableViewSection();
+        if (self.isAndroid) {
+          decisionSection.headerTitle = "Decisions";
+          decisionSection.footerTitle = "Comments";
+        }
         recordDecisionRow = Ti.UI.createTableViewRow({
           title: 'Record Decision',
           hasChild: true
         });
         recordDecisionRow.addEventListener('click', function(e) {
-          var baptizedRow, decisionMakerSection, decisionMakerSectionListener, femaleRow, footerView, joinedRow, maleRow, otherRow, otherTextField, recordDecisionWin, rowIndex, savedRow, typeData, typeDecisionSection, typeDecisionSectionListener, typeDecisionTableView;
+          var baptizedRow, decisionMakerSection, decisionMakerSectionListener, decisionSaveButtonListener, femaleRow, footerView, joinedRow, maleRow, otherRow, otherTextField, recordDecisionWin, rowIndex, savedRow, typeData, typeDecisionSection, typeDecisionSectionListener, typeDecisionTableView;
           rowIndex = e.index;
           recordDecisionWin = Ti.UI.createWindow({
             title: 'Record Decision'
@@ -544,7 +550,7 @@
             width: 300,
             height: 50
           });
-          saveButtonListener = function(e) {
+          decisionSaveButtonListener = function(e) {
             var decisionPerson, decisionTitle, decisionType, groupHasCheck, i, newDecisionRow, row, _len, _len2, _ref, _ref2;
             decisionTitle = '';
             decisionType = '';
@@ -592,10 +598,11 @@
             if (self.platform === 'iPhone OS') {
               return recordContactNav.close(recordDecisionWin);
             } else {
+              contactTableView.height = contactTableView.height + 50;
               return recordDecisionWin.close();
             }
           };
-          saveButton.addEventListener('click', saveButtonListener);
+          saveButton.addEventListener('click', decisionSaveButtonListener);
           footerView.add(saveButton);
           typeDecisionTableView = Ti.UI.createTableView({
             data: typeData,
@@ -609,7 +616,7 @@
               m1 = menu.add({
                 title: 'Save'
               });
-              m1.addEventListener('click', saveButtonListener);
+              m1.addEventListener('click', decisionSaveButtonListener);
               m2 = menu.add({
                 title: 'Cancel'
               });
@@ -631,8 +638,22 @@
           data: tdata,
           style: Titanium.UI.iPhone.TableViewStyle.GROUPED
         });
-        recordContactRoot.add(contactTableView);
-        recordContactRoot.add(datePickerView);
+        if (self.isAndroid) {
+          scrollView = Ti.UI.createScrollView({
+            contentWidth: 'auto',
+            contentHeight: 'auto',
+            top: 0,
+            showVerticalScrollIndicator: true,
+            layout: 'vertical'
+          });
+          contactTableView.height = 480;
+          scrollView.add(contactTableView);
+          scrollView.add(commentsTextArea);
+          recordContactRoot.add(scrollView);
+        } else {
+          recordContactRoot.add(contactTableView);
+          recordContactRoot.add(datePickerView);
+        }
         recordContactRoot.activity = {
           onCreateOptionsMenu: function(w) {
             var m1, m2, menu;

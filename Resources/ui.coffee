@@ -399,11 +399,15 @@ class UI
         returnKeyType:Titanium.UI.RETURNKEY_DONE,
         borderStyle:Titanium.UI.INPUT_BORDERSTYLE_NONE
       })
-      commentsRow.add(commentsTextArea)
-      commentSection.add(commentsRow)
-      tdata.push(commentSection)
+      if not self.isAndroid
+        commentsRow.add(commentsTextArea)
+        commentSection.add(commentsRow)
+        tdata.push(commentSection)
       
       decisionSection = Ti.UI.createTableViewSection()
+      if self.isAndroid
+        decisionSection.headerTitle = "Decisions"
+        decisionSection.footerTitle = "Comments"
       recordDecisionRow = Ti.UI.createTableViewRow({
         title: 'Record Decision',
         hasChild: true
@@ -503,7 +507,7 @@ class UI
           width: 300,
           height: 50
         })
-        saveButtonListener = (e) ->
+        decisionSaveButtonListener = (e) ->
           # Save and go back to other window in the navgroup
           # Loop through the two sections to find the one that hasCheck
           decisionTitle = ''
@@ -544,9 +548,10 @@ class UI
           if self.platform is 'iPhone OS'
             recordContactNav.close(recordDecisionWin)
           else
+            contactTableView.height = contactTableView.height + 50
             recordDecisionWin.close()
         
-        saveButton.addEventListener('click', saveButtonListener)
+        saveButton.addEventListener('click', decisionSaveButtonListener)
         footerView.add(saveButton)
         
         typeDecisionTableView = Ti.UI.createTableView({
@@ -558,7 +563,7 @@ class UI
           onCreateOptionsMenu : (w) ->
             menu = w.menu
             m1 = menu.add({title: 'Save'})
-            m1.addEventListener('click', saveButtonListener)
+            m1.addEventListener('click', decisionSaveButtonListener)
             m2 = menu.add({title: 'Cancel'})
             m2.addEventListener('click', (x) ->
               recordDecisionWin.close()
@@ -577,8 +582,21 @@ class UI
         data: tdata, 
         style: Titanium.UI.iPhone.TableViewStyle.GROUPED
       })
-      recordContactRoot.add(contactTableView)
-      recordContactRoot.add(datePickerView)
+      if self.isAndroid
+        scrollView = Ti.UI.createScrollView({
+          contentWidth: 'auto',
+          contentHeight: 'auto',
+          top: 0,
+          showVerticalScrollIndicator: true,
+          layout: 'vertical'
+        })
+        contactTableView.height = 480
+        scrollView.add(contactTableView)
+        scrollView.add(commentsTextArea)
+        recordContactRoot.add(scrollView)
+      else
+        recordContactRoot.add(contactTableView)
+        recordContactRoot.add(datePickerView)
       recordContactRoot.activity = {
         onCreateOptionsMenu : (w) ->
           menu = w.menu
