@@ -298,41 +298,6 @@
         }
         tdata = [];
         today = new Date();
-        dateSection = Ti.UI.createTableViewSection({
-          headerTitle: typeof prospect.formatName === "function" ? prospect.formatName() : void 0
-        });
-        dateRow = Ti.UI.createTableViewRow();
-        datePickerView = Ti.UI.createView({
-          height: 251,
-          bottom: -251
-        });
-        pickerCancel = Ti.UI.createButton({
-          title: 'Cancel',
-          style: Ti.UI.iPhone.SystemButtonStyle.BORDERED
-        });
-        pickerDone = Ti.UI.createButton({
-          title: 'Done',
-          style: Ti.UI.iPhone.SystemButtonStyle.DONE
-        });
-        pickerSpacer = Ti.UI.createButton({
-          systemButton: Ti.UI.iPhone.SystemButton.FLEXIBLE_SPACE
-        });
-        pickerToolbar = Ti.UI.createToolbar({
-          top: 0,
-          items: [pickerCancel, pickerSpacer, pickerDone]
-        });
-        today = new Date();
-        datePicker = Ti.UI.createPicker({
-          top: 43,
-          type: Ti.UI.PICKER_TYPE_DATE,
-          value: today
-        });
-        datePicker.selectionIndicator = true;
-        datePicker.addEventListener('change', function(e) {
-          return datePicker.value = e.value;
-        });
-        datePickerView.add(pickerToolbar);
-        datePickerView.add(datePicker);
         dateField = Ti.UI.createTextField({
           height: 40,
           width: 300,
@@ -340,26 +305,62 @@
           value: (today.getMonth() + 1) + '/' + today.getDate() + '/' + today.getFullYear(),
           borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE
         });
-        pickerSlideIn = Ti.UI.createAnimation({
-          bottom: 0
-        });
-        pickerSlideOut = Ti.UI.createAnimation({
-          bottom: -251
-        });
-        dateField.addEventListener('focus', function() {
-          datePickerView.animate(pickerSlideIn);
-          return dateField.blur();
-        });
-        pickerCancel.addEventListener('click', function() {
-          return datePickerView.animate(pickerSlideOut);
-        });
-        pickerDone.addEventListener('click', function() {
-          dateField.value = date('n/j/Y', datePicker.value);
-          return datePickerView.animate(pickerSlideOut);
-        });
-        dateRow.add(dateField);
-        dateSection.add(dateRow);
-        tdata.push(dateSection);
+        if (!self.isAndroid) {
+          dateSection = Ti.UI.createTableViewSection({
+            headerTitle: typeof prospect.formatName === "function" ? prospect.formatName() : void 0
+          });
+          dateRow = Ti.UI.createTableViewRow();
+          datePickerView = Ti.UI.createView({
+            height: 251,
+            bottom: -251
+          });
+          pickerCancel = Ti.UI.createButton({
+            title: 'Cancel',
+            style: Ti.UI.iPhone.SystemButtonStyle.BORDERED
+          });
+          pickerDone = Ti.UI.createButton({
+            title: 'Done',
+            style: Ti.UI.iPhone.SystemButtonStyle.DONE
+          });
+          pickerSpacer = Ti.UI.createButton({
+            systemButton: Ti.UI.iPhone.SystemButton.FLEXIBLE_SPACE
+          });
+          pickerToolbar = Ti.UI.createToolbar({
+            top: 0,
+            items: [pickerCancel, pickerSpacer, pickerDone]
+          });
+          datePicker = Ti.UI.createPicker({
+            top: 43,
+            type: Ti.UI.PICKER_TYPE_DATE,
+            value: today
+          });
+          datePicker.selectionIndicator = true;
+          datePicker.addEventListener('change', function(e) {
+            return datePicker.value = e.value;
+          });
+          datePickerView.add(pickerToolbar);
+          datePickerView.add(datePicker);
+          pickerSlideIn = Ti.UI.createAnimation({
+            bottom: 0
+          });
+          pickerSlideOut = Ti.UI.createAnimation({
+            bottom: -251
+          });
+          dateField.addEventListener('focus', function() {
+            datePickerView.animate(pickerSlideIn);
+            return dateField.blur();
+          });
+          pickerCancel.addEventListener('click', function() {
+            return datePickerView.animate(pickerSlideOut);
+          });
+          pickerDone.addEventListener('click', function() {
+            dateField.value = date('n/j/Y', datePicker.value);
+            return datePickerView.animate(pickerSlideOut);
+          });
+          dateRow.add(dateField);
+          dateSection.add(dateRow);
+          tdata.push(dateSection);
+        }
         visitSection = Ti.UI.createTableViewSection({
           headerTitle: 'Type of Contact'
         });
@@ -648,7 +649,8 @@
             showVerticalScrollIndicator: true,
             layout: 'vertical'
           });
-          contactTableView.height = 480;
+          contactTableView.height = 420;
+          scrollView.add(dateField);
           scrollView.add(contactTableView);
           scrollView.add(commentsTextArea);
           recordContactRoot.add(scrollView);
