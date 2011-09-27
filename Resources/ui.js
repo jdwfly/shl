@@ -517,26 +517,28 @@
           otherRow = Ti.UI.createTableViewRow({
             hasCheck: false
           });
-          otherTextField = Ti.UI.createTextField({
-            height: 40,
-            width: 270,
-            left: 7,
-            keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
-            returnKeyType: Titanium.UI.RETURNKEY_DONE,
-            borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
-            hintText: 'Other Family Member'
-          });
-          otherTextField.addEventListener('blur', function(e) {
-            if (maleRow != null) {
-              maleRow.hasCheck = false;
-            }
-            if (femaleRow != null) {
-              femaleRow.hasCheck = false;
-            }
-            return otherRow.hasCheck = true;
-          });
-          otherRow.add(otherTextField);
-          decisionMakerSection.add(otherRow);
+          if (!self.isAndroid) {
+            otherTextField = Ti.UI.createTextField({
+              height: 40,
+              width: 270,
+              left: 7,
+              keyboardType: Titanium.UI.KEYBOARD_DEFAULT,
+              returnKeyType: Titanium.UI.RETURNKEY_DONE,
+              borderStyle: Titanium.UI.INPUT_BORDERSTYLE_NONE,
+              hintText: 'Other Family Member'
+            });
+            otherTextField.addEventListener('blur', function(e) {
+              if (maleRow != null) {
+                maleRow.hasCheck = false;
+              }
+              if (femaleRow != null) {
+                femaleRow.hasCheck = false;
+              }
+              return otherRow.hasCheck = true;
+            });
+            otherRow.add(otherTextField);
+            decisionMakerSection.add(otherRow);
+          }
           decisionMakerSection.addEventListener('click', decisionMakerSectionListener);
           typeData.push(decisionMakerSection);
           footerView = Ti.UI.createView({
