@@ -41,6 +41,7 @@
                 android:largeScreens="false"
                 android:normalScreens="false" android:smallScreens="false"/>
         </manifest>
+        <manifest android:versionCode="2" android:versionName="1.1"/>
     </android>
     <modules/>
 </ti:app>
