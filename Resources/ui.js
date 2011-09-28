@@ -389,12 +389,16 @@
           hasCheck: false
         });
         visitSectionListener = function(e) {
-          var i, row, _len, _ref, _results;
+          var diff, i, row, _len, _ref, _results;
           _ref = visitSection.rows;
           _results = [];
           for (i = 0, _len = _ref.length; i < _len; i++) {
             row = _ref[i];
-            _results.push(i === (e.index - 1) ? visitSection.rows[i].hasCheck = true : visitSection.rows[i].hasCheck = false);
+            diff = 1;
+            if (self.isAndroid) {
+              diff = 0;
+            }
+            _results.push(i === (e.index - diff) ? visitSection.rows[i].hasCheck = true : visitSection.rows[i].hasCheck = false);
           }
           return _results;
         };
@@ -1753,7 +1757,7 @@
               mobilePhoneNum = mobileText.value.replace(/[^0-9]/g, '');
               now = time();
               firstContact = strtotime(initContactDate.value);
-              firstContactValue = (now - firstContact) + firstContact;
+              firstContactValue = secondsMidnight() + firstContact;
               formValues = {
                 last: lname.value,
                 firstMale: fname.value,

@@ -392,3 +392,13 @@ function strtotime (str, now) {
 function time () {
     return Math.floor(new Date().getTime() / 1000);
 }
+// Give the amount of seconds since midnight
+function secondsMidnight() {
+  var today = new Date(),
+      now = new Date().getTime();
+  today.setHours(0);
+  today.setMinutes(0);
+  today.setSeconds(0);
+  today.setMilliseconds(0);
+  return Math.floor((now - today.getTime()) / 1000);
+}

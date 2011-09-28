@@ -362,7 +362,10 @@ class UI
         # this is technically getting called twice due to android event bubbling but no ill side effects yet.
         for row, i in visitSection.rows
           # e.index is off by one because there is one row already
-          if i is (e.index - 1)
+          diff = 1
+          if self.isAndroid
+            diff = 0
+          if i is (e.index - diff)
             visitSection.rows[i].hasCheck = true
           else
             visitSection.rows[i].hasCheck = false
@@ -1550,7 +1553,7 @@ class UI
             mobilePhoneNum = mobileText.value.replace(/[^0-9]/g, '')
             now = time()
             firstContact = strtotime(initContactDate.value)
-            firstContactValue = (now - firstContact) + firstContact
+            firstContactValue = secondsMidnight() + firstContact
             formValues = {
               last: lname.value,
               firstMale: fname.value,
