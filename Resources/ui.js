@@ -100,6 +100,29 @@
         d = shl.Contact.find(e.row.contactID);
         return d.destroy();
       });
+      if (this.isAndroid) {
+        tableView.addEventListener('click', function(e) {
+          var dialog, rowIndex;
+          if (e.section.headerTitle === 'Activity Log') {
+            dialog = Ti.UI.createOptionDialog({
+              title: '',
+              options: ['Delete', 'Cancel'],
+              destructive: 0,
+              cancel: 1
+            });
+            rowIndex = e.index;
+            dialog.addEventListener('click', function(f) {
+              var d;
+              if (f.index === 0) {
+                d = shl.Contact.find(e.row.contactID);
+                d.destroy();
+                return tableView.deleteRow(rowIndex);
+              }
+            });
+            return dialog.show();
+          }
+        });
+      }
       tableView.updateProspect = function(prospect) {
         if (prospect.id != null) {
           data = self.processProspectViewData(prospect);

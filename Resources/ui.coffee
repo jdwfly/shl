@@ -95,6 +95,25 @@ class UI
       d = shl.Contact.find(e.row.contactID)
       d.destroy()
     )
+    # This allows android users to delete wrong contacts
+    if @isAndroid
+      tableView.addEventListener('click', (e) ->
+        if e.section.headerTitle is 'Activity Log'
+          dialog = Ti.UI.createOptionDialog({
+            title: '',
+            options: ['Delete', 'Cancel'],
+            destructive: 0,
+            cancel: 1
+          })
+          rowIndex = e.index
+          dialog.addEventListener('click', (f) ->
+            if f.index is 0
+              d = shl.Contact.find(e.row.contactID)
+              d.destroy()
+              tableView.deleteRow(rowIndex)
+          )
+          dialog.show()
+      )
     tableView.updateProspect = (prospect) ->
       if prospect.id?
         data = self.processProspectViewData(prospect)
