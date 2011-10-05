@@ -37,15 +37,13 @@
     </iphone>
     <android xmlns:android="http://schemas.android.com/apk/res/android">
         <tool-api-level>8</tool-api-level>
-        <manifest android:installLocation="preferExternal">
-          <uses-sdk android:minSdkVersion="7" />
-        </manifest>
-        <manifest>
+        <manifest android:installLocation="auto">
+            <uses-sdk android:minSdkVersion="7" android:targetSdkVersion="8" />
             <supports-screens android:anyDensity="false"
                 android:largeScreens="false"
                 android:normalScreens="false" android:smallScreens="false"/>
         </manifest>
-        <manifest android:versionCode="2" android:versionName="1.1"/>
+        <manifest android:versionCode="3" android:versionName="1.2"/>
     </android>
     <modules/>
 </ti:app>
