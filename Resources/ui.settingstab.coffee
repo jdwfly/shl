@@ -166,7 +166,7 @@ class SettingsTab
     data.push(defaultSection)
     
     exportSection = Ti.UI.createTableViewSection({
-      headerTitle: 'Export'
+      headerTitle: 'Export & Feedback'
     })
     exportEmail = Ti.UI.createTableViewRow({
       title: 'Email a CSV'
@@ -183,6 +183,15 @@ class SettingsTab
       emailDialog.open();
     )
     exportSection.add(exportEmail)
+    sendFeedback = Ti.UI.createTableViewRow({
+      title: 'Send Feedback'
+    })
+    sendFeedback.addEventListener('click', (e) ->
+      emailDialog = Ti.UI.createEmailDialog()
+      emailDialog.toRecipients = ['outreachapp@lancasterbaptist.org']
+      emailDialog.open()
+    )
+    exportSection.add(sendFeedback)
     
     data.push(exportSection)
     

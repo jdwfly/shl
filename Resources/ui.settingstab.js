@@ -134,7 +134,7 @@
     }
 
     SettingsTab.prototype.createSettingsWindow = function() {
-      var data, defaultCityRow, defaultCountryRow, defaultSection, defaultStateRow, defaultZipRow, exportEmail, exportSection, self, settingsWin, tableView;
+      var data, defaultCityRow, defaultCountryRow, defaultSection, defaultStateRow, defaultZipRow, exportEmail, exportSection, self, sendFeedback, settingsWin, tableView;
       self = this;
       settingsWin = Ti.UI.createWindow({
         title: 'Settings'
@@ -173,7 +173,7 @@
       defaultSection.add(defaultCountryRow);
       data.push(defaultSection);
       exportSection = Ti.UI.createTableViewSection({
-        headerTitle: 'Export'
+        headerTitle: 'Export & Feedback'
       });
       exportEmail = Ti.UI.createTableViewRow({
         title: 'Email a CSV'
@@ -191,6 +191,16 @@
         return emailDialog.open();
       });
       exportSection.add(exportEmail);
+      sendFeedback = Ti.UI.createTableViewRow({
+        title: 'Send Feedback'
+      });
+      sendFeedback.addEventListener('click', function(e) {
+        var emailDialog;
+        emailDialog = Ti.UI.createEmailDialog();
+        emailDialog.toRecipients = ['outreachapp@lancasterbaptist.org'];
+        return emailDialog.open();
+      });
+      exportSection.add(sendFeedback);
       data.push(exportSection);
       tableView = Ti.UI.createTableView({
         data: data,
