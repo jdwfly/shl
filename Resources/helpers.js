@@ -402,3 +402,42 @@ function secondsMidnight() {
   today.setMilliseconds(0);
   return Math.floor((now - today.getTime()) / 1000);
 }
+
+function getCSVHeaders(objArray) {
+  var array = typeof objArray != 'object' ? JSON.parse(objArray) : objArray;
+  var str = '';
+  var i = 0;
+  var line = '';
+  for (var index in array[i]) {
+    if (line != '') line += ','
+      
+    line += index;
+  }
+  str += line + '\r\n';
+  return str;
+}
+
+function ConvertToCSV(objArray) {
+  var array = typeof objArray != 'object' ? JSON.parse(objArray) : objArray;
+  var str = '';
+  // Get headers
+  var firstline = '';
+  for (var index in array[0]) {
+    if (firstline != '') firstline += ','
+      
+    firstline += index;
+  }
+  str += firstline + '\r\n';
+  // Get Data
+  for (var i = 0; i < array.length; i++) {
+    var line = '';
+    for (var index in array[i]) {
+      if (line != '') line += ','
+      
+      line += array[i][index];
+    }
+    str += line + '\r\n';
+  }
+ 
+  return str;
+}

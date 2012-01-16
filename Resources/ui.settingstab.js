@@ -134,7 +134,7 @@
     }
 
     SettingsTab.prototype.createSettingsWindow = function() {
-      var data, defaultCityRow, defaultCountryRow, defaultSection, defaultStateRow, defaultZipRow, self, settingsWin, tableView;
+      var data, defaultCityRow, defaultCountryRow, defaultSection, defaultStateRow, defaultZipRow, exportEmail, exportSection, self, settingsWin, tableView;
       self = this;
       settingsWin = Ti.UI.createWindow({
         title: 'Settings'
@@ -172,6 +172,26 @@
       defaultSection.add(defaultZipRow);
       defaultSection.add(defaultCountryRow);
       data.push(defaultSection);
+      exportSection = Ti.UI.createTableViewSection({
+        headerTitle: 'Export'
+      });
+      exportEmail = Ti.UI.createTableViewRow({
+        title: 'Email a CSV'
+      });
+      exportEmail.addEventListener('click', function(e) {
+        var csvString, emailDialog, file, prospects;
+        file = Ti.Filesystem.getFile(Ti.Filesystem.tempDirectory, 'outreach.csv');
+        prospects = shl.Prospect.find();
+        Ti.API.info('prospects = ' + prospects.toJSON());
+        csvString = ConvertToCSV(prospects.toJSON());
+        Ti.API.info('csvString = ' + csvString);
+        file.write(csvString);
+        emailDialog = Ti.UI.createEmailDialog();
+        emailDialog.addAttachment(file);
+        return emailDialog.open();
+      });
+      exportSection.add(exportEmail);
+      data.push(exportSection);
       tableView = Ti.UI.createTableView({
         data: data,
         style: Titanium.UI.iPhone.TableViewStyle.GROUPED
