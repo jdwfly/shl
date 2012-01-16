@@ -33,7 +33,7 @@ class UI
     tabs.addTab(starredTab)
     tabs.addTab(addTab)
     tabs.addTab(searchTab)
-    tabs.addTab(statsTab)
+    #tabs.addTab(statsTab)
     #tabs.addTab(nearbyTab)
     tabs.addTab(settingsTab)
     #tabs.addTab(helpTab)

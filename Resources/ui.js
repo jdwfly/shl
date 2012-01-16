@@ -32,7 +32,6 @@
       tabs.addTab(starredTab);
       tabs.addTab(addTab);
       tabs.addTab(searchTab);
-      tabs.addTab(statsTab);
       tabs.addTab(settingsTab);
       if (this.isAndroid) {
         tabs.addEventListener('focus', function(e) {
