@@ -1,6 +1,8 @@
 (function() {
   var SettingRow, SettingsTab;
+
   SettingRow = (function() {
+
     function SettingRow(args, settings) {
       var debug, instance, self, settingSwitch, settingTitleLabel, value;
       self = this;
@@ -21,9 +23,7 @@
         height: 'auto',
         textAlign: 'right'
       });
-      if (settings.control !== 'boolean') {
-        instance.add(this.settingValueLabel);
-      }
+      if (settings.control !== 'boolean') instance.add(this.settingValueLabel);
       switch (settings.control) {
         case 'select':
         case 'text':
@@ -44,9 +44,7 @@
                   title: option.name,
                   hasCheck: false
                 });
-                if (option.name === value) {
-                  row.hasCheck = true;
-                }
+                if (option.name === value) row.hasCheck = true;
                 data.push(row);
               }
               optionsTableView = Ti.UI.createTableView({
@@ -55,14 +53,18 @@
               });
               optionsTableView.addEventListener('click', function(f) {
                 var i, row, _len2, _ref2, _results;
-                if (debug) {
-                  Ti.API.info(f);
-                }
+                if (debug) Ti.API.info(f);
                 _ref2 = optionsTableView.data[0].rows;
                 _results = [];
                 for (i = 0, _len2 = _ref2.length; i < _len2; i++) {
                   row = _ref2[i];
-                  _results.push(i === f.index ? (optionsTableView.data[0].rows[i].hasCheck = true, Ti.App.Properties.setString(settings.name, optionsTableView.data[0].rows[i].title), self.settingValueLabel.text = optionsTableView.data[0].rows[i].title) : optionsTableView.data[0].rows[i].hasCheck = false);
+                  if (i === f.index) {
+                    optionsTableView.data[0].rows[i].hasCheck = true;
+                    Ti.App.Properties.setString(settings.name, optionsTableView.data[0].rows[i].title);
+                    _results.push(self.settingValueLabel.text = optionsTableView.data[0].rows[i].title);
+                  } else {
+                    _results.push(optionsTableView.data[0].rows[i].hasCheck = false);
+                  }
                 }
                 return _results;
               });
@@ -79,9 +81,7 @@
                 borderStyle: Titanium.UI.INPUT_BORDERSTYLE_ROUNDED
               });
               saveProperty = function(f) {
-                if (debug) {
-                  Ti.API.info(settings.name + ' = ' + f);
-                }
+                if (debug) Ti.API.info(settings.name + ' = ' + f);
                 Ti.App.Properties.setString(settings.name, f);
                 self.settingValueLabel.text = f;
                 return optionsWin.close();
@@ -110,18 +110,20 @@
             right: 5
           });
           settingSwitch.addEventListener('change', function(e) {
-            if (debug) {
-              Ti.API.info(settings.name + ' = ' + e.value);
-            }
+            if (debug) Ti.API.info(settings.name + ' = ' + e.value);
             return Ti.App.Properties.setBool(settings.name, e.value);
           });
           instance.add(settingSwitch);
       }
       return instance;
     }
+
     return SettingRow;
+
   })();
+
   SettingsTab = (function() {
+
     function SettingsTab() {
       this.win = this.createSettingsWindow();
       this.tab = Ti.UI.createTab({
@@ -130,6 +132,7 @@
         icon: 'images/20-gear2.png'
       });
     }
+
     SettingsTab.prototype.createSettingsWindow = function() {
       var data, defaultCityRow, defaultCountryRow, defaultSection, defaultStateRow, defaultZipRow, self, settingsWin, tableView;
       self = this;
@@ -176,7 +179,11 @@
       settingsWin.add(tableView);
       return settingsWin;
     };
+
     return SettingsTab;
+
   })();
+
   shl.settingsTab = new SettingsTab;
+
 }).call(this);

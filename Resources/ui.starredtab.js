@@ -1,6 +1,8 @@
 (function() {
   var StarredTab;
+
   StarredTab = (function() {
+
     function StarredTab() {
       this.win = this.createStarredWindow();
       this.tab = Ti.UI.createTab({
@@ -9,6 +11,7 @@
         icon: 'images/28-star.png'
       });
     }
+
     StarredTab.prototype.createStarredWindow = function() {
       var prospects, starList, tableView, win;
       win = Ti.UI.createWindow({
@@ -33,7 +36,11 @@
       });
       return win;
     };
+
     return StarredTab;
+
   })();
+
   shl.starredTab = new StarredTab;
+
 }).call(this);

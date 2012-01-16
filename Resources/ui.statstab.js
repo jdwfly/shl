@@ -1,6 +1,8 @@
 (function() {
   var StatsTab;
+
   StatsTab = (function() {
+
     function StatsTab() {
       this.win = this.createStatsWindow();
       this.tab = Ti.UI.createTab({
@@ -9,6 +11,7 @@
         icon: 'images/16-line-chart.png'
       });
     }
+
     StatsTab.prototype.createStatsWindow = function() {
       var aBap, aBapTxt, aCalls, aCallsTxt, aSal, aSalTxt, aVisitTxt, aVisits, allTime, mBap, mBapTxt, mCalls, mCallsTxt, mSal, mSalTxt, mVisitTxt, mVisits, self, statsWin, thisMonth, view;
       self = this;
@@ -217,7 +220,11 @@
       });
       return statsWin;
     };
+
     return StatsTab;
+
   })();
+
   shl.statsTab = new StatsTab;
+
 }).call(this);

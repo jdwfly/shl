@@ -1,12 +1,9 @@
 (function() {
-  var ListsTab;
-  var __indexOf = Array.prototype.indexOf || function(item) {
-    for (var i = 0, l = this.length; i < l; i++) {
-      if (this[i] === item) return i;
-    }
-    return -1;
-  };
+  var ListsTab,
+    __indexOf = Array.prototype.indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+
   ListsTab = (function() {
+
     function ListsTab() {
       this.win = this.createListsWindow();
       this.tab = Ti.UI.createTab({
@@ -15,6 +12,7 @@
         icon: 'images/179-notepad.png'
       });
     }
+
     ListsTab.prototype.createListsWindow = function() {
       var lists, self, tableView, win;
       self = this;
@@ -30,7 +28,7 @@
                     alert('clicked')
                   )
               }
-              */
+        */
       });
       lists = shl.List.find({
         where: {
@@ -63,6 +61,7 @@
       });
       return win;
     };
+
     ListsTab.prototype.createListTableView = function(lists) {
       var data, self, tableView;
       self = this;
@@ -179,9 +178,7 @@
             } else {
               currentList = shl.List.find(e.row.listID);
               prospects = currentList.getProspectList();
-              if (!shl.ui.isAndroid) {
-                listWin.setRightNavButton(listedit);
-              }
+              if (!shl.ui.isAndroid) listWin.setRightNavButton(listedit);
               listview.editing = false;
             }
             data = shl.ui.processProspectData(prospects);
@@ -224,9 +221,7 @@
           });
           makebrow = function() {
             var addBtn, brow, clearBtn, deleteBtn, editBtns;
-            if (!shl.ui.isAndroid) {
-              listWin.setRightNavButton(listcancel);
-            }
+            if (!shl.ui.isAndroid) listWin.setRightNavButton(listcancel);
             listview.editing = true;
             brow = Ti.UI.createTableViewRow({
               backgroundColor: '#999',
@@ -280,9 +275,7 @@
                   }
                   currentList = shl.List.find(e.row.listID);
                   prospects = currentList.getProspectList();
-                  if (!shl.ui.isAndroid) {
-                    listWin.setRightNavButton(listedit);
-                  }
+                  if (!shl.ui.isAndroid) listWin.setRightNavButton(listedit);
                   listview.editing = false;
                   data = shl.ui.processProspectData(prospects);
                   return listview.setData(data);
@@ -335,9 +328,7 @@
             style: Titanium.UI.iPhone.SystemButtonStyle.DONE
           });
           listcancel.addEventListener('click', function() {
-            if (!shl.ui.isAndroid) {
-              listWin.setRightNavButton(listedit);
-            }
+            if (!shl.ui.isAndroid) listWin.setRightNavButton(listedit);
             listview.editing = false;
             index = listview.getIndexByName('options');
             return listview.deleteRow(index, {
@@ -358,6 +349,7 @@
       };
       return tableView;
     };
+
     ListsTab.prototype.createAddProspectsWindow = function(listId) {
       var createRow, data, doneBtn, prospect, prospects, self, tableView, win;
       self = this;
@@ -373,13 +365,9 @@
       doneBtn.addEventListener('click', function() {
         return win.close();
       });
-      if (!shl.ui.isAndroid) {
-        win.setRightNavButton(doneBtn);
-      }
+      if (!shl.ui.isAndroid) win.setRightNavButton(doneBtn);
       prospects = shl.Prospect.find();
-      if (prospects.length < 1) {
-        return win;
-      }
+      if (prospects.length < 1) return win;
       createRow = function(prospect) {
         var addBtn, addressLabel, contentTitle, currentList, deleteBtn, listMembers, prosp, prospectsList, row, _ref;
         row = Ti.UI.createTableViewRow({
@@ -507,6 +495,7 @@
       win.add(tableView);
       return win;
     };
+
     ListsTab.prototype.processListData = function(lists) {
       var addCustom, countView, currentList, data, i, listcount, listnameLabel, row, self, viewMore;
       self = this;
@@ -545,9 +534,7 @@
             right: 5,
             color: '#616161'
           });
-          if (shl.ui.isAndroid) {
-            countView.right = 15;
-          }
+          if (shl.ui.isAndroid) countView.right = 15;
           row.add(countView);
           _results.push(row);
         }
@@ -574,7 +561,11 @@
       data.push(viewMore);
       return data;
     };
+
     return ListsTab;
+
   })();
+
   shl.listsTab = new ListsTab;
+
 }).call(this);

@@ -1,6 +1,8 @@
 (function() {
   var SearchTab;
+
   SearchTab = (function() {
+
     function SearchTab() {
       this.win = this.createSearchWindow();
       this.tab = Ti.UI.createTab({
@@ -9,6 +11,7 @@
         icon: 'images/06-magnify.png'
       });
     }
+
     SearchTab.prototype.createSearchWindow = function() {
       var search, self, tableView, win;
       self = this;
@@ -41,7 +44,11 @@
       win.add(tableView);
       return win;
     };
+
     return SearchTab;
+
   })();
+
   shl.searchTab = new SearchTab;
+
 }).call(this);
