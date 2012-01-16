@@ -1,18 +1,20 @@
 (function() {
   var UI;
+
   UI = (function() {
+
     function UI() {
       this.isAndroid = Ti.Platform.name === 'android' ? true : false;
       this.platform = Ti.Platform.name;
     }
+
     UI.prototype.createApplicationTabGroup = function() {
-      var addTab, listsTab, searchTab, settingsTab, starredTab, statsTab, tabs;
+      var addTab, listsTab, searchTab, settingsTab, starredTab, tabs;
       tabs = Ti.UI.createTabGroup();
       listsTab = shl.listsTab.tab;
       starredTab = shl.starredTab.tab;
       addTab = shl.addTab.tab;
       searchTab = shl.searchTab.tab;
-      statsTab = shl.statsTab.tab;
       settingsTab = shl.settingsTab.tab;
       /*
           nearbyTab = Ti.UI.createTab({
@@ -25,7 +27,7 @@
             window: help,
             icon: 'images/90-life-buoy.png'
           })
-          */
+      */
       tabs.addTab(listsTab);
       tabs.addTab(starredTab);
       tabs.addTab(addTab);
@@ -35,12 +37,8 @@
       if (this.isAndroid) {
         tabs.addEventListener('focus', function(e) {
           Ti.API.info('Current Tab Index: ' + e.index);
-          if (e.index === 0) {
-            Ti.App.fireEvent('ListWinUpdate');
-          }
-          if (e.index === 2) {
-            return Ti.App.fireEvent('AddFormUpdate');
-          }
+          if (e.index === 0) Ti.App.fireEvent('ListWinUpdate');
+          if (e.index === 2) return Ti.App.fireEvent('AddFormUpdate');
         });
       }
       tabs.open({
@@ -49,6 +47,7 @@
       this.tabs = tabs;
       return tabs;
     };
+
     UI.prototype.createProspectTableView = function(prospects) {
       var data, self, tableView;
       self = this;
@@ -60,19 +59,13 @@
         var dataSourceString, prospectWin;
         dataSourceString = e.source + '';
         if (self.isAndroid) {
-          if (dataSourceString.indexOf('Ti.UI.ImageView') !== -1.0) {
-            return true;
-          }
+          if (dataSourceString.indexOf('Ti.UI.ImageView') !== -1.0) return true;
         } else {
-          if (dataSourceString.indexOf('TiUIImageView') !== -1) {
-            return true;
-          }
+          if (dataSourceString.indexOf('TiUIImageView') !== -1) return true;
         }
         if (!tableView.editing) {
           Ti.API.info(JSON.stringify(e.row));
-          if (!(e.row.prospect != null)) {
-            return false;
-          }
+          if (!(e.row.prospect != null)) return false;
           prospectWin = self.createProspectViewWindow(e.row.prospect);
           return self.tabs.activeTab.open(prospectWin);
         }
@@ -83,6 +76,7 @@
       };
       return tableView;
     };
+
     UI.prototype.createProspectViewWindow = function(prospect) {
       var data, editButton, editButtonListener, self, tableView, win;
       prospect = shl.Prospect.find(prospect.id);
@@ -180,13 +174,12 @@
       win.add(tableView);
       return win;
     };
+
     UI.prototype.processProspectViewData = function(prospect) {
       var addressLabel, addressRow, addressSection, attendedRow, bogusNoneRow, bogusSection, contact, contactLabel, contactSection, contacts, data, decision, decisionList, decisionRow, emailLabel, emailRow, emailSection, essRow, firstContactLabel, firstContactRow, firstContactSection, headerView, nameLabel, nextStepLabel, noneRow, phoneHomeLabel, phoneHomeRow, phoneMobileLabel, phoneMobileRow, phoneSection, prevBaptRow, prevSavedRow, recordContactButton, row, rowLabel, self, statusLabel, statusRow, statusSection, statusValueLabel, _i, _j, _len, _len2;
       self = this;
       data = {};
-      if (!(prospect.id != null)) {
-        return {};
-      }
+      if (!(prospect.id != null)) return {};
       prospect = shl.Prospect.find(prospect.id);
       headerView = Ti.UI.createView({
         height: '116'
@@ -297,9 +290,7 @@
               }
             }
           }
-          if (self.isAndroid) {
-            recordContactRoot.close();
-          }
+          if (self.isAndroid) recordContactRoot.close();
           return recordContactWin.close();
         };
         if (self.platform === 'iPhone OS') {
@@ -418,10 +409,12 @@
           for (i = 0, _len = _ref.length; i < _len; i++) {
             row = _ref[i];
             diff = 1;
-            if (self.isAndroid) {
-              diff = 0;
+            if (self.isAndroid) diff = 0;
+            if (i === (e.index - diff)) {
+              _results.push(visitSection.rows[i].hasCheck = true);
+            } else {
+              _results.push(visitSection.rows[i].hasCheck = false);
             }
-            _results.push(i === (e.index - diff) ? visitSection.rows[i].hasCheck = true : visitSection.rows[i].hasCheck = false);
           }
           return _results;
         };
@@ -495,7 +488,11 @@
             _results = [];
             for (i = 0, _len = _ref.length; i < _len; i++) {
               row = _ref[i];
-              _results.push(i === e.index ? typeDecisionSection.rows[i].hasCheck = true : typeDecisionSection.rows[i].hasCheck = false);
+              if (i === e.index) {
+                _results.push(typeDecisionSection.rows[i].hasCheck = true);
+              } else {
+                _results.push(typeDecisionSection.rows[i].hasCheck = false);
+              }
             }
             return _results;
           };
@@ -518,7 +515,12 @@
             _results = [];
             for (i = 0, _len = _ref.length; i < _len; i++) {
               row = _ref[i];
-              _results.push(i === (e.index - 3) ? (decisionMakerSection.rows[i].hasCheck = true, otherRow.hasCheck = false) : decisionMakerSection.rows[i].hasCheck = false);
+              if (i === (e.index - 3)) {
+                decisionMakerSection.rows[i].hasCheck = true;
+                _results.push(otherRow.hasCheck = false);
+              } else {
+                _results.push(decisionMakerSection.rows[i].hasCheck = false);
+              }
             }
             return _results;
           };
@@ -556,12 +558,8 @@
               hintText: 'Other Family Member'
             });
             otherTextField.addEventListener('blur', function(e) {
-              if (maleRow != null) {
-                maleRow.hasCheck = false;
-              }
-              if (femaleRow != null) {
-                femaleRow.hasCheck = false;
-              }
+              if (maleRow != null) maleRow.hasCheck = false;
+              if (femaleRow != null) femaleRow.hasCheck = false;
               return otherRow.hasCheck = true;
             });
             otherRow.add(otherTextField);
@@ -890,7 +888,12 @@
           for (i = 0, _len2 = _ref.length; i < _len2; i++) {
             row = _ref[i];
             Ti.API.info(JSON.stringify(row));
-            _results.push(i === e.index ? (statusTableView.data[0].rows[i].hasCheck = true, prospect.updateAttribute('status', statusTableView.data[0].rows[i].title)) : statusTableView.data[0].rows[i].hasCheck = false);
+            if (i === e.index) {
+              statusTableView.data[0].rows[i].hasCheck = true;
+              _results.push(prospect.updateAttribute('status', statusTableView.data[0].rows[i].title));
+            } else {
+              _results.push(statusTableView.data[0].rows[i].hasCheck = false);
+            }
           }
           return _results;
         });
@@ -933,6 +936,7 @@
       data.data.push(contactSection);
       return data;
     };
+
     UI.prototype.processProspectData = function(prospects) {
       var addressLabel, content, contentTitle, data, lastContactLabel, prospect, row, starImage;
       if (prospects.length < 1) {
@@ -1030,11 +1034,10 @@
         return _results;
       })();
     };
+
     UI.prototype.createProspectFormWin = function(prospect) {
       var attendValue, attendedRow, b, cancel, city, citystateRow, country, data, deleteProspectButton, email, emailRow, enrolledRow, enrolledValue, fname, fnameRow, gender, genderValue, genderView, homeLabel, homeRow, homeText, initContactDate, initContactLabel, initPickerView, initialContactRow, initialPicker, lname, lnameRow, mobileLabel, mobileRow, mobileText, nameSep, pickerCancel, pickerDone, pickerSlideIn, pickerSlideOut, pickerSpacer, pickerToolbar, pocRow, pocTextfield, prevBaptRow, prevBaptValue, prevSavedRow, prevSavedValue, s1, s3, s4, s5, s6, s7, self, sep1, sep2, sep3, sep4, sep5, sname, state, street, streetRow, tableFooterView, tableView, today, win, zip, zipcountryRow;
-      if (this.isAndroid) {
-        return this.createProspectFormWinAndroid(prospect);
-      }
+      if (this.isAndroid) return this.createProspectFormWinAndroid(prospect);
       self = this;
       win = Ti.UI.createWindow({
         title: prospect != null ? 'Edit Prospect' : 'Add Prospect',
@@ -1106,15 +1109,9 @@
       });
       if (this.platform === 'iPhone OS') {
         if (prospect != null) {
-          if (sname.value !== '') {
-            genderValue = 1;
-          }
-          if (fname.value !== '') {
-            genderValue = 0;
-          }
-          if (sname.value !== '' && fname.value !== '') {
-            genderValue = 2;
-          }
+          if (sname.value !== '') genderValue = 1;
+          if (fname.value !== '') genderValue = 0;
+          if (sname.value !== '' && fname.value !== '') genderValue = 2;
         }
         gender = Titanium.UI.createTabbedBar({
           labels: ['Male', 'Female', 'Couple'],
@@ -1137,9 +1134,7 @@
                 visible: true
               });
             });
-            if (!fname.value) {
-              fname.value = sname.value;
-            }
+            if (!fname.value) fname.value = sname.value;
             return sname.value = '';
           } else if (this.index === 1) {
             nameSep.visible = false;
@@ -1155,9 +1150,7 @@
               visible: true
             });
             sname.top = -40;
-            if (!sname.value) {
-              sname.value = fname.value;
-            }
+            if (!sname.value) sname.value = fname.value;
             return fname.value = '';
           } else {
             fnameRow.height = 80;
@@ -1208,9 +1201,7 @@
           });
           sname.visible = true;
           sname.top = -40;
-          if (!sname.value) {
-            sname.value = fname.value;
-          }
+          if (!sname.value) sname.value = fname.value;
           fname.value = '';
         }
       }
@@ -1757,6 +1748,7 @@
       });
       return win;
     };
+
     UI.prototype.createProspectFormWinAndroid = function(prospect) {
       var attendValue, attendedRow, city, clearForm, country, data, email, enrolledRow, enrolledValue, fields, fname, homeText, initContactDate, lname, mobileText, pocTextfield, prevBaptRow, prevBaptValue, prevSavedRow, prevSavedValue, s7, scrollView, self, sname, state, street, tableView, win, zip;
       self = this;
@@ -2105,7 +2097,11 @@
       });
       return win;
     };
+
     return UI;
+
   })();
+
   shl.ui = new UI;
+
 }).call(this);

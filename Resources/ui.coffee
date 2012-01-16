@@ -13,7 +13,7 @@ class UI
     starredTab = shl.starredTab.tab
     addTab = shl.addTab.tab
     searchTab = shl.searchTab.tab
-    statsTab = shl.statsTab.tab
+    # statsTab = shl.statsTab.tab
     settingsTab = shl.settingsTab.tab
     ###
     nearbyTab = Ti.UI.createTab({
