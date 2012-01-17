@@ -964,7 +964,8 @@ class UI
       backgroundColor: 'transparent',
       borderWidth: 0,
       borderColor: 'transparent',
-      height: if prospect? then 0 else 60,
+      #height: if prospect? then 0 else 60,
+      height: 60,
       selectionStyle: "none"
     })
     if @platform is 'iPhone OS'

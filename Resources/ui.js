@@ -1103,7 +1103,7 @@
         backgroundColor: 'transparent',
         borderWidth: 0,
         borderColor: 'transparent',
-        height: prospect != null ? 0 : 60,
+        height: 60,
         selectionStyle: "none"
       });
       if (this.platform === 'iPhone OS') {
