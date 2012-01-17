@@ -433,8 +433,23 @@ function ConvertToCSV(objArray) {
     var line = '';
     for (var index in array[i]) {
       if (line != '') line += ','
-      
-      line += array[i][index];
+      switch (index) {
+        case 'firstContactDate':
+        case 'lastContact':
+        case 'createdDate':
+        case 'modified':
+          line += date('Y-m-d',array[i][index]);
+          break;
+        case 'previouslySaved':
+        case 'previouslyBaptized':
+        case 'attended':
+        case 'sundaySchool':
+        case 'starred':
+          line += (array[i][index]) ? 'Yes' : 'No';
+          break;
+        default:
+          line += array[i][index];
+      }
     }
     str += line + '\r\n';
   }
