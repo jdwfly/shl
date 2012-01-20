@@ -1,5 +1,5 @@
 # Set variables
-finishedLoading = Ti.App.getBool('finishedLoading')
+finishedLoading = Ti.App.Properties.getBool('finishedLoading')
 
 # Call first to start debug process
 shl.appStartup = () ->

@@ -1,43 +1,48 @@
+
+/*
+This class extends the TableViewRow to set an App wide property setting. Right
+now there is just the standard On/Off switch, textfield, and select option list.
+Examples of how to do so are below for posterity.
+
+Example of an On/Off Switch
+testRow = new SettingRow({},{
+  name: 'testRow',
+  control: 'boolean',
+  value: Ti.App.Properties.getBool('testRow'),
+  title: 'Test Row',
+  debug: true
+})
+data.push(testRow)
+
+Example of a Test Field
+testRowText = new SettingRow({},{
+  name: 'testRowText',
+  control: 'text',
+  value: Ti.App.Properties.getString('testRowText'),
+  title: 'Test Row Text',
+  debug: true
+})
+
+Example of a Select List
+testRowList = new SettingRow({},{
+  name: 'testRowList',
+  control: 'select',
+  value: Ti.App.Properties.getString('testRowList')
+  title: 'Test Row List',
+  options: [
+    {name: 'Option 1'},
+    {name: 'Option 2'},
+    {name: 'Option 3'},
+    {name: 'Option 4'}
+    ]
+  debug: true
+})
+*/
+
 (function() {
-  /*
-  This class extends the TableViewRow to set an App wide property setting. Right
-  now there is just the standard On/Off switch, textfield, and select option list.
-  Examples of how to do so are below for posterity.
-  
-  Example of an On/Off Switch
-  testRow = new SettingRow({},{
-    name: 'testRow',
-    control: 'boolean',
-    value: Ti.App.Properties.getBool('testRow'),
-    title: 'Test Row',
-    debug: true
-  })
-  data.push(testRow)
-  
-  Example of a Test Field
-  testRowText = new SettingRow({},{
-    name: 'testRowText',
-    control: 'text',
-    value: Ti.App.Properties.getString('testRowText'),
-    title: 'Test Row Text',
-    debug: true
-  })
-  
-  Example of a Select List
-  testRowList = new SettingRow({},{
-    name: 'testRowList',
-    control: 'select',
-    value: Ti.App.Properties.getString('testRowList')
-    title: 'Test Row List',
-    options: [
-      {name: 'Option 1'},
-      {name: 'Option 2'},
-      {name: 'Option 3'},
-      {name: 'Option 4'}
-      ]
-    debug: true
-  })
-  */  exports.SettingRow = (function() {
+
+  exports.SettingRow = (function() {
+
     function SettingRow(args, settings) {
       var debug, instance, self, settingSwitch, settingTitleLabel, value;
       self = this;
@@ -58,9 +63,7 @@
         height: 'auto',
         textAlign: 'right'
       });
-      if (settings.control !== 'boolean') {
-        instance.add(this.settingValueLabel);
-      }
+      if (settings.control !== 'boolean') instance.add(this.settingValueLabel);
       switch (settings.control) {
         case 'select':
         case 'text':
@@ -81,9 +84,7 @@
                   title: option.name,
                   hasCheck: false
                 });
-                if (option.name === value) {
-                  row.hasCheck = true;
-                }
+                if (option.name === value) row.hasCheck = true;
                 data.push(row);
               }
               optionsTableView = Ti.UI.createTableView({
@@ -92,14 +93,18 @@
               });
               optionsTableView.addEventListener('click', function(f) {
                 var i, row, _len2, _ref2, _results;
-                if (debug) {
-                  Ti.API.info(f);
-                }
+                if (debug) Ti.API.info(f);
                 _ref2 = optionsTableView.data[0].rows;
                 _results = [];
                 for (i = 0, _len2 = _ref2.length; i < _len2; i++) {
                   row = _ref2[i];
-                  _results.push(i === f.index ? (optionsTableView.data[0].rows[i].hasCheck = true, Ti.App.Properties.setString(settings.name, optionsTableView.data[0].rows[i].title), self.settingValueLabel.text = optionsTableView.data[0].rows[i].title) : optionsTableView.data[0].rows[i].hasCheck = false);
+                  if (i === f.index) {
+                    optionsTableView.data[0].rows[i].hasCheck = true;
+                    Ti.App.Properties.setString(settings.name, optionsTableView.data[0].rows[i].title);
+                    _results.push(self.settingValueLabel.text = optionsTableView.data[0].rows[i].title);
+                  } else {
+                    _results.push(optionsTableView.data[0].rows[i].hasCheck = false);
+                  }
                 }
                 return _results;
               });
@@ -116,9 +121,7 @@
                 borderStyle: Titanium.UI.INPUT_BORDERSTYLE_ROUNDED
               });
               saveProperty = function(f) {
-                if (debug) {
-                  Ti.API.info(settings.name + ' = ' + f);
-                }
+                if (debug) Ti.API.info(settings.name + ' = ' + f);
                 Ti.App.Properties.setString(settings.name, f);
                 self.settingValueLabel.text = f;
                 return optionsWin.close();
@@ -147,15 +150,16 @@
             right: 5
           });
           settingSwitch.addEventListener('change', function(e) {
-            if (debug) {
-              Ti.API.info(settings.name + ' = ' + e.value);
-            }
+            if (debug) Ti.API.info(settings.name + ' = ' + e.value);
             return Ti.App.Properties.setBool(settings.name, e.value);
           });
           instance.add(settingSwitch);
       }
       return instance;
     }
+
     return SettingRow;
+
   })();
+
 }).call(this);
