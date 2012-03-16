@@ -164,7 +164,7 @@ class SettingsTab
     defaultSection.add(defaultCountryRow)
     
     data.push(defaultSection)
-    
+
     exportSection = Ti.UI.createTableViewSection({
       headerTitle: 'Export & Feedback'
     })
@@ -194,7 +194,7 @@ class SettingsTab
     exportSection.add(sendFeedback)
     
     data.push(exportSection)
-    
+
     tableView = Ti.UI.createTableView({
       data: data,
       style: Titanium.UI.iPhone.TableViewStyle.GROUPED
