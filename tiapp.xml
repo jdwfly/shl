@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ti:app xmlns:ti="http://ti.appcelerator.org">
-    <sdk-version>1.8.0.1</sdk-version>
+    <property name="ti.android.runtime">v8</property>
+    <sdk-version>1.8.2</sdk-version>
     <deployment-targets>
         <target device="mobileweb">true</target>
         <target device="iphone">true</target>
@@ -39,12 +40,12 @@
     <android xmlns:android="http://schemas.android.com/apk/res/android">
         <tool-api-level>8</tool-api-level>
         <manifest android:installLocation="auto">
-            <uses-sdk android:minSdkVersion="7" android:targetSdkVersion="8"/>
+            <uses-sdk android:minSdkVersion="9" android:targetSdkVersion="9"/>
             <supports-screens android:anyDensity="false"
                 android:largeScreens="false"
                 android:normalScreens="false" android:smallScreens="false"/>
         </manifest>
-        <manifest android:versionCode="3" android:versionName="1.2"/>
+        <manifest android:versionCode="4" android:versionName="1.2.1"/>
     </android>
     <modules/>
 </ti:app>
